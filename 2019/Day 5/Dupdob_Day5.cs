@@ -3,10 +3,13 @@ using System.Linq;
 
 namespace AdventCalendar2019.Day_5
 {
-    public  class Dupdob_Day5
+    public  class DupdobDay5
     {
         private int[] _opCodes;
         private int[] _opCodesOriginal;
+        private int _pointer;
+        private int _inIndex;
+        public bool Halted { get; private set; } = true;
 
         public void ParseInput(string input = Input)
         {
@@ -15,70 +18,99 @@ namespace AdventCalendar2019.Day_5
 
         public int ComputeAnswer(int input)
         {
-            var outIndex = 0;
+            Func<int, int> inputProvider = (index) => input;
+            Func<int, bool> outputHandler = (output) =>
+            {
+                Console.WriteLine($"Output: {output}");
+                return true;
+            };
+            var memory = RunProgram(inputProvider, outputHandler);
+
+            return memory[0];
+        }
+
+        public int[] RunProgram(Func<int, int> inputProvider, Func<int, bool> outputHandler)
+        {
             _opCodes = (int[]) _opCodesOriginal.Clone();
             // patch
-            for (var i = 0; i < _opCodes.Length; i++)
+            _pointer = 0;
+            _inIndex = 0;
+            Halted = false;
+            ContinueProgram(inputProvider, outputHandler);
+            return _opCodes;
+        }
+
+        public void ContinueProgram(Func<int, int> inputProvider, Func<int, bool> outputHandler)
+        {
+            for (; _pointer < _opCodes.Length; _pointer++)
             {
-                var opcode = _opCodes[i];
-                var xMode = (opcode/100) % 10 == 1;
-                var yMode = (opcode/1000) % 10 == 1;
+                var opcode = _opCodes[_pointer];
+                var xMode = (opcode / 100) % 10 == 1;
+                var yMode = (opcode / 1000) % 10 == 1;
                 opcode %= 100;
                 switch (opcode)
                 {
                     case 1:
-                        Set(i+3, Get(i+1, xMode) + Get(i+2, yMode));
-                        i += 3;
+                        Set(_pointer + 3, Get(_pointer + 1, xMode) + Get(_pointer + 2, yMode));
+                        _pointer += 3;
                         break;
                     case 2:
-                        Set(i+3, Get(i+1, xMode) * Get(i+2, yMode));
-                        i += 3;
+                        Set(_pointer + 3, Get(_pointer + 1, xMode) * Get(_pointer + 2, yMode));
+                        _pointer += 3;
                         break;
                     case 3:
-                        Set(i+1, input);
-                        i += 1;
+                        Set(_pointer + 1, inputProvider(_inIndex++));
+                        _pointer += 1;
                         break;
                     case 4:
-                        var output = Get(i + 1, xMode);
-                        Console.WriteLine($"Output {outIndex}: {output}");
-                        outIndex++;
-                        i += 1;
+                        var output = Get(_pointer + 1, xMode);
+                        _pointer += 1;
+                        if (outputHandler(output))
+                        {
+                            return;
+                        }
+
                         break;
                     case 5:
-                        if (Get(i + 1, xMode) != 0)
+                        if (Get(_pointer + 1, xMode) != 0)
                         {
-                            i = Get(i + 2, yMode)-1;
+                            _pointer = Get(_pointer + 2, yMode) - 1;
                         }
                         else
                         {
-                            i += 2;
+                            _pointer += 2;
                         }
+
                         break;
                     case 6:
-                        if (Get(i + 1, xMode) == 0)
+                        if (Get(_pointer + 1, xMode) == 0)
                         {
-                            i = Get(i + 2, yMode)-1;
+                            _pointer = Get(_pointer + 2, yMode) - 1;
                         }
                         else
                         {
-                            i += 2;
+                            _pointer += 2;
                         }
+
                         break;
                     case 7:
-                        Set(i+3, Get(i + 1, xMode) < Get(i+2, yMode) ? 1 : 0);
-                        i += 3;
+                        Set(_pointer + 3, Get(_pointer + 1, xMode) < Get(_pointer + 2, yMode) ? 1 : 0);
+                        _pointer += 3;
                         break;
                     case 8:
-                        Set(i+3, Get(i + 1, xMode) == Get(i+2, yMode) ? 1 : 0);
-                        i += 3;
+                        Set(_pointer + 3, Get(_pointer + 1, xMode) == Get(_pointer + 2, yMode) ? 1 : 0);
+                        _pointer += 3;
                         break;
                     case 99:
-                        return _opCodes[0];
+                    {
+                        Halted = true;
+                        return;
+                    }
                 }
             }
-            throw new ApplicationException("failed");
+            throw new ApplicationException("Ran out of memory");
         }
-        
+
         private int Get(int i, bool mode)
         {
             return _opCodes[mode ? i : _opCodes[i]];

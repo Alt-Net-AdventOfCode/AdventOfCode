@@ -1,5 +1,5 @@
 ﻿using System;
-using AdventCalendar2019.Day_6;
+using AdventCalendar2019.Day7;
 
 namespace AdventCalendar2019
 {
@@ -7,10 +7,10 @@ namespace AdventCalendar2019
     {
         static void Main(string[] args)
         {
-            var puzzle = new DupdobDay6();
+            var puzzle = new Dupdob_Day7();
             puzzle.ParseInput();
-            Console.WriteLine($"Answer 1: {puzzle.CountOrbits()}");
-            Console.WriteLine($"Answer 2: {puzzle.FindMinimumNumberOfOrbitalTransfers()}");
+            Console.WriteLine($"Answer 1: {puzzle.FindMaxPower()}");
+            Console.WriteLine($"Answer 2: {puzzle.FindMaxPowerWithAlt()}");
         }
     }
 }
