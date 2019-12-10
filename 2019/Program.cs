@@ -1,6 +1,5 @@
 ﻿using System;
-using AdventCalendar2019.Day7;
-using AdventCalendar2019.Day8;
+using AdventCalendar2019.Day9;
 
 namespace AdventCalendar2019
 {
@@ -8,10 +7,7 @@ namespace AdventCalendar2019
     {
         static void Main(string[] args)
         {
-            var puzzle = new DupdobDay8();
-            puzzle.ParseInput();
-            Console.WriteLine($"Answer 1: {puzzle.ElvishChecksum()}");
-            Console.WriteLine($"Answer 2:\n{puzzle.GenerateSingleMessage()}");
+            DupdobDay9.GiveAnswers();
         }
     }
 }
