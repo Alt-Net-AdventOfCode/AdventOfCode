@@ -1,4 +1,4 @@
-﻿using AdventCalendar2019.Day12;
+﻿using AdventCalendar2019.Day13;
 
 namespace AdventCalendar2019
 {
@@ -6,7 +6,7 @@ namespace AdventCalendar2019
     {
         static void Main(string[] args)
         {
-            DupdobDay12.GiveAnswers();
+            DupdobDay13.GiveAnswers();
         }
     }
 }
