@@ -32,7 +32,11 @@ namespace AdventCalendar2019.Day22
                 {
                     pos = func(pos, 119315717514047);
                 }
-               // Console.WriteLine($"iter {i}: {pos}.");
+
+                if (pos == 2020)
+                {
+                    Console.WriteLine("Cycle after {0} iterations.", i);
+                }
             }
             
             return pos;
