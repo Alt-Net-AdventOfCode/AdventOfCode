@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -11,61 +12,111 @@ namespace AdventCalendar2019.Day18
             var runner = new DupdobDay18();
             runner.ParseInput();
             
-            Console.WriteLine("Answer 1:{0}", runner.FindShortestPathForKeys());
+            Console.WriteLine("Answer 1:{0}.                ", runner.FindShortestPathForKeys());
+
+            runner.PatchMap();
+            Console.WriteLine("Answer 2:{0}.                ", runner.FindShortestPathWithDroids());
+        }
+
+        private int FindShortestPathWithDroids()
+        {
+            var heldKeys = new HashSet<char>();
+            var droids = (Room[])_droids.Clone();
+
+            var currentBestDistance = int.MaxValue;
+            TotalDistance(droids, heldKeys, 0, ref currentBestDistance);
+            return currentBestDistance;
+        }
+
+        private void PatchMap()
+        {
+            // turn start point into a wall
+            _start.TurnIntoWall();
+            // and its neighbours
+            for (var i = 0; i < _directions.Length; i++)
+            {
+                GetRoom(_start.X, _start.Y, i).TurnIntoWall();
+            }
+            // create 4 new start points;
+            (int dx, int dy)[] droidsOffset = {(-1, -1), (1, -1), (1, 1), (-1, 1)};
+            var allKeys = new string(_map.Values.Where(r => r.IsKey).Select(r => r.Content).ToArray());
+            _keyToStartMap.Clear();
+            for (var i = 0; i < droidsOffset.Length; i++)
+            {
+                _droids[i] = GetRoom(_start.X + droidsOffset[i].dx, _start.Y + droidsOffset[i].dy);
+                _droids[i].TurnToStart();
+                
+                foreach (var room in _map.Values.Where(r => r.IsKey))
+                {
+                    if (FindDistanceToRoom(_droids[i], room, allKeys) < int.MaxValue)
+                    {
+                        _keyToStartMap.Add(room, i);
+                    }
+                }
+            }
+            PrintMap();
         }
 
         private int FindShortestPathForKeys()
         {
-            var totalDistance = 0;
             var heldKeys = new HashSet<char>();
-            var startRoom = _map.Values.First( r =>r.Content == '@');
-
             var currentBestDistance = int.MaxValue;
-            return TotalDistance(startRoom, heldKeys, totalDistance, ref currentBestDistance);
+            TotalDistance(new []{_start}, heldKeys, 0, ref currentBestDistance);
+            return currentBestDistance;
         }
 
-        private int TotalDistance(Room startRoom, HashSet<char> heldKeys, int totalDistance, ref int currentBestDistance)
+        private void TotalDistance(Room[] startRooms, ICollection<char> heldKeys, int totalDistance,
+            ref int currentBestDistance)
         {
-            var neededKeysCount = _map.Values.Count(room => char.IsLower(room.Content));
-            Console.Clear();
-            Console.WriteLine($"Min distance: {currentBestDistance}");
-            Console.Write($"Keys: {string.Join(',', heldKeys)}");
-            var distances = new Dictionary<Room, int>();
-            var minDistance = int.MaxValue;
-            if (totalDistance > currentBestDistance)
+            if (heldKeys.Count == _neededKeysCount)
             {
-                return int.MaxValue;
-            }
-            if (heldKeys.Count == neededKeysCount)
-            {
-                if (totalDistance < currentBestDistance)
+                if (totalDistance >= currentBestDistance)
                 {
-                    currentBestDistance = totalDistance;
+                    return;
                 }
-                return totalDistance;
+                Console.WriteLine($"Min distance: {totalDistance}.          ");
+                Console.Write($"Keys: {string.Join(',', heldKeys)}");
+                Console.CursorTop--;
+                Console.CursorLeft = 0;
+                currentBestDistance = totalDistance;
+
+                return;
             }
-            FinDistanceToRooms(startRoom, heldKeys, distances);
-            var accessibleKeys =
-                distances.Where(e =>
-                        e.Value < int.MaxValue && char.IsLower(e.Key.Content) && !heldKeys.Contains(e.Key.Content))
-                    .Select(t => t.Key).OrderBy(t => distances[t]);
-            
-            foreach (var accessibleKey in accessibleKeys)
+
+            var keyRing = new string(heldKeys.OrderBy(x => x).ToArray());
+            var missingKeys = _map.Values.Where(r => r.IsKey && !heldKeys.Contains(r.Content));
+            foreach (var accessibleKey in missingKeys)
             {
+                var i = _keyToStartMap[accessibleKey];
+                // find the droid that can access it
                 // let's try picking a key
-                var keyAttempt = new HashSet<char>(heldKeys) {accessibleKey.Content};
-                var nextStep = TotalDistance(accessibleKey, keyAttempt, distances[accessibleKey] + totalDistance, ref currentBestDistance);
-                if (nextStep < minDistance)
+                var nexStep = GetDistance(startRooms[i], accessibleKey, keyRing);
+                if (nexStep == int.MaxValue)
                 {
-                    minDistance = nextStep;
+                    nexStep = FindDistanceToRoom(startRooms[i], accessibleKey, keyRing);
+                    if (nexStep == int.MaxValue)
+                    {
+                        continue;
+                    }
+                }
+
+                var newPos = (Room[])startRooms.Clone();
+                var keyAttempt = new HashSet<char>(heldKeys) {accessibleKey.Content};
+                newPos[i] = accessibleKey;
+                var index = (_start, startRooms[i], new string(keyAttempt.OrderBy(x => x).ToArray()));
+                var nextDist = totalDistance + nexStep;
+                if (!_cache.ContainsKey(index) || _cache[index] > nextDist)
+                {
+                    // we find a shorter path to this state
+                    _cache[index] = nextDist;
+                    TotalDistance(newPos, keyAttempt, totalDistance + nexStep, ref currentBestDistance);
                 }
             }
-
-            return minDistance;
         }
 
-        private void FinDistanceToRooms(Room startRoom, HashSet<char> holdKeys, Dictionary<Room, int> distances)
+        private int FindDistanceToRoom(Room startRoom, Room target, string keyRing)
         {
+            var distances = new  Dictionary<Room, int>();
             var roomToVisit = _map.Values.ToList();
             foreach (var room in roomToVisit)
             {
@@ -89,19 +140,41 @@ namespace AdventCalendar2019.Day18
                     break;
                 }
 
-                roomToVisit.Remove(closestRoom);
-                if (closestRoom.CanCrossTheRoom(holdKeys))
+                if (closestRoom.IsKey)
                 {
-                    closestDist++;
+                    SetDistance(startRoom, closestRoom, keyRing, closestDist);
+                }
+
+                if (closestRoom == target)
+                {
+                    return closestDist;
+                }
+                roomToVisit.Remove(closestRoom);
+                if (closestRoom.CanCrossTheRoom(keyRing))
+                {
                     foreach (var neighbour in closestRoom.Neighbours)
                     {
-                        if (distances[neighbour] > closestDist)
+                        var distance = closestDist + closestRoom.GetDistance(neighbour);
+                        if (distances[neighbour] > distance)
                         {
-                            distances[neighbour] = closestDist;
+                            distances[neighbour] = distance;
                         }
                     }
                 }
             }
+            SetDistance(startRoom, target, keyRing, int.MaxValue);
+            return int.MaxValue;
+        }
+
+        private int GetDistance(Room from, Room to, string keys)
+        {
+            return _cache.TryGetValue((from, to, keys), out var dist) ? dist : int.MaxValue;
+        }
+
+        private void SetDistance(Room from, Room to, string keys, int distance)
+        {
+            _cache[(from, to, keys)] = distance;
+            _cache[(to, from, keys)] = distance;
         }
 
         private void ParseInput(string input = Input)
@@ -117,14 +190,15 @@ namespace AdventCalendar2019.Day18
                         continue;
                     }
 
-                    var room = new Room(line[i]);
+                    var room = new Room(line[i], i, lineIndex);
                     _map[(i, lineIndex)] = room;
                 }
 
-                maxX = Math.Max(line.Length, maxX);
+                _maxX = maxX = Math.Max(line.Length, maxX);
                 lineIndex++;
             }
 
+            _maxY = lineIndex;
             // detect neighbours
             for (var y = 0; y < lineIndex; y++)
             {
@@ -146,43 +220,99 @@ namespace AdventCalendar2019.Day18
                 }
             }
             
-            // scan to prune dead ends
-            var scanNeeded = true;
-            var toRemove = new List<Room>();
-            while (scanNeeded)
+            _map = Simplify();
+            _neededKeysCount = _map.Values.Count(room => char.IsLower(room.Content));
+            _start = _map.Values.First(r => r.IsStart);
+            foreach (var room in _map.Values.Where(r => r.IsKey))
             {
-                scanNeeded = false;
-                foreach (var room in _map.Values.Where(r => r.Content =='.' && r.Neighbours.Count()==1))
+                _keyToStartMap[room] = 0;
+            }
+            PrintMap();
+        }
+
+        private IDictionary<(int x, int y), Room> Simplify()
+        {
+                var roomToRemove = new List<Room>();
+
+                // step two = remove dead ends
+                var deadEnd = _map.Values
+                    .FirstOrDefault(r => r.NeighboursCount == 1 && (r.IsEmpty || r.IsGate));
+                while (deadEnd != null)
                 {
-                    var roomScan = room;
-                    for (;;)
-                    {
-                        
-                        if (room.Neighbours.Count() != 1 || room.IsKey)
+                    roomToRemove.Add(deadEnd);
+                    deadEnd.Prune();
+                    
+                    deadEnd = _map.Values
+                        .FirstOrDefault(r => r.NeighboursCount == 1 && (r.IsEmpty || r.IsGate));
+                }
+                
+                // Step one = simplify intermediate steps
+                foreach (var room in _map.Values.Where(r => r.NeighboursCount == 2 && r.IsEmpty))
+                {
+                    // looking for an end of this branch
+                    var next = room.Neighbours.ToList();
+                    var leftBranch = next[1];
+                    var rightBranch = next[0];
+                    var previousLeft = room;
+                    var distance = 2;
+                    while (leftBranch.IsEmpty && leftBranch.NeighboursCount == 2)
+                    { 
+                        next = leftBranch.Neighbours.ToList();
+                        if (next[0] == previousLeft)
                         {
-                            break;
+                            previousLeft = leftBranch;
+                            leftBranch = next[1];
                         }
-
-                        var toPrune = roomScan;
-                        roomScan = roomScan.Neighbours.First();
-                        toPrune.Neighbours.Clear();
-                        roomScan.Neighbours.Remove(toPrune);
-                        toRemove.Add(toPrune);
-                        scanNeeded = true;
+                        else
+                        {
+                            previousLeft = leftBranch;
+                            leftBranch = next[0];
+                        }
+                        roomToRemove.Add(previousLeft);
+                        distance++;
                     }
-                }
-            }
 
-            var map = new Dictionary<(int x, int y), Room>();
-            foreach (var entry in _map)
+                    var previousRight = room;
+                    while (rightBranch.IsEmpty && rightBranch.NeighboursCount == 2)
+                    { 
+                        next = rightBranch.Neighbours.ToList();
+                        if (next[0] == previousRight)
+                        {
+                            previousRight = rightBranch;
+                            rightBranch = next[1];
+                        }
+                        else
+                        {
+                            previousRight = rightBranch;
+                            rightBranch = next[0];
+                        }
+                        roomToRemove.Add(previousRight);
+                        distance++;
+                    }
+                    roomToRemove.Add(previousLeft);
+                    roomToRemove.Add(previousRight);
+                    previousRight.Prune();
+                    previousLeft.Prune();
+                    leftBranch.AddNeighbour(rightBranch, distance);
+                    rightBranch.AddNeighbour(leftBranch, distance);
+                }
+            
+                var map = _map.Where(entry => !roomToRemove.Contains(entry.Value))
+                    .ToDictionary(entry => entry.Key, entry => entry.Value);
+                Console.WriteLine("Removed {0} useless rooms.", _map.Count - map.Count);
+                return map;
+        }
+
+        private void PrintMap()
+        {
+            for (var y = 0; y < _maxY; y++)
             {
-                if (!toRemove.Contains(entry.Value))
+                for (var x = 0; x < _maxX; x++)
                 {
-                    map.Add(entry.Key, entry.Value);
+                    Console.Write(_map.TryGetValue((x, y), out var room) ? room.Content : ' ');
                 }
-            }
-
-            _map = map;
+                Console.WriteLine();
+            }    
         }
 
         private Room GetRoom(int x, int y, int direction=-1)
@@ -196,52 +326,96 @@ namespace AdventCalendar2019.Day18
             return _map.TryGetValue((x, y), out var room) ? room : null;
         }
         
-        private readonly (int dx, int dy)[] _directions = {(0, -1),(1, 0),(0, 1),(-1, 0)};
-    
         private class Room
         {
-            private readonly IList<Room> _neighbours = new List<Room>();
-            private char _content;
+            private readonly IDictionary<Room, int> _neighbours = new Dictionary<Room, int>();
 
-            public char Content => _content;
+            public int X { get; }
+            public int Y { get; }
+            public char Content { get; set; }
 
-            public IList<Room> Neighbours => _neighbours;
+            public ICollection<Room> Neighbours => _neighbours.Keys;
 
-            public bool IsDoor => char.IsUpper(_content);
+            public int NeighboursCount => _neighbours.Count;
             
-            public bool IsKey => char.IsLower(_content);
-            
-            public Room(char content)
+            public bool IsKey => char.IsLower(Content);
+            public bool IsGate => char.IsUpper(Content);
+            public bool IsStart => Content == '@';
+            public bool IsEmpty => Content == '.';
+
+            public Room(char content, int x, int y)
             {
-                this._content = content;
+                this.Content = content;
+                this.X = x;
+                this.Y = y;
             }
 
-            public void AddNeighbour(Room next)
+            public void TurnIntoWall()
             {
-                _neighbours.Add(next);
+                Prune();
+                Content = '#';
             }
 
-            public bool CanCrossTheRoom(HashSet<char> keys)
+            public int GetDistance(Room next)
             {
-                return !char.IsUpper(_content) || keys.Contains(char.ToLower(_content));
+                return _neighbours[next];
+            }
+            
+            public void AddNeighbour(Room next, int distance = 1)
+            {
+                _neighbours.Add(next, distance);
+            }
+
+            public bool CanCrossTheRoom(string keys)
+            {
+                return !IsGate || keys.Contains(char.ToLower(Content));
             }
 
             public override string ToString()
             {
-                if (char.IsUpper(_content))
+                if (Content == '@')
                 {
-                    return $"Door {_content}";
+                    return "Start";
                 }
-                else if (char.IsLower(_content))
+                if (char.IsUpper(Content))
                 {
-                    return $"Key {_content}";
+                    return $"Door {Content}";
                 }
 
-                return "Room";
+                return char.IsLower(Content) ? $"Key {Content}" : "Room";
+            }
+
+            public void Prune()
+            {
+                foreach (var neighbour in _neighbours)
+                {
+                    neighbour.Key.PruneNeighbour(this);
+                }
+                _neighbours.Clear();
+            }
+
+            private void PruneNeighbour(Room toPrune)
+            {
+                _neighbours.Remove(toPrune);
+            }
+
+            public void TurnToStart()
+            {
+                Content = '@';
             }
         }
         
+        private readonly (int dx, int dy)[] _directions = {(0, -1),(1, 0),(0, 1),(-1, 0)};
+        private readonly Dictionary<(Room from, Room to, string keys), int> _cache = new Dictionary<(Room from, Room to, string keys), int>();
+    
         private IDictionary<(int x, int y), Room> _map = new Dictionary<(int x, int y), Room>();
+        private int _maxX;
+        private int _maxY;
+        private int _neededKeysCount;
+        private Room _start;
+        private readonly Room[] _droids = new Room[4];
+        private readonly IDictionary<Room, int> _keyToStartMap = new Dictionary<Room, int>();
+
         private const string Input =
 @"#################################################################################
 #.#.......#.................#.D...#.....#.........#.......#.#...#.......#.....V.#
