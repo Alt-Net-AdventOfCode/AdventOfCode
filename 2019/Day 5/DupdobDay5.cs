@@ -11,22 +11,31 @@ namespace AdventCalendar2019.Day_5
         private int _inIndex;
         public bool Halted { get; private set; } = true;
 
+        public static void GiveAnswers()
+        {
+            var runner = new DupdobDay5();
+            runner.ParseInput();
+            Console.WriteLine("Answer 1: {0}.", runner.ComputeAnswer(1));
+            Console.WriteLine("Answer 2: {0}.", runner.ComputeAnswer(5));
+        }
+
         public void ParseInput(string input = Input)
         {
             _opCodesOriginal = input.Split(',').Select(int.Parse).ToArray();
         }
 
-        public int ComputeAnswer(int input)
+        public long ComputeAnswer(int input)
         {
+            var result = 0L;
             Func<int, int> inputProvider = (index) => input;
             Func<int, bool> outputHandler = (output) =>
             {
-                Console.WriteLine($"Output: {output}");
-                return true;
+                result = output;
+                return false;
             };
             var memory = RunProgram(inputProvider, outputHandler);
 
-            return memory[0];
+            return result;
         }
 
         public int[] RunProgram(Func<int, int> inputProvider, Func<int, bool> outputHandler)

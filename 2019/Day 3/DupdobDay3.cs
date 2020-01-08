@@ -4,12 +4,20 @@ using System.Linq;
 
 namespace AdventCalendar2019.Day_3
 {
-    public class Dupdob_Day3
+    public class DupdobDay3
     {
         private readonly Dictionary<Point, int> _firstWire = new Dictionary<Point, int>();
         private readonly Dictionary<Point, int> _secondWire = new Dictionary<Point, int>();
 
-        public void Parse(string input = Input)
+        public static void GiveAnswers()
+        {
+            var runner = new DupdobDay3();
+            runner.ParseInput();
+            Console.WriteLine("Answer 1: {0}.", runner.FindCloserIntersection());
+            Console.WriteLine("Answer 2: {0}.", runner.FindShortestPathToIntersection());
+        }
+        
+        public void ParseInput(string input = Input)
         {
             var lines = input.Split('\n');
             TracePath(lines[0], _firstWire);

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -5,6 +6,14 @@ namespace AdventCalendar2019.Day_6
 {
     public class DupdobDay6
     {
+        public static void GiveAnswers()
+        {
+            var runner = new DupdobDay6();
+            runner.ParseInput();
+            Console.WriteLine("Answer 1: {0}.", runner.CountOrbits());
+            Console.WriteLine("Answer 2: {0}.", runner.FindMinimumNumberOfOrbitalTransfers());
+        }
+
         public void ParseInput(string input = Input)
         {
             // declare center of mas

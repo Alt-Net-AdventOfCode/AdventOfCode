@@ -1,12 +1,21 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace AdventCalendar2019.Day_1
 {
-    public  class Dupdob_Day1
+    public  class DupdobDay1
     {
         private int[] _masses;
         
+        public static void GiveAnswers()
+        {
+            var runner = new DupdobDay1();
+            runner.ParseInput();
+            Console.WriteLine("Answer 1: {0}.", runner.ComputeFuel());
+            Console.WriteLine("Answer 2: {0}.", runner.ComputeFuelAndFuleForFuel());
+        }
+
         public void ParseInput(string input = Input)
         {
             _masses=input.Split('\n').Select(int.Parse).ToArray();
@@ -134,6 +143,7 @@ namespace AdventCalendar2019.Day_1
 135012
 55101
 67926";
+
     }
     
 }

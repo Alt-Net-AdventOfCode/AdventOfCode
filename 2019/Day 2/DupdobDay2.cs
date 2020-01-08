@@ -1,12 +1,19 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace AdventCalendar2019.Day_2
 {
-    public  class Dupdob_Day2
+    public  class DupdobDay2
     {
         private int[] _opCodes;
+
+        public static void GiveAnswers()
+        {
+            var runner = new DupdobDay2();
+            runner.ParseInput();
+            Console.WriteLine("Answer 1: {0}.", runner.ComputeAnswer());
+            Console.WriteLine("Answer 2: {0}.", runner.ComputeAnswer2());
+        }
 
         public int[] ParseInput(string input = Input)
         {
