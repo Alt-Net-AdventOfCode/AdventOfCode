@@ -16,7 +16,7 @@ namespace AdventCalendar2019.Day_6
 
         public void ParseInput(string input = Input)
         {
-            // declare center of mas
+            // declare center of mass
             GetOrAdd("COM");
             foreach (var line in input.Split('\n'))
             {
