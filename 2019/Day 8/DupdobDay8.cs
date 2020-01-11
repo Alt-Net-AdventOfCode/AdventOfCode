@@ -3,10 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace AdventCalendar2019.Day8
+namespace AdventCalendar2019.Day_8
 {
     public class DupdobDay8
     {
+        public static void GiveAnswers()
+        {
+            var runner = new DupdobDay8();
+            runner.ParseInput();
+            Console.WriteLine("Answer 1: {0}.", runner.ElvishChecksum());
+            Console.WriteLine("Answer 2:");
+            Console.WriteLine(runner.GenerateSingleMessage());
+        }
 
         public void ParseInput(string input = Input, int width = 25, int height = 6)
         {
@@ -51,8 +59,8 @@ namespace AdventCalendar2019.Day8
 
                     nextCar = nextCar switch
                     {
-                        '1' => '*',
-                        '2' => '2',
+                        '1' => 'O',
+                        '2' => '_',
                         '0' => ' ',
                         _ => nextCar
                     };
