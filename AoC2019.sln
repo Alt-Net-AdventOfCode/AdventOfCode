@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdventCalendar2019", "2019\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdventCalendar2020", "AdventCalendar2020\AdventCalendar2020.csproj", "{A7FB9E98-55E8-4507-8C8F-232594B426D2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdventCalendar2015", "AdventCalendar2015\AdventCalendar2015.csproj", "{8527E9A5-7781-4A75-9139-0F49A9973185}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{A7FB9E98-55E8-4507-8C8F-232594B426D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A7FB9E98-55E8-4507-8C8F-232594B426D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A7FB9E98-55E8-4507-8C8F-232594B426D2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8527E9A5-7781-4A75-9139-0F49A9973185}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8527E9A5-7781-4A75-9139-0F49A9973185}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8527E9A5-7781-4A75-9139-0F49A9973185}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8527E9A5-7781-4A75-9139-0F49A9973185}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
