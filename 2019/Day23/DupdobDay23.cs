@@ -13,6 +13,7 @@ namespace AdventCalendar2019.Day23
         private long _pointer;
         private long _inIndex;
         private long _relativeBase;
+        private bool _halted;
 
         public static void GiveAnswers()
         {
@@ -25,8 +26,9 @@ namespace AdventCalendar2019.Day23
                 puzzle[i].ParseInput();
                 network[i] = new Queue<long>();
             }
-            var lck = new object();;
+            var lck = new object();
             var finished = false;
+            var monitoredValue = 0L;
             network.Add(255, new Queue<long>());
             
             for (var i = 0; i < puzzle.Length; i++)
@@ -51,15 +53,22 @@ namespace AdventCalendar2019.Day23
                                         if (network[verify].Count > 0)
                                         {
                                             idle = false;
+                                            break;
                                         }
                                     }
-
                                     if (idle)
                                     {
+                                        var x = network[255].Dequeue();
+                                        var y = network[255].Peek();
+                                        network[255].Enqueue(x);
                                         // forward NAT message
-                                        network[0].Enqueue(network[255].Dequeue());
-                                        Console.WriteLine("Nat sent Y {0}", network[255].Peek());
-                                        network[0].Enqueue(network[255].Dequeue());
+                                        network[index].Enqueue(x);
+                                        Console.WriteLine("Nat sent Y {0}", y);
+                                        network[index].Enqueue(y);
+                                    }
+                                    else
+                                    {
+                                        return result;
                                     }
                                 }
                                 else
@@ -79,32 +88,44 @@ namespace AdventCalendar2019.Day23
                         {
                             return false;
                         }
-                        if (buffer[0] == 255)
+
+                        var key = buffer[0];
+                        if (key == 255)
                         {
-                            Console.WriteLine("First 255 Y {0}", buffer[2]);
-                            lock (lck)
+                            if (monitoredValue == 0)
                             {
-                                finished = true;
-                                Monitor.Pulse(lck);
+                                Console.WriteLine("First 255 Y {0}", buffer[2]);
                             }
+                            else if (monitoredValue == buffer[2])
+                            {
+                                Console.WriteLine("Repeated Y {0}", buffer[2]);
+                                lock (lck)
+                                {
+                                    finished = true;
+                                    Monitor.Pulse(lck);
+                                }
+                            }
+
+                            monitoredValue = buffer[2];
                         }
 
-                        lock (buffer)
+                        lock (network)
                         {
-                            if (buffer[0] == 255)
+                            if (key == 255)
                             {
-                                network[buffer[0]].Clear();
+                                network[key].Clear();
                             }
-                            network[buffer[0]].Enqueue(buffer[1]);
-                            network[buffer[0]].Enqueue(buffer[2]);
+                            network[key].Enqueue(buffer[1]);
+                            network[key].Enqueue(buffer[2]);
                         }
 
-                        Console.WriteLine($"Computer {index} sent {buffer[1]}:{buffer[2]} to {buffer[0]}");
+                        Console.WriteLine($"Computer {index} sent {buffer[1]}:{buffer[2]} to {key}");
 
                         buffer.Clear();
 
                         return finished;
                     });
+                    Console.WriteLine($"Node {x} stopped.");
                 });
                 
                 runners.Add(thread);
@@ -119,6 +140,8 @@ namespace AdventCalendar2019.Day23
                 }
             }
         }
+
+        public bool Halted => _halted;
 
         private void ParseInput(string input = Input)
         {
@@ -136,8 +159,16 @@ namespace AdventCalendar2019.Day23
             _pointer = 0;
             _inIndex = 0;
             _relativeBase = 0;
-            ContinueProgram(inputProvider, outputHandler);
-            return;
+            try
+            {
+                ContinueProgram(inputProvider, outputHandler);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Internal error:");
+                Console.WriteLine(e);
+                throw;
+            }
         }
 
         private void ContinueProgram(Func<long, long> inputProvider, Func<long, bool> outputHandler)
@@ -180,7 +211,6 @@ namespace AdventCalendar2019.Day23
                         {
                             _pointer += 3;
                         }
-
                         break;
                     case 6:
                         if (Get(_pointer + 1, xMode) == 0)
@@ -191,7 +221,6 @@ namespace AdventCalendar2019.Day23
                         {
                             _pointer += 3;
                         }
-
                         break;
                     case 7:
                         Set(_pointer + 3, Get(_pointer + 1, xMode) < Get(_pointer + 2, yMode) ? 1 : 0, zMode);
@@ -206,6 +235,7 @@ namespace AdventCalendar2019.Day23
                         _pointer += 2;
                         break;
                     case 99:
+                        _halted = true;
                         return;
                 }
             }
