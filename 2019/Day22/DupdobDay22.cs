@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
 namespace AdventCalendar2019.Day22
@@ -18,9 +19,21 @@ namespace AdventCalendar2019.Day22
 
         private int Answer1()
         {
-            var pos = _processPos.Aggregate<Func<long, long, long>, long>(2019, (current, func) => func(current, 10007));
-
+            var size = 10007;
+            Simplify(size);
+            var pos = (((2019 * _multiplier + _offset) % size) + size) % size;
             return (int)pos;
+        }
+
+        private void Simplify(int size)
+        {
+            _offset = 0;
+            _multiplier = 1;
+            foreach (var op in _shuffle)
+            {
+                _multiplier = (_multiplier * op.mul) % size;
+                _offset = (_offset * op.mul + op.offset) % size;
+            }
         }
 
         private long Answer2()
@@ -28,11 +41,7 @@ namespace AdventCalendar2019.Day22
             long pos = 2020;
             for(var i = 0L; i<101741582076661; i++)
             {
-                foreach (var func in _processPos)
-                {
-                    pos = func(pos, 119315717514047);
-                }
-
+                pos = (pos * _multiplier + _offset) % 119315717514047;
                 if (pos == 2020)
                 {
                     Console.WriteLine("Cycle after {0} iterations.", i);
@@ -48,39 +57,27 @@ namespace AdventCalendar2019.Day22
             {
                 if (line == "deal into new stack")
                 {
-                    _processPos.Add(PositionAfterNewDeck);
+                    _shuffle.Add((-1, -1));
                 }
                 else if (line.StartsWith("cut "))
                 {
                     var cutFactor = int.Parse(line.Substring(4));
-                    _processPos.Add( (initPos, size) => PositionAfterCut( cutFactor,initPos, size));
+                    _shuffle.Add((1, -cutFactor));
                 }
                 else if (line.StartsWith("deal with increment "))
                 {
                     var increment = int.Parse(line.Substring(20));
-                    _processPos.Add((initpos, size) => PositionAfterDeal(increment, initpos, size));
+                    _shuffle.Add((increment, 0));
                 }
             }
         }
+        
+        private readonly IList<(int mul, int offset)> _shuffle = new List<(int mul, int offset)>();
+        private long _offset;
+        private long _multiplier;
 
-        private static long PositionAfterCut(int cut, long initPosition, long deckSize)
-        {
-            return (initPosition - cut + deckSize) % deckSize;
-        }
-        
-        private static long PositionAfterDeal(int increment, long initPosition, long deckSize)
-        {
-            return (initPosition * increment) % deckSize;
-        }
-        
-        private static long PositionAfterNewDeck(long initPos, long deckSize)
-        {
-            return deckSize-1-initPos;
-        }
-        
-        private readonly IList<Func<long, long, long>> _processPos = new List<Func<long, long, long>>();
         private const string Input =
-@"cut -7812
+@"cut -7812    
 deal with increment 55
 cut -3909
 deal with increment 51

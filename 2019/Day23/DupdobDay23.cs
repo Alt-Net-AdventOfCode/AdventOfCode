@@ -59,8 +59,8 @@ namespace AdventCalendar2019.Day23
                                     if (idle)
                                     {
                                         var x = network[255].Dequeue();
-                                        var y = network[255].Peek();
-                                        network[255].Enqueue(x);
+                                        var y = network[255].Dequeue();
+                                            //network[255].Enqueue(x);
                                         // forward NAT message
                                         network[index].Enqueue(x);
                                         Console.WriteLine("Nat sent Y {0}", y);
@@ -120,14 +120,12 @@ namespace AdventCalendar2019.Day23
                         }
 
                         Console.WriteLine($"Computer {index} sent {buffer[1]}:{buffer[2]} to {key}");
-
                         buffer.Clear();
-
                         return finished;
                     });
                     Console.WriteLine($"Node {x} stopped.");
                 });
-                
+                thread.IsBackground = true;
                 runners.Add(thread);
                 thread.Start(i);
             }
