@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -60,7 +59,8 @@ namespace AdventCalendar2019.Day23
                                     {
                                         var x = network[255].Dequeue();
                                         var y = network[255].Dequeue();
-                                            //network[255].Enqueue(x);
+                                            network[255].Enqueue(x);
+                                            network[255].Enqueue(y);
                                         // forward NAT message
                                         network[index].Enqueue(x);
                                         Console.WriteLine("Nat sent Y {0}", y);
@@ -137,6 +137,7 @@ namespace AdventCalendar2019.Day23
                     Monitor.Wait(lck);
                 }
             }
+
         }
 
         public bool Halted => _halted;
