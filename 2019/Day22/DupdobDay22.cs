@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Reflection.Metadata;
 
 namespace AdventCalendar2019.Day22
 {
@@ -25,7 +26,7 @@ namespace AdventCalendar2019.Day22
             return (int)pos;
         }
 
-        private void Simplify(int size)
+        private void Simplify(long size)
         {
             _offset = 0;
             _multiplier = 1;
@@ -34,21 +35,100 @@ namespace AdventCalendar2019.Day22
                 _multiplier = (_multiplier * op.mul) % size;
                 _offset = (_offset * op.mul + op.offset) % size;
             }
+
+            if (_offset < 0)
+            {
+                _offset += size;
+            }
+        }
+
+        private static long Mod(long a, long b)
+        {
+            return (a >= 0) ? (a % b) : (b + a % b);
+        }
+
+        private static long mod_multiply(long a, long b, long n)
+        {
+            long bit = 1;
+            long res = 0;
+            while (bit <= a) {
+                if ((a & bit) == bit) {
+                    res = Mod(res + b, n);
+                }
+                b = Mod(b<<1, n);
+                bit <<= 1;
+            }
+
+            return res;
+        }
+
+        private static long gcd_extended(long a, long b, out long x, out long  y)
+        {
+            if (a == 0) {
+                x = 0;
+                y = 1;
+                return b;
+            }
+
+            var gcd = gcd_extended(b % a, a, out var x1, out var y1);
+            x = y1 - (b / a) * x1;
+            y = x1;
+            return gcd;
+        }
+
+        static long modular_inverse(long b, long n)
+        {
+            var g = gcd_extended(b, n, out var x, out _);
+            return (g != 1) ? -1 : Mod(x, n);
+        }
+        
+        private static long modular_divide(long a, long b, long n)
+        {
+            a = Mod(a, n);
+            var inv = modular_inverse(b, n);
+            return (inv == -1) ? -1 : mod_multiply(a, inv, n);
+        }
+
+
+        private static long modular_power(long powerBase, long exponent, long n)
+        {
+            if (exponent == 0) {
+                return (powerBase == 0) ? 0 : 1;
+            }
+            long bit = 1;
+            var power = Mod(powerBase, n);
+            long res = 1;
+            while (bit <= exponent) {
+                if ((exponent & bit) == bit) {
+                    res = mod_multiply(res, power, n);
+                }
+                power = mod_multiply(power, power, n);
+                bit <<= 1;
+            }
+            // 103559492576018 too high
+            // 64674018369271
+            // 35489935255921
+            // 20064638448990 too low
+
+            return res;
         }
 
         private long Answer2()
         {
             long pos = 2020;
-            for(var i = 0L; i<101741582076661; i++)
-            {
-                pos = (pos * _multiplier + _offset) % 119315717514047;
-                if (pos == 2020)
-                {
-                    Console.WriteLine("Cycle after {0} iterations.", i);
-                }
-            }
+
+
+            var nbIteration = 101741582076661;
+            var desk = 119315717514047;
+            Simplify(desk);
+
+            long fullA = modular_power(_multiplier, nbIteration, desk);
+            long fullB = mod_multiply(_offset, modular_divide(fullA - 1, _multiplier - 1, desk), desk);
+
+            // Now do the inverse calculation, i.e. given C', what was C?
+            long startPos = Mod(modular_divide(Mod(pos - fullB, desk), fullA, desk), desk);
             
-            return pos;
+            return startPos;
         }
 
         private void ParseInput(string input = Input)
