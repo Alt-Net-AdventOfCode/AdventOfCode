@@ -7,7 +7,7 @@ namespace AdventCalendar2020.Day_1
     {
         private HashSet<long> _unique;
 
-        public long GiveAnswers()
+        public long GiveAnswer1()
         {
             var i = 2020;
             return FindSeed(i);
