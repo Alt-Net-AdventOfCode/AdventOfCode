@@ -5,4 +5,8 @@
         <TargetFramework>netcoreapp5.0</TargetFramework>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\2019\AdventCalendar2019.csproj" />
+    </ItemGroup>
+
 </Project>
