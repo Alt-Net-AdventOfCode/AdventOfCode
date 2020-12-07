@@ -31,7 +31,7 @@ namespace AdventCalendar2015
             }
         }
 
-        public object? Compute1()
+        public object Compute1()
         {
             var score = new Dictionary<string, int>();
             foreach (var name in _speeds.Keys)
@@ -59,7 +59,7 @@ namespace AdventCalendar2015
             return score.Values.Max();
         }
 
-        public object? Compute2()
+        public object Compute2()
         {
             return _speeds.Values.Select(x => x.ComputeDistance(2503)).Max();
         }

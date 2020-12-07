@@ -40,7 +40,7 @@ namespace AdventCalendar2015
             }
         }
 
-        public object? Compute1()
+        public object Compute1()
         {
             var guests = _happiness.Keys;
             return GetMaxHapinness(guests);
@@ -87,7 +87,7 @@ namespace AdventCalendar2015
                 yield return sub.Append(entry);
         }
         
-        public object? Compute2()
+        public object Compute2()
         {
             var guests = _happiness.Keys.ToList();
             guests.Add("Me");

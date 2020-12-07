@@ -14,7 +14,7 @@ namespace AdventCalendar2020.Day_6
             }
         }
 
-        public object? GiveAnswer1()
+        public object GiveAnswer1()
         {
             var count = 0;
             foreach (var groupAnswers in _groupsAnswers)
@@ -33,7 +33,7 @@ namespace AdventCalendar2020.Day_6
             return count;
         }
 
-        public object? GiveAnswer2()
+        public object GiveAnswer2()
         {
             var count = 0;
             foreach (var groupAnswers in _groupsAnswers)

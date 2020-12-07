@@ -10,7 +10,7 @@ namespace AdventCalendar2015
     {
         private JSon _parsed;
 
-        public object? Compute1()
+        public object Compute1()
         {
             return _parsed.Sum();
         }
@@ -21,7 +21,7 @@ namespace AdventCalendar2015
             _parsed = JSon.Deserialize(reader);
         }
 
-        public object? Compute2()
+        public object Compute2()
         {
             ignoreRed = true;
             return _parsed.Sum();

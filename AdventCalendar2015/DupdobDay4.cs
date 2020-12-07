@@ -22,8 +22,6 @@ namespace AdventCalendar2015
                 if (ComputeMd5(test).StartsWith(leading))
                     return suffix;
             }
-
-            return -1;
         }
     }
 }
