@@ -1,14 +1,16 @@
 ﻿using System;
+using AOCHelpers;
 
 namespace AdventCalendar2015
 {
-    internal static class Program
+    internal static class DupdobProgram
     {
         private static void Main(string[] args)
         {
-            var day16= new DupdobDay16();
-            day16.SetData();
-            Console.WriteLine("Day 15: (1) = {0} , (2) = {1}", day16.GiveAnswer1(), day16.GiveAnswer2());
+            DupdobDayBase day;
+            day = new DupdobDay17();
+            day.SetData();
+            Console.WriteLine("Day {0}: (1) = {1} , (2) = {2}", day.Day, day.GiveAnswer1(), day.GiveAnswer2());
         }
 
         private static void GiveAllAnswers()
@@ -34,6 +36,9 @@ namespace AdventCalendar2015
             var day15 = new DupdobDay15();
             day15.Parse();
             Console.WriteLine("Day 15: (1) = {0} , (2) = {1}", day15.Compute1(), day15.Compute2());
+            DupdobDayBase day= new DupdobDay17();
+            day.SetData();
+            Console.WriteLine("Day {2}: (1) = {0} , (2) = {1}", day.GiveAnswer1(), day.GiveAnswer2(), day.Day);
         }
     }
 }
