@@ -6,6 +6,7 @@ using AdventCalendar2020.Day_4;
 using AdventCalendar2020.Day_5;
 using AdventCalendar2020.Day_6;
 using AdventCalendar2020.Day_7;
+using AdventCalendar2020.Day_8;
 
 namespace AdventCalendar2020
 {
@@ -13,9 +14,9 @@ namespace AdventCalendar2020
     {
         static void Main(string[] args)
         {
-            var day7 = new DupdobDay7();
-            day7.Parse();
-            Console.WriteLine($"Day 5: {day7.GiveAnswer1()} & {day7.GiveAnswer2()}");
+            var day = new DupdobDay8();
+            day.SetData();
+            Console.WriteLine($"Day {day.Day}: {day.GiveAnswer1()} & {day.GiveAnswer2()}");
         }
 
         private static void FullCalendar()
@@ -38,6 +39,12 @@ namespace AdventCalendar2020
             var day6 = new DupdobDay6();
             day6.Parse();
             Console.WriteLine($"Day 6: {day6.GiveAnswer1()} & {day6.GiveAnswer2()}");
+            var day7 = new DupdobDay7();
+            day7.Parse();
+            Console.WriteLine($"Day 7: {day7.GiveAnswer1()} & {day7.GiveAnswer2()}");
+            var day = new DupdobDay8();
+            day.SetData();
+            Console.WriteLine($"Day {day.Day}: {day.GiveAnswer1()} & {day.GiveAnswer2()}");
         }
     }
 }
