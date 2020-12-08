@@ -7,14 +7,15 @@ using AdventCalendar2020.Day_5;
 using AdventCalendar2020.Day_6;
 using AdventCalendar2020.Day_7;
 using AdventCalendar2020.Day_8;
+using AdventCalendar2020.Day_9;
 
 namespace AdventCalendar2020
 {
-    class Program
+    static class DupdobProgÒram
     {
         static void Main(string[] args)
         {
-            var day = new DupdobDay8();
+            var day = new DupdobDay9();
             day.SetData();
             Console.WriteLine($"Day {day.Day}: {day.GiveAnswer1()} & {day.GiveAnswer2()}");
         }
