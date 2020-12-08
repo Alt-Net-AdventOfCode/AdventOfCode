@@ -6,9 +6,9 @@ namespace AdventCalendar2015
     {
         private static void Main(string[] args)
         {
-            var day15 = new DupdobDay15();
-            day15.Parse();
-            Console.WriteLine("Day 15: (1) = {0} , (2) = {1}", day15.Compute1(), day15.Compute2());
+            var day16= new DupdobDay16();
+            day16.SetData();
+            Console.WriteLine("Day 15: (1) = {0} , (2) = {1}", day16.GiveAnswer1(), day16.GiveAnswer2());
         }
 
         private static void GiveAllAnswers()
@@ -31,6 +31,9 @@ namespace AdventCalendar2015
             var day14 = new DupdobDay14();
             day14.Parse();
             Console.WriteLine("Day 14: (1) = {0} , (2) = {1}", day14.Compute1(), day14.Compute2());
+            var day15 = new DupdobDay15();
+            day15.Parse();
+            Console.WriteLine("Day 15: (1) = {0} , (2) = {1}", day15.Compute1(), day15.Compute2());
         }
     }
 }

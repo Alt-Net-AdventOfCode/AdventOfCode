@@ -22,7 +22,7 @@ namespace AdventCalendar2019.Day20
             var exit = _exit;
             
             var roomToVisit = _map.Values.ToList();
-            var distances = new Dictionary<Room, int>();
+            var distances = new Dictionary<DupdobRoom, int>();
             foreach (var room in roomToVisit)
             {
                 distances[room] = int.MaxValue;
@@ -33,7 +33,7 @@ namespace AdventCalendar2019.Day20
             while (roomToVisit.Count > 0)
             {
                 var closestDist = int.MaxValue;
-                Room closestRoom = null;
+                DupdobRoom closestRoom = null;
                 foreach (var room in roomToVisit.Where(room => distances[room] < closestDist))
                 {
                     closestRoom = room;
@@ -69,14 +69,14 @@ namespace AdventCalendar2019.Day20
             var start = (_start, currentDepth);
             var exit = (_exit, currentDepth);
             
-            var distances = new Dictionary<(Room room, int depth), int>();
+            var distances = new Dictionary<(DupdobRoom room, int depth), int>();
             var roomToVisit = distances.Keys.ToList();
             distances[start] = 0;
             roomToVisit.Add(start);
             while (roomToVisit.Count > 0)
             {
                 var closestDist = int.MaxValue;
-                (Room room, int depth) closestRoom = (null, 0);
+                (DupdobRoom room, int depth) closestRoom = (null, 0);
                 foreach (var room in roomToVisit.Where(room => distances[room] < closestDist))
                 {
                     closestRoom = room;
@@ -122,7 +122,7 @@ namespace AdventCalendar2019.Day20
                         continue;
                     }
 
-                    var room = new Room(i, lineIndex, line[i].ToString());
+                    var room = new DupdobRoom(i, lineIndex, line[i].ToString());
                     _map[(i, lineIndex)] = room;
                 }
 
@@ -191,11 +191,10 @@ namespace AdventCalendar2019.Day20
             _map = PruneDeadEnds();
         }
 
-        private Dictionary<(int x, int y), Room> PruneDeadEnds()
+        private Dictionary<(int x, int y), DupdobRoom> PruneDeadEnds()
         {
             // scan to prune dead ends
-            var scanNeeded = true;
-            var toRemove = new List<Room>();
+            var toRemove = new List<DupdobRoom>();
 
             var deadEnd = _map.Values.FirstOrDefault(r => !r.IsGateway && r.Neighbours.Count == 1);
             while (deadEnd != null)
@@ -211,7 +210,7 @@ namespace AdventCalendar2019.Day20
             return map;
         }
 
-        private Room GetRoom(int x, int y, int direction = -1, int times = 1)
+        private DupdobRoom GetRoom(int x, int y, int direction = -1, int times = 1)
         {
             if (direction >= 0)
             {
@@ -225,7 +224,7 @@ namespace AdventCalendar2019.Day20
             return _map.TryGetValue((x, y), out var room) ? room : null;
         }
         
-        private class Room
+        private class DupdobRoom
         {
             private readonly int _x;
             private readonly int _y;
@@ -236,18 +235,18 @@ namespace AdventCalendar2019.Day20
             public bool IsExit => Content == "ZZ";
             public bool IsEntry => Content == "AA";
             
-            public IDictionary<Room, int> Neighbours { get; set; } = new Dictionary<Room, int>();
+            public IDictionary<DupdobRoom, int> Neighbours { get; set; } = new Dictionary<DupdobRoom, int>();
             public bool IsOuter { get; set; }
-            public bool IsInner => IsGateway && !IsOuter;
+            private bool IsInner => IsGateway && !IsOuter;
 
-            public Room(int x, int y, string content)
+            public DupdobRoom(int x, int y, string content)
             {
                 Content = content;
                 _x = x;
                 _y = y;
             }
 
-            public void AddNeighbour(Room next, int distance = 1)
+            public void AddNeighbour(DupdobRoom next, int distance = 1)
             {
                 Neighbours.Add(next, distance);
             }
@@ -266,15 +265,15 @@ namespace AdventCalendar2019.Day20
                 Neighbours.Clear();
             }
 
-            private void RemoveNeighbour(Room room)
+            private void RemoveNeighbour(DupdobRoom room)
             {
                 Neighbours.Remove(room);
             }
 
-            public ICollection<((Room room, int depth) cell, int distance)> GetNeighbours(int depth)
+            public IEnumerable<((DupdobRoom room, int depth) cell, int distance)> GetNeighbours(int depth)
             {
-                IList<((Room, int), int)> result = new List<((Room, int), int)>(Neighbours.Count);
-                foreach (KeyValuePair<Room,int> keyValuePair in Neighbours)
+                IList<((DupdobRoom, int), int)> result = new List<((DupdobRoom, int), int)>(Neighbours.Count);
+                foreach (KeyValuePair<DupdobRoom,int> keyValuePair in Neighbours)
                 {
                     var nextRoom = keyValuePair.Key;
                     if (nextRoom.IsOuter)
@@ -301,14 +300,9 @@ namespace AdventCalendar2019.Day20
                     }
                     else if (nextRoom.IsInner)
                     {
-                        if (IsOuter)
-                        {
-                            result.Add(((nextRoom, depth-1), keyValuePair.Value));
-                        }
-                        else
-                        {
-                            result.Add(((nextRoom, depth), keyValuePair.Value));
-                        }
+                        result.Add(IsOuter
+                            ? ((nextRoom, depth - 1), keyValuePair.Value)
+                            : ((nextRoom, depth), keyValuePair.Value));
                     }
                     else
                     {
@@ -320,11 +314,11 @@ namespace AdventCalendar2019.Day20
             }
         }
 
-        private Room _exit;
-        private Room _start;
+        private DupdobRoom _exit;
+        private DupdobRoom _start;
         private readonly (int dx, int dy)[] _directions = {(0, -1),(1, 0),(0, 1),(-1, 0)};
-        private IDictionary<(int x, int y), Room> _map = new Dictionary<(int x, int y), Room>();
-        private readonly IDictionary<string, (Room, Room)> _gateways = new Dictionary<string, (Room, Room)>();
+        private IDictionary<(int x, int y), DupdobRoom> _map = new Dictionary<(int x, int y), DupdobRoom>();
+        private readonly IDictionary<string, (DupdobRoom, DupdobRoom)> _gateways = new Dictionary<string, (DupdobRoom, DupdobRoom)>();
 
         private const string Input =
 @"                                 T     P           U       U       Z   O                                     
