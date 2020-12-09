@@ -7,11 +7,7 @@ namespace AOCHelpers
     {
         public void SetData(string input = null)
         {
-            if (!string.IsNullOrEmpty(input))
-            {
-                _testData = input;
-            }
-            Parse(_testData ?? Input);
+            Parse(input ?? Input);
         }
 
         protected virtual void Parse(string input)
@@ -27,6 +23,12 @@ namespace AOCHelpers
             throw new NotImplementedException();
         }
 
+        public virtual void OutputAnswers()
+        {
+            SetData();
+            Console.WriteLine($"Day {Day}: {GiveAnswer1()} & {GiveAnswer2()}");
+        }
+        
         public virtual object GiveAnswer1()
         {
             return "undef";
@@ -51,8 +53,8 @@ namespace AOCHelpers
             return true;
         }
 
-        private string _testData;
         protected abstract string Input { get; }
         public abstract int Day { get; }
+
     }
 }

@@ -1,9 +1,5 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.Design;
-using System.Linq;
 using AOCHelpers;
 
 namespace AdventCalendar2020.Day_9
@@ -38,8 +34,8 @@ namespace AdventCalendar2020.Day_9
 
                 if (!valid)
                 {
-                    key = _numbers[i];
-                    return key;
+                    _key = _numbers[i];
+                    return _key;
                 }
             }
 
@@ -58,7 +54,7 @@ namespace AdventCalendar2020.Day_9
                     total += _numbers[j];
                     min = Math.Min(min, _numbers[j]);
                     max = Math.Max(max, _numbers[j]);
-                    if (total == key)
+                    if (total == _key)
                     {
                         // found
                         return min + max;
@@ -74,8 +70,8 @@ namespace AdventCalendar2020.Day_9
             return -1;
         }
         
-        private long key;
-        private List<long> _numbers = new List<long>();
+        private long _key;
+        private readonly List<long> _numbers = new List<long>();
         protected override string Input => @"19
 30
 13
