@@ -1,0 +1,303 @@
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using AOCHelpers;
+
+namespace AdventCalendar2020.Day11
+{
+    public class DupdobDay11: DupdobDayWithTest
+    {
+        protected override void SetupTestData()
+        {
+            _testData =@"L.LL.LL.LL
+LLLLLLL.LL
+L.L.L..L..
+LLLL.LL.LL
+L.LL.LL.LL
+L.LLLLL.LL
+..L.L.....
+LLLLLLLLLL
+L.LLLLLL.L
+L.LLLLL.LL";
+            _expectedResult1 = 37;
+            _expectedResult2 = 26;
+        }
+
+        protected override void SetupRunData()
+        {
+            // clean any pending data
+            _map.Clear();
+        }
+
+        protected override void ParseLine(string line)
+        {
+            _map.Add(line);
+        }
+
+        public override object GiveAnswer1()
+        {
+            var map = _map;
+            var nextMap = _map;
+            for(;;)
+            {
+                nextMap = NextMap(map);
+                if (MapsAreEqual(map, nextMap))
+                    break;
+                map = nextMap;
+            }
+
+            return map.Sum(t => t.Count(c => c=='#'));
+        }
+
+        private List<string> NextMap(IReadOnlyList<string> map)
+        {
+            var nextMap = new List<string>(map.Count);
+            for (var i = 0; i < map.Count; i++)
+            {
+                var buffer = new StringBuilder();
+                for (var j = 0; j < map[0].Length; j++)
+                {
+                    var cell = map[i][j];
+                    if (cell == '.')
+                    {
+                        buffer.Append('.');
+                        continue;
+                    }
+                    var occupied= AdjacentSeats(map, j, i).Count(c => c == '#');
+                    switch (cell)
+                    {
+                        case 'L' when occupied == 0:
+                            buffer.Append('#');
+                            break;
+                        case '#' when occupied >= 4:
+                            buffer.Append('L');
+                            break;
+                        default:
+                            buffer.Append(cell);
+                            break;
+                    }
+                }
+                nextMap.Add(buffer.ToString());
+            }
+
+            return nextMap;
+        }
+
+        private List<string> NextMap2(IReadOnlyList<string> map)
+        {
+            var nextMap = new List<string>(map.Count);
+            for (var i = 0; i < map.Count; i++)
+            {
+                var buffer = new StringBuilder();
+                for (var j = 0; j < map[0].Length; j++)
+                {
+                    var cell = map[i][j];
+                    if (cell == '.')
+                    {
+                        buffer.Append('.');
+                        continue;
+                    }
+                    var occupied= SeatsInSight(map, j, i).Count(c => c == '#');
+                    switch (cell)
+                    {
+                        case 'L' when occupied == 0:
+                            buffer.Append('#');
+                            break;
+                        case '#' when occupied >= 5:
+                            buffer.Append('L');
+                            break;
+                        default:
+                            buffer.Append(cell);
+                            break;
+                    }
+                }
+                nextMap.Add(buffer.ToString());
+            }
+
+            return nextMap;
+        }
+
+        private bool MapsAreEqual(IReadOnlyList<string> mapA, IReadOnlyList<string> mapB)
+        {
+            return !mapA.Where((t, i) => t != mapB[i]).Any();
+        }
+
+        public override object GiveAnswer2()
+        {
+            var map = _map;
+            var nextMap = _map;
+            for(;;)
+            {
+                nextMap = NextMap2(map);
+                if (MapsAreEqual(map, nextMap))
+                    break;
+                map = nextMap;
+            }
+
+            return map.Sum(t => t.Count(c => c=='#'));
+        }
+
+        private static IEnumerable<char> AdjacentSeats(IReadOnlyList<string> map, int x, int y)
+        {
+            if (x > 0)
+            {
+                if (y > 0)
+                    yield return map[y - 1][x - 1];
+                yield return map[y][x - 1];
+                if (y < map.Count - 1)
+                {
+                    yield return map[y + 1][x - 1];
+                }
+            }
+
+            if (y > 0)
+            {
+                yield return map[y - 1][x];
+            }
+
+            if (y < map.Count - 1)
+            {
+                yield return map[y + 1][x];
+            }
+
+            if (x < map[0].Length - 1)
+            {
+                if (y > 0)
+                    yield return map[y - 1][x + 1];
+                yield return map[y][x + 1];
+                if (y < map.Count - 1)
+                {
+                    yield return map[y + 1][x + 1];
+                }
+            }
+        }
+
+        private static char NextInDir(IReadOnlyList<string> map, int x, int y, int dx, int dy)
+        {
+            for(;;)
+            {
+                x += dx;
+                y += dy;
+                if (x < 0 || x >= map[0].Length || y < 0 || y >= map.Count)
+                {
+                    return '.';
+                }
+
+                if (map[y][x] != '.') return map[y][x];
+            }
+        }
+
+        private IEnumerable<char> SeatsInSight(IReadOnlyList<string> map, int x, int y)
+        {
+            yield return NextInDir(map, x, y, -1, -1);
+            yield return NextInDir(map, x, y, 0, -1);
+            yield return NextInDir(map, x, y, 1, -1);
+            yield return NextInDir(map, x, y, 1, 0);
+            yield return NextInDir(map, x, y, 1, 1);
+            yield return NextInDir(map, x, y, 0, 1);
+            yield return NextInDir(map, x, y, -1, 1);
+            yield return NextInDir(map, x, y, -1, 0);
+        }
+        
+        private List<string> _map = new List<string>();
+        public override int Day => 11;
+        protected override string Input => @"LLLLL.LLLLLLL.LLLLLL.L.LLLL..LLLL.LLLLLLLLL.LLLLLLLL.LLLLLLLLLLLLL.L.LLLLLLLLLLLLLL.LLLLLL
+LLLLLLLLLLLLLLL.LLLL..LLLLLLLLLLLL.LLLLLLLL.L..LLLLLLLLLLLL.LLLL.LLL.LLLLL.LLL.LLLLLLLLLLL
+LLLLL.LLLLLLLLLLLLLLLLLLLLL.LLLLLL.LLLLLLLLLLL.LLL.LLLLLLLL.LLLLL.LL.LLLLL.LLLLLLLL.LLLLLL
+LLLLL.LLLLLLLLL.LLLL.LLLLLL.LLLLLL.LLLLLLLL.LLLLLLLL.LLLLLLLLLLLLLLLLL.LLL.LLLLLLLL.LLLLLL
+LLLLLLLLLLLLLLL.LLLLLLLLLLLLLLLLLL.LLLLLLLL.LLLLLLLL.LLLLLL.LLLLLLLLL.LLLLLLLLLLLLL.LLLLLL
+LLLLLLLLLLLLLLL.LLLL.LLLLLLLLLLLLLLLLLLLLLL.L.LLLLLL.LLLLLL..LLLLLL..LLLLLLLLLLLLLL.LLLLLL
+.L..L.L.L.LL..LL.........L....L.L..LL.LLLL.L..L.LLLL.L.L..L.......LL...LL..LL.L..L.L.LL..L
+LLL.L.LLL.LLLLL..LLL.LLLLLL.LL.L.L.LLLLLLLL.LLLLLLLL.LLLLLL.LLLLLLLL.LLLLL.LLLLLLLL..LLLLL
+LL.L..LLLLLLLLLLLLLL.LLLLLL.LLLLLL.LLLLLLLLLLLLLLLLL.LLLLLL.LLLL.LLLLLLLLL.LLLLLLLLLLLLLLL
+LLL.LLL.LLLL.LL.LLLL.LLLLLLLLLLLLL.LLLLLLLLLLLLLLLLL.LLLLLLLLLLLLLLL.LLLLLLL.LLLLLLLLLLLLL
+LLLLLLLLL.LLLLL.LLLLLLLLLLL.LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL.LLLLLLLLLLLLLL.LLLLL.LL.LLL
+LLLLL.LLLLLLLLLLLLLL.LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL.LLLLLLLL.LLLLLLLLLLLLLL.LLLLLL
+LLLLL.LLLLLLLLL.LL.LLLLLL..LLLLLLLLLLLLLLLL.LLLLLLLL.LLLLLL..LLLLLLL.LLL.LL.LLLLLLL.LLLLLL
+LLLLL.LLLLLLLLLLLLL.LLLLLLL.LLLLLLLLLLLLLLL.LLLLLLLLLLLLLLLLLLLLLLLLLLLLLL.LLLLL.LL.LLLLLL
+LLLLL.LLLLLLLLL.LLLL.LLLLLL.LLLL.LLLLLLLLL..LLLLLLLL.LLLLLL.L.LLLLLLLLLLLL.LLLLLLLL.LLLLLL
+LLLLL.LLLLLLLLL.LLLLLLLL.LLL.LLLLL.LLLLLLLL.LLL.LLLL.LLLLLL.LLLLLL.LLLLLLL.LLLLL.LLLLLLLLL
+...L..L..........L...L..LLL..L....LL......L......L.L.L...........L....L.L.LL..LL.L....LL..
+LLLLL.LLLLLLLLL.LLLLLLLLLLLLLLLLLLLLLLLLLLL.LLLLLLLLL.LLLLL.LLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+LLLLL.LLLLL.LLLLLLLLLLLLLLL.LLLLLL.LLLLLLLLLLLLLLLLLLLLLLLL.LLLLLLLLLLLLLL.LLLLLLLL.LLLLLL
+LLLLL.LLLLLLLLL.LLLLLLLLLLL..LLLLL..LLLLLLL.LLLLLLLL..LLLLL.LLLLLLLL.LLLLLLLLLLL.LL.LLLLLL
+LLLLL.LL.LLL.LL..LLLL.LLLLL.LL.LL..LLL.LLLL.LLLLLLL..LLLLLLLL.LLLLLL.LLLL..LLLLLLLL.LLLLLL
+LLLLL.LLLLLLLLLLLLLLLLLLLLL.LLLL.L.LLLLLLLL..LLLLLLLLLLLLLLLLLLLLLLL.LLLLL.LLLLLLLLLLLLLLL
+LLLLL.LLLLLLLLL.LLLL.LLLLLL.LLLLLLL.LLLLLLL.LLLLLLLL.LLLLLLLLLLLLLLL.LLLL..LLLLLLLL.LLLLLL
+LLLLLLLLLLL.LLL.LLLL.LLLLLL.L.LLLLLLLLLLLLL.LLLLLLLLLLLLLLL.LLLLLLLLLLLLLL.LLLLLLLLLLLLLLL
+LL...L.LLL.....L....LL.....L...L.L....L.L.....L.LL...L..L.....L.L..LLL.L.LL.LLLL..........
+LLLLL.LLLLLLLLL.LLLL.LLLLL.LLLLLLLLLLL.LLL..LLLL.LLL.LLLLLL.LLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+LLLLL.LLLLLLLLL.LLLL.LLLLLL..LLLLLLLLLLLLLLLLLL.LLLLLLLLLLLLLLLLLLLL.LLLLL..LLLLLLL.LLLLLL
+LLLLLLLLLLLLLLL.LLL..LLLLLL.LLLLL.LL.LLLLLL.LLLLLL.LLLLLLLL.LLLLLLLLLLLLLL.LLLLLLLL.LLLLLL
+LLLLL.LLL.LLLLL.LLLLLLLLLLLLLLLLLL.LLLLLLL..LLLLL.LLLLLLLLL.LLLLLLLL.LLLLL..LL.LLLL.LLLLLL
+L..LL.L.....L...LL.....L.L........L..LL...L.....L....L..L.L...L...LL.......L.L....L.......
+LLLLL..LLLLLLLL.LLLL.LLLLLL.LLLLLLLL.LLLL.LLLLLLL.LLLLLLLLLLLLLLLLLL..LLLL.LLLLLLLL.LLLLLL
+LLLLLLLLLLLLLLL.LLLL.LLLLLL.LLLLLLLLLLLLLLL.LLLL.LLL.LLLL.L.LLLLLLLLLLLLLLLLL.L.LLL.LLLLLL
+LLLLL.LLLLLLLLL.LL.LLLLLLLLLLLLLLL.LLLLLLLLLLL.LLLLLLLLLLLLLLLLLLLLLLLLLLL.LLLLLLLL..LLLLL
+LLLLLLLLLLLLLLL.LLL..LL.LLLLLLLLLLLLLLLLLLL.LLL.LLLL.LLLLLL.LLLLLLLL.LLLLLLLLLLLLLL.LLLLL.
+LLLLL.LLLLLLLLL.LLLLLLLLLLLLL.LLLL.LLLLLLLL.LLLLLLLLLLLLLLLLLLLLLLLL.LLLLL.LLLLLLLL.LLLLLL
+LLLLL.LLLLLLLLLLLL.L.LLLLLL.LLLLLLLLLLLLLLL.LL.LLLLL.LLLLLL.LLLLLLLL.LLLLLLLLLLLLLL.LLLLLL
+LLLLLLLLLLLLLLL..LLL.LLLLLL.LLLLLLLLL.LLLLLLLLLLLLLL.LLLLLL.LLLLLLLL.LLLLL.LLLLLLLLLLLLLLL
+LLLLL.LLLLLLLLLLLLLLLLLLLLL.LLLLLL.LLLLL.LL.LLLLLLLL.LLLLLLLLLLLLLLLLLLLLLLLLLLLLLL.LLL.LL
+.L.LLLLL.............L.LL.L.LLL.L.LL....L...L...L.....L..L...LLLL..L..L.......L.L.LLL.LLLL
+LLLLL.LLLLLLLLLLLLLLLLLLLLL..LLLLL.LLLLLLLL.LLLLLLLL.LLLLLLLLLLLLLLL.LLLLL.LLLLLLLLLLLLLLL
+LLLLL.LLLLLLLLL.LLLL.LLLLLL.LLLLLL.LLLLLLLL.LLLLLLLLLLL.LLL.LL.LLLLL.LLLLL.LLLLLL.LLLLLLLL
+LLLLLLLLLL.LLL.LLLLL.LLLLLL.LLLLLL.LLLLLLLL.LLLLLLLL.LLLLLLLLLLLLLLL.LLLLL.LLLLLLLLLL.LLLL
+LLLLL.LLLLLLLLL.LLLL.LLLLLL.LLLLLLLLLL.LLLL.LLLLLLLLLLLLLLL.LLLLLLLL.LLLL..LLLLL.LLLLLLLLL
+LLLLL.LLLLLLLLLLLLLLLLLLLLL.LLLLLL.LLLLLLLLLLLLLLLL..LLLLLL.LLLLLLLL.LLLLL.LLLLLLLL.LLLLLL
+LLLL..LLLLLLLLL..LLL.LLLLLL.L.LLLLLL.LLLLLLLLLLLLLLLLLLLLLL.LLLLLLLL.L..LL.LLLLLLLL.LLLLLL
+LLLLL.LLLLLLLLLLLLLL.LLLLLL.LLLLLL.LLLLLLLL.LLLLLLL..LLLLLLLLLLLLLLL.LLLLL.LLLLLLLL.LLLLLL
+LLLLL.LLLLLLLLL.LLLLLLLLLLL.LLL.LLLLLLLLLLL.LLLLLLLL.LLLLLL.LLLLLLLL.LLLLLLLLLLLLL..LLLLLL
+LLLLL.LLLLL.LLL..LLL.LLLLLLLLLLLLL.LLLLLLLL.LLLLLLLLLLLLLLL.LLLLLLLLLLLLLLLLLLLLLLL.LLL.LL
+.L.......LL...L...L.LL.LL......L..L...L...L...L....LL..L...L..LLL.....L.....L.....LLL.LL..
+LLLLL.LLLLLLLLLLLLLLLLLLLLLLLLLLLL.LLLLLLLL.LLLLLLLL.LLLLL..LLLLL.LL.LLLLL.LLLLLLL..L.LLLL
+LLLLL.LLLLLLLLLLLLLLLLLLLLL.L.LLLLLLLLLLL.L.LLL.LLLL.LLLLLLLLLLLLLLL.LLLLLLLLLLLLLL.LLLLLL
+LLLLL.LLLLLL.LLLLLLLLLLLLLLLLLLLLL.LLLLLLLL.LLLLLLLL.LLLLLL.LLLLL.LLLLLLLL.LLLLLLLLLLLLLLL
+LLLLL.LLLLLLLLL.LLLL.LLLLLL.LLLLLLLLLLLLLLL.LLLLLLLL.LLLLLLLLLLLLL.L.LLLLL.LL.LLLLL.LLLLLL
+LLLL..LLLLLLLLL.LLLLLLLLLLL.LL.LLL.LLLLLLLL.LLLLLLLLLLLL.LL.LLLLLLLL.LLLLL.LLLLLLLL.LLLLLL
+.......L......L....L....L......L...L.L..L...L.LL.....L......L.......LL.........L.L.L...LLL
+L.LLL.LLLLLLLLL.LLLL.LLLLL..LLLLLL.LLLLLLLLLLLLLL.LL.LLLLLL.LLLLLL.L.LLLLL.LLLLL.LLL.LLLLL
+LLLLL.LLLLLLLLLLL.LL.LLLLLL..LLLL..LLLLLLLLLLLLLLLLL.LLLLLL.LLLLLLLL.LLLLL.LLLLLLLLLLLLLLL
+LLLLLLLLLLLLLLL.LLLL.LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL.LLLLLL.LLLLLLLL.LLL.LLLLLLLLLL.LLLLLL
+LLLLLLLLLLLLLLLLLLLL.LLLLLL.LLLLLL.LLLL.LLL.LLLL.LLL.L..LLL.LLL.LLLL.LLLLLLL.LLLLLLLLLLLLL
+LLLL.LLLLLLLLLL.L.LL.LLLLLL.LLLLLLLLLLLLLLL.LLLLLLLLLLLLLLLLLL.LLLLL.LLLLL.LLLLLLLL.LLLLLL
+LLLLL.LLLLLLLLL.LLLLLL.LLL..LLLLLL.LLLLLLLLLLLLLLLLL.LLLLLLLLLLL.LLL.LLLLLLLLLLLLLL.LLLLLL
+.LLLLLLLLLLLLLL.LLLLLLLLLLLLL.LLLL.LLLLLLLL.L.LLLLLL.LLLLLL.LLLLLLLL.LLLLL.LLL.LLL..LLLLLL
+LLLLLLLLLLLLLLL.LLLL.LLLLLLLLLLLLLL.LLLLLLL.LLLLLLLLLLLLLLL.LLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+L...L.........L....L......LL..LL.....LL.L..LLL....L.L...L..LLL.......LL.L...L..L...LL...L.
+LLLLL.LLLL.LLLL.LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL.LLLLLL.LLL.LLLLLLLLLL.LLLLLLLLL.LLLLL
+LLLLL.L.LLLLLLLLLLLL.LLLLLLLLLLLLLL.LLLLLLLLLLLLLLLLL.LLLLL.LLLLLLLL.LLLLL..LL.LLLLLLLLLLL
+LLLLLLLLLLLLLLLLLLLL.LLLLL.LLLLLLLLLLLLLLLL.LLLLLLLL.L.LLLLLLLLLLLLLLLLLLLLLLLLLLLL.LLLLLL
+LLLLL.LLLLLLLLL.LLLL.LLLLLLLLLLLLLLLLLLLLLL.LLLLLLLL.LLLLLL.LLLLLLLLLLLLLL.LLLLLLLL.LL.LLL
+LLLLL.LLLLLLLLLLLLLL.LLLLLL.LLLLLL.LLLLLLLL.LLLLLLLL.LLLLLL.LLLLLLLL.LLLLL.LLLLLLLL..LLLLL
+.L.L.L..L.L...LLLLLL.....LL...L..L..L......LLLL.L.LL.....LLLL.LL.L.....L.L...L....L...L...
+LLLL..LLLLLL.LL.LLLLLLLLLLLLLLLLLL.LLLLLLLLLLLLLLLLL.LLLLLL.LLLLLLLL.LLLLL.LLLLL.LLLLLLLLL
+LLLLL.LLLLLLLLL.LLLLLLLLLLL..LLLLL.L.L.LLLLLLLLLLLLL.LLLLLL.LLLLLLLLLLLLLL.LLLLLLLL.LLLLLL
+LLLLL.LLLLLLLLLLLLLL.LLLLLLLLLLLLLLLLLLLL.LLLLLLLLLL.LLLLLL.LLL.LLLLLLLLLLLLLL.LLLL..LLLLL
+LLLLLL.LLLLLL.LLLLLLLLLLLLL.LLLLLLLL.LLLLLL.LLLLLLLL.LLLLLL.LLLLLLLL.LL.LL..LLLLLLL.LLLLLL
+LLLLL.LLLL..LLLLL.LL.LLLLLL.LLLLLL.LLLLLLLL.LLLLLLLLLLLLLLLLLLLLLLLL.LLLLL.LLLL.LLL.LLLLLL
+....L........L..L...........L.L............L.....LL..L.L.L.........LLLLLL.LL..L..L.L..L...
+LL.LLLLLLLLLLLL.LLLLLLLLLLL.LLLLLL.LLLLLLLL.LLLLLLLL.LLLLLLLLLLLLLLLLLLLLL.L..LLLL..LLLLLL
+LLLLL.LLLLLLLLL.LLLL.LLLLLLLLLLL.L.LLLLLLLL.LLLLLLLL.LLL.LL.LLLLLLLL..LLLL.LLLL.LLLLLLLLLL
+LLLL.LLLLLLLLLL.LLLL.LLLLLL.LLLLLLLLLLLLL.L.LLLLLLLLLLLLLLL.LLLLLLLL.LLLLLLLLLLLLLL.LLLLLL
+LLLLLLLLLLLLLLLLLLLL.LLLLLL.LLLLLLLLLLL.LLL.LLLLLLLL.LLLLLLLLLLL.LLL.LLLLL.LLLLLLL..LLLLLL
+LLLLL.LLLLLLLLLLLLLL.LLLLLLLLLLLLLL.LLLLLLL..LL.LLLLLLLLLLLLLLLLLLLL.LLLLLLLLLLLLLL.LLLLLL
+LLLLL.LLLLLLLLLLLLLL.LLLLLL.LLLLLL..LLLLLLL.LLLLL.LL.LLLLLL.LLLLLLLL.LLLLLLLLLLLLLL.LLLLLL
+LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL...LLLLLL.LLLL.L.LLLLL.LL.LLLLL.LLLLLLLL.L.LLLL
+LLLLLLLLLLLLLLL.LLLL.L.LLLL.LLLLLL.LLLLLLLL.LLLLLLLL.LLLLLLLLLLLLLLLLLLLLL.L.LLLLLL.LLLLLL
+L.LLL......LLL....L.......L..L..L.....LL......L.LLLL...L.....L.L............L.LL....LL....
+LLLLLLLLLLLLLLL.LLLLLLLLLLL.LLL.LL.LLLLLLLLLLLLLLLLLLLLLLLL.LLLLLLLL.LLLLL.LLLLLLLL.LLLLLL
+L..LL.LLLLLLLLL.LLLLLLLLLLLLLLLLLL.LLLLL.LLLL.LLLLLL.LLLLLLLLLLLLLLL.LLLLLLL.LLLLLL.LLLLLL
+LLLLL.LLLLLLLLL.LLLLLLLLLLL.LLLLL..LL.LLLLL.LLLLLLLL.LLLLLL.LLLLLLLL.LLLLL.LLL.LLLL.LLLLLL
+LLLLL.LL.LLLLLL.LLLL.LLLLLL.LL.LLL.LLLLLLLLLLLLLLLLLLLLLLLL.LLLLLLLL.LLLLLLLLLLLLLLLLLLLLL
+LLLLLLLLLLLLLLL.LLLLLLL..LL.LLLL.L.LLLLLLLL.L.LLLLL..LLLLLL.LLLLLLL..LLLLLLLLLLLLLL.LLLLLL
+LLL...LLLLLLLLL.LLLL.LLLLL..LLLLLLL.LLLLLLL...LLLLLLLLLLLLLLLLLLLLLL.LLLLL.LLLLLLLL.LLL.LL
+LLLLLLLLLLLLLLL.LLLL.LLLLLL.LLLL.LLLLLLLLLL.LLLLLLL.LLL.LLLLLLLLLL.L.LLLLLLLLLLLLLL.L.LLLL
+...L.L.L.L.....LL...L...LL.L........L...LL.L...........L..L.L.L.L..L...LL.LL.L.L.L....L..L
+LLL.L.LLLLLLLLL.LLLL.L.LLLLLLLLLLL.LLLLLLLLLLLLLLLLL.LLLLLL.LLLLLLLL..LLLL.LLLLL.LL.LLLLLL
+LLLLL.LLLLLLLLL.LLLL.LLLLLLLLLLLLLLLLLLLLLL.LLLLLLLLLLLLLLL.LLL.LLLLLLLLLL.LLLLLLLLLLLLLLL
+LLLLL.LLLLLLLLL.LLLL.LLLLLL.LLLLLL.LLLLLLLL.LLLLLLLL.LLLLLLLLLLLLLLL.LLLL..LLLLLLLL.LLLLLL
+LLLLL.LLLLLLLLLLLLLL.L.LLLL.LLLL.L.LLLLLLLL.LLLLLLLL.LLL.LL.LLLLLLLL.LLLLL.LLLLLLLL.LLLLLL
+LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL.LLLLLLLLLLLLLLLLL.LLLLLLL.LLLLLLL.LLLLL.LLLLLLLL.LLLLLL";
+    }
+}
