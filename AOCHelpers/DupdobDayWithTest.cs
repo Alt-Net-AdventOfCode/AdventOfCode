@@ -10,22 +10,29 @@ namespace AOCHelpers
         public override void OutputAnswers()
         {
             SetupTestData();
-            if (_testData == null)
+            if (_expectedResult1 != null)
             {
-                throw new InvalidOperationException("Define _testData.");
-            }
+                if (_testData == null)
+                {
+                    throw new InvalidOperationException("Define _testData.");
+                }
+                Parse(_testData);
 
-            Parse(_testData);
-            var answer = GiveAnswer1();
-            if (!Compare(answer, _expectedResult1))
-            {
-                throw new InvalidOperationException(_expectedResult1 == null ? "Define _expectedResult1." : $"Incorrect answer : {answer}, expected {_expectedResult1}.");
-            }
-
-            answer = GiveAnswer2();
-            if (!Compare(answer,_expectedResult2))
-            {
-                throw new InvalidOperationException(_expectedResult1 == null ? "Define _expectedResult2." : $"Incorrect answer : {answer}, expected {_expectedResult2}.");
+                var answer = GiveAnswer1();
+                if (!Compare(answer, _expectedResult1))
+                {
+                    throw new InvalidOperationException(_expectedResult1 == null ? "Define _expectedResult1." : $"Incorrect answer : {answer}, expected {_expectedResult1}.");
+                } 
+                if (_expectedResult2 != null)
+                {
+                    answer = GiveAnswer2();
+                    if (!Compare(answer, _expectedResult2))
+                    {
+                        throw new InvalidOperationException(_expectedResult1 == null
+                            ? "Define _expectedResult2."
+                            : $"Incorrect answer : {answer}, expected {_expectedResult2}.");
+                    }
+                }
             }
             
             SetupRunData();
