@@ -20,7 +20,7 @@ namespace AdventCalendar2020
     {
         private static void Main(string[] args)
         {    
-            new DupdobDay13().OutputAnswers();
+            new DupdobDay14().OutputAnswers();
         }
 
         private static void FullCalendar()
@@ -56,6 +56,7 @@ namespace AdventCalendar2020
             new DupdobDay10().OutputAnswers();
             new DupdobDay11().OutputAnswers();
             new DupdobDay12().OutputAnswers();
+            new DupdobDay13().OutputAnswers();
         }
     }
 }

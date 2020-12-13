@@ -37,10 +37,9 @@ L.LLLLL.LL";
         public override object GiveAnswer1()
         {
             var map = _map;
-            var nextMap = _map;
             for(;;)
             {
-                nextMap = NextMap(map);
+                var nextMap = NextMap(map);
                 if (MapsAreEqual(map, nextMap))
                     break;
                 map = nextMap;
@@ -125,10 +124,9 @@ L.LLLLL.LL";
         public override object GiveAnswer2()
         {
             var map = _map;
-            var nextMap = _map;
             for(;;)
             {
-                nextMap = NextMap2(map);
+                var nextMap = NextMap2(map);
                 if (MapsAreEqual(map, nextMap))
                     break;
                 map = nextMap;

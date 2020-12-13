@@ -60,29 +60,19 @@ namespace AdventCalendar2020.Day13
             return from - _busesId[_buses.Count-1];
         }
 
-        private static long RoundedUpDiv(long toDiv, long divisor)
+        private static long FindMatch(long bus, in long lastBus, long gap, long from)
         {
-            if (toDiv < divisor)
-            {
-                return 1;
-            }
-
-            return toDiv / divisor + (((toDiv % divisor) == 0) ?  0 : 1);
-        }
-        
-        private long FindMatch(long bus, in long lastBus, long gap, long from)
-        {
-            var busTime = RoundedUpDiv(from,bus)*bus;
+            var busTime = DupdobMath.RoundedUpDiv(from,bus)*bus;
             var lastBusTime = from;
             while (busTime - lastBusTime != gap)
             {
                 while (busTime-lastBusTime < gap)
                 {
-                    busTime += RoundedUpDiv(-(busTime-lastBusTime - gap), bus)* bus;
+                    busTime += DupdobMath.RoundedUpDiv(-(busTime-lastBusTime - gap), bus)* bus;
                 }
                 while (busTime-lastBusTime>gap)
                 {
-                    lastBusTime += RoundedUpDiv(busTime - lastBusTime - gap,lastBus)*lastBus;
+                    lastBusTime += DupdobMath.RoundedUpDiv(busTime - lastBusTime - gap,lastBus)*lastBus;
                 }
             }
 
