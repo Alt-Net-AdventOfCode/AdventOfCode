@@ -6,7 +6,7 @@ namespace AdventCalendar2015
 {
     public class DupdobDay19: DupdobDayWithTest
     {
-        protected override void SetupTestData()
+        protected override void SetupTestData(int _)
         {
             _testData = @"H => HO
 H => OH

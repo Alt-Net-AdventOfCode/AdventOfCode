@@ -7,7 +7,7 @@ namespace AdventCalendar2020.Day11
 {
     public class DupdobDay11: DupdobDayWithTest
     {
-        protected override void SetupTestData()
+        protected override void SetupTestData(int _)
         {
             _testData =@"L.LL.LL.LL
 LLLLLLL.LL

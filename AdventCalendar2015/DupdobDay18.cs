@@ -10,7 +10,7 @@ namespace AdventCalendar2015
         private bool[,] _map;
         private int _nbRuns = 100;
 
-        protected override void SetupTestData()
+        protected override void SetupTestData(int _)
         {
             _nbRuns = 5;
             _testData = @".#.#.#

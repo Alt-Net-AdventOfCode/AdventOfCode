@@ -79,7 +79,7 @@ namespace AdventCalendar2020.Day13
             return busTime;
         }
 
-        protected override void SetupTestData()
+        protected override void SetupTestData(int _)
         {
             _testData = @"939
             7,13,x,x,59,x,31,19";

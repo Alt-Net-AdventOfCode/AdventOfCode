@@ -4,12 +4,12 @@ namespace AOCHelpers
 {
     public abstract class DupdobDayWithTest: DupdobDayBase
     {
-        protected abstract void SetupTestData();
+        protected abstract void SetupTestData(int id);
         protected abstract void SetupRunData();
         
         public override void OutputAnswers()
         {
-            SetupTestData();
+            SetupTestData(1);
             if (_expectedResult1 != null)
             {
                 if (_testData == null)
@@ -25,6 +25,7 @@ namespace AOCHelpers
                 } 
                 if (_expectedResult2 != null)
                 {
+                    SetupTestData(1);
                     answer = GiveAnswer2();
                     if (!Compare(answer, _expectedResult2))
                     {
@@ -41,21 +42,13 @@ namespace AOCHelpers
 
         private bool Compare(object a, object b)
         {
-            if (a is int anInt)
+            return a switch
             {
-                return anInt == (int) b;
-            }
-            if (a is long aLong)
-            {
-                return aLong == (long) b;
-            }
-
-            if (a is string aString)
-            {
-                return aString == (string) b;
-            }
-
-            return a == b;
+                int anInt => anInt == (int) b,
+                long aLong => aLong == (long) b,
+                string aString => aString == (string) b,
+                _ => a == b
+            };
         }
 
         protected string _testData;

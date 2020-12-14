@@ -9,7 +9,7 @@ namespace AdventCalendar2020.Day12
     {
         private (int dx, int dy)[] _directions = new (int dx, int dy)[]{(1, 0), (0,1), (-1, 0), (0,-1)};
         private List<(char opt, int dist)> _instructions = new List<(char opt, int dist)>();
-        protected override void SetupTestData()
+        protected override void SetupTestData(int _)
         {
             _testData = @"F10
 N3
