@@ -14,7 +14,7 @@ namespace AdventCalendar2020.Day_8
             base.Parse(input);
         }
 
-        protected override void ParseLine(string line)
+        protected override void ParseLine(int index, string line)
         {
             _instructions.Add((line.Substring(0,3), int.Parse(line.Substring(3))));
         }

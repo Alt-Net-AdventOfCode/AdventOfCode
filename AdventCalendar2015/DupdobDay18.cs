@@ -35,15 +35,16 @@ namespace AdventCalendar2015
             _map = new bool[map[0].Length, map.Length];
             for (var i = 0; i < map.Length; i++)
             {
-                for (var j = 0; j < map[i].Length; j++)
-                {
-                    _map[j, i] = map[i][j] == '#';
-                }
+                ParseLine(i, map[i]);
             }
         }
 
-        protected override void ParseLine(string line)
+        protected override void ParseLine(int index, string line)
         {
+            for (var j = 0; j < line.Length; j++)
+            {
+                _map[j, index] = line[j] == '#';
+            }
         }
 
         // 1634: too high

@@ -112,7 +112,7 @@ namespace AdventCalendar2020.Day10
 
         public override int Day => 11;
 
-        protected override void ParseLine(string line)
+        protected override void ParseLine(int index, string line)
         {
             _adapters.Add(int.Parse(line));
         }

@@ -29,7 +29,7 @@ L.LLLLL.LL";
             _map.Clear();
         }
 
-        protected override void ParseLine(string line)
+        protected override void ParseLine(int index, string line)
         {
             _map.Add(line);
         }

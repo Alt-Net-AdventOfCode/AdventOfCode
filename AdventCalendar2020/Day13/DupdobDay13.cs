@@ -5,7 +5,7 @@ namespace AdventCalendar2020.Day13
 {
     public class DupdobDay13 : DupdobDayWithTest
     {
-        protected override void ParseLine(string line)
+        protected override void ParseLine(int index1, string line)
         {
             if (_earliestDeparture == 0)
             {

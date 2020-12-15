@@ -4,7 +4,7 @@ namespace AdventCalendar2020.Day16
 {
     public class DupdobDay16: DupdobDayWithTest
     {
-        protected override void ParseLine(string line)
+        protected override void ParseLine(int index, string line)
         {
         }
 

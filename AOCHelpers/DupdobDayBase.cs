@@ -12,18 +12,20 @@ namespace AOCHelpers
 
         protected virtual void Parse(string input)
         {
+            var index=0;
             foreach (var line in input.Split('\n'))
             {
-                ParseLine(line);
+                ParseLine(index++, line);
             }
         }
 
-        protected abstract void ParseLine(string line);
+        protected abstract void ParseLine(int index, string line);
         
         public virtual void OutputAnswers()
         {
             SetData();
-            Console.WriteLine($"Day {Day}: {GiveAnswer1()} & {GiveAnswer2()}");
+            Console.Write($"Day {Day}: {GiveAnswer1()}");
+            Console.WriteLine($" & {GiveAnswer2()}");
         }
         
         public virtual object GiveAnswer1()

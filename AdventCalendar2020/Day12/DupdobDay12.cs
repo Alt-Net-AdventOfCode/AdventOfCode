@@ -25,7 +25,7 @@ F11";
             _instructions.Clear();
         }
 
-        protected override void ParseLine(string line)
+        protected override void ParseLine(int index, string line)
         {
             _instructions.Add((line[0], int.Parse(line.Substring(1))));
         }

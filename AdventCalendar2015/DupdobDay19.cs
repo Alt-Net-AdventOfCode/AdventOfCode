@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using AOCHelpers;
 
 namespace AdventCalendar2015
@@ -36,7 +37,7 @@ HOH";
             _replacements.Clear();
         }
 
-        protected override void ParseLine(string line)
+        protected override void ParseLine(int index, string line)
         {
             var fields = line.Split("=>");
 
@@ -73,16 +74,42 @@ HOH";
             var usefulMap = new List<(string source, string dest)>();
             foreach (var entry in _replacements)
             {
-                if (_molecule.Contains(entry.dest))
+                if (_molecule.Contains(entry.dest) || _replacements.Any(t => entry.dest.Contains(t.source)))
                 {
                     usefulMap.Add((entry.source, entry.dest));
                 }
             }
 
-            var current = "e";
             var dist = new Dictionary<string, int>();
-            dist[current] = 0;
-
+            var nextSteps = new List<string> {"e"};
+            for (var step = 0;;step++)
+            {
+                var after = new List<string>();
+                foreach (var current in nextSteps)
+                {
+                    dist[current] = step;
+                    for (var i = 0; i < current.Length; i++)
+                    {
+                        foreach (var tuple in usefulMap)
+                        {
+                            if (current.Substring(i).StartsWith(tuple.source))
+                            {
+                                var mutation = current.Substring(0, i) + tuple.dest +
+                                               current.Substring(i + tuple.source.Length);
+                                if (!dist.ContainsKey(mutation))
+                                {
+                                    after.Add(mutation);
+                                    if (mutation == _molecule)
+                                    {
+                                        return step+1;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                nextSteps = after;
+            }
             
             return 3;
         }

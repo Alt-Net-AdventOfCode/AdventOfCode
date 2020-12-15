@@ -21,7 +21,7 @@ namespace AdventCalendar2020.Day15
             _map.Clear();
         }
 
-        protected override void ParseLine(string line)
+        protected override void ParseLine(int index1, string line)
         {
             var index = 0;
             foreach (var number in line.Split(','))

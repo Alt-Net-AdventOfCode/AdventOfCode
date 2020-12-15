@@ -6,7 +6,7 @@ namespace AdventCalendar2020.Day_9
 {
     public class DupdobDay9 : DupdobDayBase
     {
-        protected override void ParseLine(string line)
+        protected override void ParseLine(int index, string line)
         {
             _numbers.Add(long.Parse(line));
         }

@@ -22,7 +22,7 @@ mem[8] = 0";
             _instructions.Clear();
         }
 
-        protected override void ParseLine(string line)
+        protected override void ParseLine(int index, string line)
         {
             _instructions.Add(line);
         }

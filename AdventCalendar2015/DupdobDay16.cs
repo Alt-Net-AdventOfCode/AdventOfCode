@@ -21,7 +21,7 @@ trees: 3
 cars: 2
 perfumes: 1";
 
-        protected override void ParseLine(string line)
+        protected override void ParseLine(int index, string line)
         {
             var (suePart, dataSet) = line.SplitAtFirst(':');
             var data = dataSet.Split(',');

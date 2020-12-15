@@ -30,7 +30,7 @@ namespace AdventCalendar2015
 27
 38";
 
-        protected override void ParseLine(string line)
+        protected override void ParseLine(int index, string line)
         {
             _eggNogContainer.Add(int.Parse(line));
         }
