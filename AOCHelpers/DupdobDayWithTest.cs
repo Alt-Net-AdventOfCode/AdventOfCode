@@ -16,6 +16,8 @@ namespace AOCHelpers
                 {
                     throw new InvalidOperationException("Define _testData.");
                 }
+
+                var firstData = _testData;
                 Parse(_testData);
 
                 var answer = GiveAnswer1();
@@ -23,9 +25,13 @@ namespace AOCHelpers
                 {
                     throw new InvalidOperationException(_expectedResult1 == null ? "Define _expectedResult1." : $"Incorrect answer : {answer}, expected {_expectedResult1}.");
                 } 
+                SetupTestData(2);
                 if (_expectedResult2 != null)
                 {
-                    SetupTestData(1);
+                    if (_testData != firstData)
+                    {
+                        Parse(_testData);
+                    }
                     answer = GiveAnswer2();
                     if (!Compare(answer, _expectedResult2))
                     {

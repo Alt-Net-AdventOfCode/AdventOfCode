@@ -18,11 +18,8 @@ namespace AOCHelpers
             }
         }
 
-        protected virtual void ParseLine(string line)
-        {
-            throw new NotImplementedException();
-        }
-
+        protected abstract void ParseLine(string line);
+        
         public virtual void OutputAnswers()
         {
             SetData();

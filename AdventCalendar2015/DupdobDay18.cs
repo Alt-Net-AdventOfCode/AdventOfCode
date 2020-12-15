@@ -42,6 +42,10 @@ namespace AdventCalendar2015
             }
         }
 
+        protected override void ParseLine(string line)
+        {
+        }
+
         // 1634: too high
         public override object GiveAnswer1()
         {

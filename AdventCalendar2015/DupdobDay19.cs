@@ -6,15 +6,29 @@ namespace AdventCalendar2015
 {
     public class DupdobDay19: DupdobDayWithTest
     {
-        protected override void SetupTestData(int _)
+        protected override void SetupTestData(int phase)
         {
-            _testData = @"H => HO
+            if (phase == 1)
+            {
+                _testData = @"H => HO
 H => OH
 O => HH
 
 HOHOHO";
-            _expectedResult1 = 7;
-            _expectedResult2 = "undef";
+                _expectedResult1 = 7;
+            }
+            else
+            {
+                _testData = @"e => H
+e => O
+H => HO
+H => OH
+O => HH
+
+HOH";
+                _replacements.Clear();
+                _expectedResult2 = 3;
+            }
         }
     
         protected override void SetupRunData()
@@ -56,7 +70,21 @@ HOHOHO";
 
         public override object GiveAnswer2()
         {
-            return base.GiveAnswer2();
+            var usefulMap = new List<(string source, string dest)>();
+            foreach (var entry in _replacements)
+            {
+                if (_molecule.Contains(entry.dest))
+                {
+                    usefulMap.Add((entry.source, entry.dest));
+                }
+            }
+
+            var current = "e";
+            var dist = new Dictionary<string, int>();
+            dist[current] = 0;
+
+            
+            return 3;
         }
 
         private string _molecule;
