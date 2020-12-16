@@ -63,15 +63,11 @@ namespace AdventCalendar2020.Day16
             for (var i = 0; i < _tickets.Count; i++)
             {
                 var ticket = _tickets[i];
-                foreach (var field in ticket)
+                foreach (var field in ticket.Where(field => !_ranges.Values.Any(range =>
+                    (field >= range.min1 && field <= range.max1) || (field >= range.min2 && field <= range.max2))))
                 {
-                    var valid = _ranges.Values.Any(range => (field >= range.min1 && field <= range.max1) || (field >= range.min2 && field <= range.max2));
-
-                    if (!valid)
-                    {
-                        result += field;
-                        _tickets.RemoveAt(i--);
-                    }
+                    result += field;
+                    _tickets.RemoveAt(i--);
                 }
             }
 
@@ -80,28 +76,21 @@ namespace AdventCalendar2020.Day16
 
         public override object GiveAnswer2()
         {
-            var possibleMap = new List<List<string>>();
-            foreach (var _ in _yourTicket)
-            {
-                possibleMap.Add(_ranges.Keys.ToList());
-            }
+            var possibleMap = _yourTicket.Select(_ => _ranges.Keys.ToList()).ToList();
 
             foreach (var ticket in _tickets)
             {
                 for (var i = 0; i < ticket.Count; i++)
                 {
                     var field = ticket[i];
-                    foreach (var entry in _ranges)
+                    foreach (var (fieldName, range) in _ranges)
                     {
-                        var range = entry.Value;
-                        if (!((field >= range.min1 && field <= range.max1) ||
-                            (field >= range.min2 && field <= range.max2)))
+                        if ((field >= range.min1 && field <= range.max1) ||
+                            (field >= range.min2 && field <= range.max2)) continue;
+                        possibleMap[i].Remove(fieldName);
+                        if (possibleMap[i].Count == 0)
                         {
-                            possibleMap[i].Remove(entry.Key);
-                            if (possibleMap[i].Count == 0)
-                            {
-                                Debug.Fail($"failed at position {i}");
-                            }
+                            Debug.Fail($"failed at position {i}");
                         }
                     }
                 }
@@ -114,33 +103,22 @@ namespace AdventCalendar2020.Day16
             while (mappedIndex.Count < possibleMap.Count)
             {
                 var nextField = string.Empty;
-                for (int i = 0; i < possibleMap.Count; i++)
-                {
-                    if (possibleMap[i].Count == 1)
-                    {
-                        nextField = possibleMap[i][0];
-                        mappedIndex[nextField] = i;
-                        break;
-                    }
-                }
-
                 for (var i = 0; i < possibleMap.Count; i++)
                 {
-                    possibleMap[i].Remove(nextField);
+                    if (possibleMap[i].Count != 1) continue;
+                    nextField = possibleMap[i][0];
+                    mappedIndex[nextField] = i;
+                    break;
                 }
-            }
-            
-            
-            var result = 1L;
-            foreach (var field in mappedIndex.Keys)
-            {
-                if (field.StartsWith("departure"))
+
+                foreach (var t in possibleMap)
                 {
-                    result *= _yourTicket[mappedIndex[field]];
+                    t.Remove(nextField);
                 }
             }
 
-            return result;
+
+            return mappedIndex.Keys.Where(field => field.StartsWith("departure")).Aggregate(1L, (current, field) => current * _yourTicket[mappedIndex[field]]);
         }
 
         protected override void SetupTestData(int id)
@@ -168,10 +146,10 @@ nearby tickets:
         }
 
         private int _phase = 0;
-        private Dictionary<string, (int min1, int max1, int min2, int max2)> _ranges = new Dictionary<string, (int, int, int, int)>();
-        private List<int> _yourTicket = new List<int>();
-        private List<List<int>> _tickets = new List<List<int>>();
-        private Regex _parser = new Regex("^(.*): (\\d+)-(\\d+) or (\\d+)-(\\d+)$", RegexOptions.Compiled);
+        private readonly Dictionary<string, (int min1, int max1, int min2, int max2)> _ranges = new();
+        private List<int> _yourTicket = new();
+        private readonly List<List<int>> _tickets = new();
+        private readonly Regex _parser = new Regex("^(.*): (\\d+)-(\\d+) or (\\d+)-(\\d+)$", RegexOptions.Compiled);
         protected override string Input => @"departure location: 39-715 or 734-949
 departure station: 30-152 or 160-959
 departure platform: 34-780 or 798-955
