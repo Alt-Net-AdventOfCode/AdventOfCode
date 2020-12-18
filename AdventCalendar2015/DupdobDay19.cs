@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using AOCHelpers;
 
 namespace AdventCalendar2015
@@ -71,25 +72,24 @@ HOH";
 
         public override object GiveAnswer2()
         {
-            var usefulMap = new List<(string source, string dest)>();
-            var reversedMap = new Dictionary<string, string>();
-            foreach (var entry in _replacements)
-            {
-                if (_molecule.Contains(entry.dest) || _replacements.Any(t => entry.dest.Contains(t.source)))
-                {
-                    usefulMap.Add((entry.source, entry.dest));
-                    reversedMap.Add(entry.dest, entry.source);
-                }
-            }
+            var reversedMap = _replacements.Where(entry => _molecule.Contains(entry.dest) || _replacements.Any(t => entry.dest.Contains(t.source))).ToDictionary(entry => entry.dest, entry => entry.source);
 
             var count = 0;
             var sortedEntries = reversedMap.Keys.OrderBy(t => -t.Length).ToList();
 
-            var queue = new Queue<(string current, int step)>();
-            queue.Enqueue((_molecule, 0));
+            var queue = new List<(string current, int step)> {(_molecule, 0)};
             while (queue.Count>0)
             {
-                var (current, curCount) = queue.Dequeue();
+                (string current, int step) cursor = (string.Empty, 0);
+                foreach (var valueTuple in queue.Where(valueTuple => valueTuple.current.Length < cursor.current.Length ||cursor.current.Length == 0))
+                {
+                    cursor = valueTuple;
+                }
+
+                var current = cursor.current;
+                var curCount = cursor.step;
+
+                queue.Remove((cursor));
                 foreach (var precursor in EnumeratePrecursors(current, sortedEntries, reversedMap))
                 {
                     if (precursor == "e")
@@ -98,13 +98,17 @@ HOH";
                         count = curCount + 1;
                         break;
                     }
-                    queue.Enqueue((precursor, curCount+1));
+
+                    if (queue.All(t => t.current != precursor))
+                    {
+                        queue.Add((precursor, curCount+1));
+                    }
                 }
             }
             return count;
         }
 
-        private IEnumerable<string> EnumeratePrecursors(string molecule, IList<string> molecules,
+        private static IEnumerable<string> EnumeratePrecursors(string molecule, IList<string> molecules,
             IDictionary<string, string> conversions)
         {
             foreach (var precursor in molecules)
