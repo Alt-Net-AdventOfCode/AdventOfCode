@@ -72,46 +72,51 @@ HOH";
         public override object GiveAnswer2()
         {
             var usefulMap = new List<(string source, string dest)>();
+            var reversedMap = new Dictionary<string, string>();
             foreach (var entry in _replacements)
             {
                 if (_molecule.Contains(entry.dest) || _replacements.Any(t => entry.dest.Contains(t.source)))
                 {
                     usefulMap.Add((entry.source, entry.dest));
+                    reversedMap.Add(entry.dest, entry.source);
                 }
             }
 
-            var dist = new Dictionary<string, int>();
-            var nextSteps = new List<string> {"e"};
-            for (var step = 0;;step++)
+            var count = 0;
+            var sortedEntries = reversedMap.Keys.OrderBy(t => -t.Length).ToList();
+
+            var queue = new Queue<(string current, int step)>();
+            queue.Enqueue((_molecule, 0));
+            while (queue.Count>0)
             {
-                var after = new List<string>();
-                foreach (var current in nextSteps)
+                var (current, curCount) = queue.Dequeue();
+                foreach (var precursor in EnumeratePrecursors(current, sortedEntries, reversedMap))
                 {
-                    dist[current] = step;
-                    for (var i = 0; i < current.Length; i++)
+                    if (precursor == "e")
                     {
-                        foreach (var tuple in usefulMap)
-                        {
-                            if (current.Substring(i).StartsWith(tuple.source))
-                            {
-                                var mutation = current.Substring(0, i) + tuple.dest +
-                                               current.Substring(i + tuple.source.Length);
-                                if (!dist.ContainsKey(mutation))
-                                {
-                                    after.Add(mutation);
-                                    if (mutation == _molecule)
-                                    {
-                                        return step+1;
-                                    }
-                                }
-                            }
-                        }
+                        queue.Clear();
+                        count = curCount + 1;
+                        break;
                     }
+                    queue.Enqueue((precursor, curCount+1));
                 }
-                nextSteps = after;
             }
-            
-            return 3;
+            return count;
+        }
+
+        private IEnumerable<string> EnumeratePrecursors(string molecule, IList<string> molecules,
+            IDictionary<string, string> conversions)
+        {
+            foreach (var precursor in molecules)
+            {
+                for (var start = molecule.IndexOf(precursor, StringComparison.Ordinal);
+                    start >= 0;
+                    start = molecule.IndexOf(precursor, start + precursor.Length, StringComparison.Ordinal))
+                {
+                    yield return molecule.Substring(0, start) + conversions[precursor] +
+                                 molecule.Substring(start + precursor.Length);
+                }
+            }
         }
 
         private string _molecule;
