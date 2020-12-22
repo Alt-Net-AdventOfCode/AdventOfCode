@@ -29,7 +29,7 @@ namespace AdventCalendar2020
     {
         private static void Main(string[] args)
         {    
-            new AltDay22().OutputAnswers();
+            new DupdobDay22().OutputAnswers();
         }
 
         private static void FullCalendar()

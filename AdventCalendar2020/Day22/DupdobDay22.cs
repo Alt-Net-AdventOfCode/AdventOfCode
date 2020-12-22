@@ -33,15 +33,15 @@ namespace AdventCalendar2020.Day22
 
         public override object GiveAnswer2()
         {
-            var score = RecurseGame(_hands, 0);
+            var hands = new Queue<int>[2];
+            hands[0] = new Queue<int>(_hands[0]);
+            hands[1] = new Queue<int>(_hands[1]);
+            var score = RecurseGame(hands, 0);
             return score;
         }
 
-        private long RecurseGame(Queue<int>[] inHands, int level)
+        private long RecurseGame(Queue<int>[] hands, int level)
         {
-            var hands = new Queue<int>[2];
-            hands[0] = new Queue<int>(inHands[0]);
-            hands[1] = new Queue<int>(inHands[1]);
             var seen = new HashSet<long>();
 
             long Hash() => Score(hands[0]) + 10000 * Score(hands[1]);
@@ -61,12 +61,15 @@ namespace AdventCalendar2020.Day22
                 if (h0 <= hands[0].Count && h1 <= hands[1].Count)
                 {
                     // recurse!
-                    winner = RecurseGame(hands, level+1);
+                    var newHands = new Queue<int>[2];
+                    newHands[0] = new Queue<int>(hands[0].Take(h0));
+                    newHands[1] = new Queue<int>(hands[1].Take(h1));
+                    winner = RecurseGame(newHands, level+1);
                 }
 
                 if (level < 4)
                 {
-                    Console.WriteLine(new string('-', level)+"G:{0}, R:{1}, W: {2}", level+1, seen.Count, winner+1);
+                 //   Console.WriteLine(new string('-', level)+"G:{0}, R:{1}, W: {2}", level+1, seen.Count, winner+1);
                 }
                 if (winner == 0)
                 {
@@ -170,60 +173,59 @@ Player 2:
         }
 
         private readonly Queue<int>[] _hands = new Queue<int>[2];
-        protected override string Input => @"
-Player 1:
-1
-43
-24
-34
-13
-7
-10
-36
-14
-12
-47
-32
-11
-3
-9
-25
-37
-21
-2
-45
-26
-8
+        protected override string Input => @"Player 1:
 23
-6
-49
+32
+46
+47
+27
+35
+1
+16
+37
+50
+15
+11
+14
+31
+4
+38
+21
+39
+26
+22
+3
+2
+8
+45
+19
 
 Player 2:
-44
-5
-46
-18
-39
-50
-4
-41
-17
+13
+20
+12
 28
+9
+10
 30
-42
-33
-38
-35
-22
-16
-27
-40
+25
+18
+36
 48
-19
+41
 29
-15
-31
-20";
+24
+49
+33
+44
+40
+6
+34
+7
+43
+42
+17
+5";
         public override int Day => 22;
     }
 }
