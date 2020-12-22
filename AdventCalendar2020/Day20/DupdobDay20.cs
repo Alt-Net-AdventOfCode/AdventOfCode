@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using AOCHelpers;
-using Microsoft.VisualBasic;
 
 namespace AdventCalendar2020.Day20
 {
@@ -38,15 +37,15 @@ namespace AdventCalendar2020.Day20
 
             var tile = tilesToDo[0];
             
-            AddMap(tilesToDo, tile, 0, map, (0,0));
+            AddMap(tile, 0, 0, map, (0,0), tilesToDo);
 
             return 0;
         }
 
-        private void AddMap(List<int> tilesToDo, int tile, int orientation, 
-            Dictionary<(int x, int y), List<string>> map, (int x, int y) pos)
+        private void AddMap(int tile, int orientation,
+            int flip,
+            IDictionary<(int x, int y), List<string>> map, (int x, int y) pos, List<int> tilesToDo)
         {
-            List<string> localMap = new List<string>();
             if (!tilesToDo.Contains(tile))
             {
                 // done already
@@ -54,13 +53,9 @@ namespace AdventCalendar2020.Day20
             }
 
             tilesToDo.Remove(tile);
-            for (var i = 1; i < _tiles[tile].Count - 1; i++)
-            {
-                var line = _tiles[tile][i];
-                localMap.Add(line.Substring(1, line.Length - 2));
-            }
 
-            map[(pos.x, pos.y)] = localMap;
+            var (x, y) = pos;
+            map[pos] = RotateFlipAndExtract(_tiles[tile], orientation, flip);
             
             /*
             Console.WriteLine("Raw {0}", tile);
@@ -80,11 +75,45 @@ namespace AdventCalendar2020.Day20
             }
             */
             // process neighbour tiles
-            if (_compatibility[tile][0].Count == 1)
+            var offsets = new[] {(0, -1), (1, 0), (0, 1), (-1, 0)};
+            for (var i = 0; i < _compatibility[tile].Length; i++)
             {
-                var (nextTile, border, flip) = _compatibility[tile][0][0];
-                var rotation = (border+2)%4;
-                AddMap(tilesToDo, nextTile, orientation, map, (pos.x, pos.y-1));
+                var edge = i;
+                edge ^= flip;
+                if (_compatibility[tile][edge].Count == 1)
+                {
+                    var (nextTile, border, flipIt) = _compatibility[tile][edge][0];
+                    if (flipIt == 1)
+                    {
+                        if ((edge+border) % 2 == 1)
+                        {
+                            flipIt = 2;
+                        }
+                    }
+
+                    flipIt ^= flip;
+                    var rotation = (orientation+edge+border+2)%4;
+                    var moveDir = (edge+orientation)%4;
+                    if ((flipIt & 1) == 1)
+                    {
+                        if ((moveDir & 1) == 1)
+                        {
+                            moveDir ^= 2;
+                        }
+                    }
+
+                    if ((flipIt & 2) == 2)
+                    {
+                        if ((moveDir & 1) == 0)
+                        {
+                            moveDir ^= 2;
+                        }
+                        
+                    }
+
+                    var (dx, dy) =  offsets[moveDir];
+                    AddMap(nextTile, rotation, flipIt, map, (x + dx, y +dy), tilesToDo);
+                }
             }
             
         }
@@ -92,7 +121,7 @@ namespace AdventCalendar2020.Day20
         private static List<string> RotateFlipAndExtract(List<string> map, int rotate, int flip)
         {
             var list = new List<string>();
-            for (var i = 0; i < map.Count - 2; i++)
+            for (var i = 0; i < map.Count ; i++)
             {
                 var lineBuilder = new StringBuilder();
                 foreach (var car in RotateFlipAndExtract(map, i, rotate, flip))
@@ -108,9 +137,9 @@ namespace AdventCalendar2020.Day20
         // extract one line/column (depends on rotation)
         private static IEnumerable<char> RotateFlipAndExtract(List<string> map, int index, int rotate, int flip)
         {
-            var min = 1;
-            var max = map.Count - 2;
-            index++;
+            var min = 0;
+            var max = map.Count - 1;
+            index = index + min;
             var reversedIndex = map.Count - index-1;
             switch (rotate)
             {
@@ -168,14 +197,14 @@ namespace AdventCalendar2020.Day20
         public override object GiveAnswer1()
         {
             var bordersMap = new Dictionary<int, string[]>();
-            foreach (var tile in _tiles)
+            foreach (var (tile, tileLine) in _tiles)
             {
                 var borders = new string[4];
-                borders[0] = tile.Value[0];
-                borders[2] = string.Concat(tile.Value.Last().Reverse());
+                borders[0] = tileLine[0];
+                borders[2] = string.Concat(tileLine.Last().Reverse());
                 var builderRight = new StringBuilder(10);
                 var builderLeft = new StringBuilder(10);
-                foreach (var line in tile.Value)
+                foreach (var line in tileLine)
                 {
                     builderLeft.Insert(0, line.First());
                     builderRight.Append(line.Last());
@@ -184,7 +213,7 @@ namespace AdventCalendar2020.Day20
                 borders[1] = builderRight.ToString();
                 borders[3] = builderLeft.ToString();
 
-                bordersMap[tile.Key] = borders;
+                bordersMap[tile] = borders;
             }
 
             _compatibility = new Dictionary<int, List<(int tile, int border, int flip)>[]>();
@@ -218,17 +247,7 @@ namespace AdventCalendar2020.Day20
                 }
             }
 
-            var countCorners = 0;
-            var result = 1L;
-            foreach (var tile in _compatibility) 
-            {
-                if (tile.Value.Count(t => t.Count == 1) == 2)
-                {
-                    countCorners++;
-                    result *= tile.Key;
-                }
-            }
-            return result;
+            return _compatibility.Where(tile => tile.Value.Count(t => t.Count == 1) == 2).Aggregate(1L, (current, tile) => current * tile.Key);
         }
 
         protected override void ParseLine(int index, string line)
