@@ -39,6 +39,25 @@ namespace AdventCalendar2020.Day20
             
             AddMap(tile, 0, 0, map, (0,0), tilesToDo);
 
+            var minX = map.Min(t => t.Key.x);
+            var maxX = map.Max(t => t.Key.x);
+            var minY = map.Min(t => t.Key.y);
+            var maxY = map.Max(t => t.Key.y);
+
+            var mapSize = _tiles.First().Value.Count-2;
+            for (var y = minY; y <= maxY; y++)
+            {
+                for (var line = 0; line < mapSize; line++)
+                {
+                    for (var x = minX; x <= maxX; x++)
+                    {
+                        Console.Write(map[(x,y)][line]);
+                       // Console.Write("|");
+                    }
+                    Console.WriteLine();
+                }
+               // Console.WriteLine("-----------------------------------------");
+            }
             return 0;
         }
 
@@ -78,42 +97,40 @@ namespace AdventCalendar2020.Day20
             var offsets = new[] {(0, -1), (1, 0), (0, 1), (-1, 0)};
             for (var i = 0; i < _compatibility[tile].Length; i++)
             {
-                var edge = i;
-                edge ^= flip;
-                if (_compatibility[tile][edge].Count == 1)
+                if (_compatibility[tile][i].Count != 1) continue;
+                // we need to convert this to the actual direction, taking into account rotation(s) and flip(s)
+                var (nextTile, border, flipIt) = _compatibility[tile][i][0];
+                if (!tilesToDo.Contains(nextTile)) continue;
+                var edge = (i + orientation) % 4;
+                
+                if ((flip & 2) == 2)
                 {
-                    var (nextTile, border, flipIt) = _compatibility[tile][edge][0];
-                    if (flipIt == 1)
+                    if ((edge & 1) == 0)
                     {
-                        if ((edge+border) % 2 == 1)
-                        {
-                            flipIt = 2;
-                        }
+                        edge ^= 2;
                     }
-
-                    flipIt ^= flip;
-                    var rotation = (orientation+edge+border+2)%4;
-                    var moveDir = (edge+orientation)%4;
-                    if ((flipIt & 1) == 1)
-                    {
-                        if ((moveDir & 1) == 1)
-                        {
-                            moveDir ^= 2;
-                        }
-                    }
-
-                    if ((flipIt & 2) == 2)
-                    {
-                        if ((moveDir & 1) == 0)
-                        {
-                            moveDir ^= 2;
-                        }
-                        
-                    }
-
-                    var (dx, dy) =  offsets[moveDir];
-                    AddMap(nextTile, rotation, flipIt, map, (x + dx, y +dy), tilesToDo);
                 }
+
+                if ((flip & 1) == 1)
+                {
+                    if ((edge & 1) == 1)
+                    {
+                        edge ^= 1;
+                    }
+                }
+
+                if (flipIt == 1)
+                {
+                    if ((edge+border) % 2 == 1)
+                    {
+                        flipIt = 2;
+                    }
+                }
+
+                flipIt ^= flip;
+                var rotation = (edge-border+6)%4;
+                var (dx, dy) =  offsets[edge];
+                AddMap(nextTile, rotation, flipIt, map, (x + dx, y +dy), tilesToDo);
             }
             
         }
@@ -121,7 +138,7 @@ namespace AdventCalendar2020.Day20
         private static List<string> RotateFlipAndExtract(List<string> map, int rotate, int flip)
         {
             var list = new List<string>();
-            for (var i = 0; i < map.Count ; i++)
+            for (var i = 0; i < map.Count-2 ; i++)
             {
                 var lineBuilder = new StringBuilder();
                 foreach (var car in RotateFlipAndExtract(map, i, rotate, flip))
@@ -137,9 +154,9 @@ namespace AdventCalendar2020.Day20
         // extract one line/column (depends on rotation)
         private static IEnumerable<char> RotateFlipAndExtract(List<string> map, int index, int rotate, int flip)
         {
-            var min = 0;
-            var max = map.Count - 1;
-            index = index + min;
+            var min = 1;
+            var max = map.Count - 1-min;
+            index += min;
             var reversedIndex = map.Count - index-1;
             switch (rotate)
             {
@@ -257,7 +274,7 @@ namespace AdventCalendar2020.Day20
         protected override void SetupTestData(int id)
         {
             _expectedResult1 = 20899048083289L;
-            _expectedResult2 = 273L;
+//            _expectedResult2 = 273L;
             _testData = @"Tile 2311:
 ..##.#..#.
 ##..#.....
@@ -375,6 +392,10 @@ Tile 3079:
 
         private readonly Dictionary<int, List<string>> _tiles = new();
         private Dictionary<int, List<(int tile, int border, int flip)>[]> _compatibility;
+
+        private const string SeaMonster = @"                  # 
+#    ##    ##    ###
+ #  #  #  #  #  #   ";
 
         protected override string Input => @"Tile 1759:
 .##.#..#..
