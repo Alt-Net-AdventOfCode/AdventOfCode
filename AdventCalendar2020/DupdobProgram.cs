@@ -22,15 +22,16 @@ using AdventCalendar2020.Day20;
 using AdventCalendar2020.Day21;
 using AdventCalendar2020.Day22;
 using AdventCalendar2020.Day23;
+using AdventCalendar2020.Day24;
 using AOCHelpers;
 
 namespace AdventCalendar2020
 {
     static class DupdobProgram
     {
-        private static void Main(string[] args)
+        private static void Main()
         {    
-            new DupdobDay23().OutputAnswers();
+            new DupdobDay24().OutputAnswers();
         }
 
         private static void FullCalendar()
@@ -76,6 +77,7 @@ namespace AdventCalendar2020
             new DupdobDay20().OutputAnswers();
             new DupdobDay21().OutputAnswers();
             new DupdobDay22().OutputAnswers();
+            new DupdobDay23().OutputAnswers();
         }
     }
 }

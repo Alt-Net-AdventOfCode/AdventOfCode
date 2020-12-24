@@ -121,7 +121,7 @@ namespace AdventCalendar2020.Day20
 
                 if (flipIt == 1)
                 {
-                    if ((edge+border) % 2 == 1)
+                    if ((border) % 2 == 1)
                     {
                         flipIt = 2;
                     }
