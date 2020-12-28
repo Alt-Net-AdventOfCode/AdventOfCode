@@ -34,36 +34,79 @@ namespace AdventCalendar2020.Day20
         {
             var map = new Dictionary<(int x, int y), List<string>>();
             var tilesToDo = _tiles.Keys.ToList();
+            var fullMap = new List<string>();
 
             var tile = tilesToDo[0];
-            
-            AddMap(tile, 0, 0, map, (0,0), tilesToDo);
+            AddMap(tile, 2, 1, map, (0,0), tilesToDo);
 
             var minX = map.Min(t => t.Key.x);
             var maxX = map.Max(t => t.Key.x);
             var minY = map.Min(t => t.Key.y);
             var maxY = map.Max(t => t.Key.y);
 
-            var mapSize = _tiles.First().Value.Count-2;
+            var mapSize = _tiles.First().Value.Count;
+            var builder = new StringBuilder();
             for (var y = minY; y <= maxY; y++)
             {
                 for (var line = 0; line < mapSize; line++)
                 {
                     for (var x = minX; x <= maxX; x++)
                     {
-                        Console.Write(map[(x,y)][line]);
-                       // Console.Write("|");
+                        builder.Append(map[(x, y)][line].Substring(1, mapSize-2));
                     }
-                    Console.WriteLine();
+
+                    // skip borders
+                    if (line > 0 && line < mapSize - 1)
+                    {
+                        fullMap.Add(builder.ToString());
+                    }
+                    builder.Clear();
                 }
-               // Console.WriteLine("-----------------------------------------");
             }
-            return 0;
+
+            // compress pixels
+            var monsterPixels = new List<(int dy, int dx)>();
+            var dy = 0;
+            foreach (var monsterLine in SeaMonster.Split('\n'))
+            {
+                for (var i = 0; i < monsterLine.Length; i++)
+                {
+                    if (monsterLine[i] == '#')
+                    {
+                        monsterPixels.Add((dy, i));
+                    }
+                }
+                dy++;
+            }
+
+            var length = monsterPixels.Max( p => p.dx);
+            var height = monsterPixels.Max(p => p.dy);
+            var foundMonsters = 0;
+            for (var index = 0; index < 8; index++)
+            {
+                var localMonsters = 0;
+                var rotation = index % 4;
+                var flip = index > 3 ? 1 : 0;
+                var transformedMap = RotateFlipAndExtract(fullMap, rotation, flip);
+                for (var y = 0; y < transformedMap.Count - height; y++)
+                {
+                    for (var x = 0; x < transformedMap[0].Length - length; x++)
+                    {
+                        if (monsterPixels.All(p => transformedMap[p.dy + y][p.dx + x] == '#'))
+                        {
+                            localMonsters++;
+                        }
+                    }
+                }
+
+                foundMonsters = Math.Max(foundMonsters, localMonsters);
+            }
+            return fullMap.SelectMany(t => t).Count(p => p=='#') - foundMonsters*monsterPixels.Count();
         }
 
         private void AddMap(int tile, int orientation,
-            int flip,
-            IDictionary<(int x, int y), List<string>> map, (int x, int y) pos, List<int> tilesToDo)
+            int actualFlip,
+            IDictionary<(int x, int y), List<string>> map, (int x, int y) pos, ICollection<int> tilesToDo)
         {
             if (!tilesToDo.Contains(tile))
             {
@@ -74,25 +117,8 @@ namespace AdventCalendar2020.Day20
             tilesToDo.Remove(tile);
 
             var (x, y) = pos;
-            map[pos] = RotateFlipAndExtract(_tiles[tile], orientation, flip);
-            
-            /*
-            Console.WriteLine("Raw {0}", tile);
-            foreach (var line in _tiles[tile])
-            {
-                Console.WriteLine(line);
-            }
-            Console.WriteLine();
-            for (var i = 0; i < 4; i++)
-            {
-                Console.WriteLine("Rotate {0}", i);
-                foreach (var line in RotateFlipAndExtract(_tiles[tile], i, 0))
-                {
-                    Console.WriteLine(line);
-                }
-                Console.WriteLine();
-            }
-            */
+            map[pos] = RotateFlipAndExtract(_tiles[tile], orientation, actualFlip);
+
             // process neighbour tiles
             var offsets = new[] {(0, -1), (1, 0), (0, 1), (-1, 0)};
             for (var i = 0; i < _compatibility[tile].Length; i++)
@@ -100,45 +126,27 @@ namespace AdventCalendar2020.Day20
                 if (_compatibility[tile][i].Count != 1) continue;
                 // we need to convert this to the actual direction, taking into account rotation(s) and flip(s)
                 var (nextTile, border, flipIt) = _compatibility[tile][i][0];
-                if (!tilesToDo.Contains(nextTile)) continue;
-                var edge = (i + orientation) % 4;
+                var actualDirection =  ((actualFlip == 0 ? i : 4 - i) + orientation) % 4;
                 
-                if ((flip & 2) == 2)
+                if (!tilesToDo.Contains(nextTile)) continue;
+                flipIt ^= actualFlip;
+                if (flipIt != 0)
                 {
-                    if ((edge & 1) == 0)
+                    if ((border & 1) == 1)
                     {
-                        edge ^= 2;
+                        border ^=2;
                     }
                 }
-
-                if ((flip & 1) == 1)
-                {
-                    if ((edge & 1) == 1)
-                    {
-                        edge ^= 1;
-                    }
-                }
-
-                if (flipIt == 1)
-                {
-                    if ((border) % 2 == 1)
-                    {
-                        flipIt = 2;
-                    }
-                }
-
-                flipIt ^= flip;
-                var rotation = (edge-border+6)%4;
-                var (dx, dy) =  offsets[edge];
-                AddMap(nextTile, rotation, flipIt, map, (x + dx, y +dy), tilesToDo);
+                var rotation = (actualDirection-border+6)%4;
+                var (dx, dy) =  offsets[actualDirection];
+                AddMap(nextTile, rotation, flipIt, map, (x + dx, y + dy), tilesToDo);
             }
-            
         }
 
-        private static List<string> RotateFlipAndExtract(List<string> map, int rotate, int flip)
+        private static List<string> RotateFlipAndExtract(IReadOnlyList<string> map, int rotate, int flip)
         {
             var list = new List<string>();
-            for (var i = 0; i < map.Count-2 ; i++)
+            for (var i = 0; i < map.Count ; i++)
             {
                 var lineBuilder = new StringBuilder();
                 foreach (var car in RotateFlipAndExtract(map, i, rotate, flip))
@@ -152,65 +160,64 @@ namespace AdventCalendar2020.Day20
         }
 
         // extract one line/column (depends on rotation)
-        private static IEnumerable<char> RotateFlipAndExtract(List<string> map, int index, int rotate, int flip)
+        private static IEnumerable<char> RotateFlipAndExtract(IReadOnlyList<string> map, int index, int rotate, int flip)
         {
-            var min = 1;
-            var max = map.Count - 1-min;
-            index += min;
-            var reversedIndex = map.Count - index-1;
+            var max = map.Count - 1;
+            var reversedIndex = map.Count-1 - index;
             switch (rotate)
             {
                 case 0:
-                    if (flip > 0)
+                    if (flip == 0)
                     {
-                        for (var i = max; i >= min; i--)
+                        for (var i = 0; i <= max; i++)
                             yield return map[index][i];
                     }
                     else
                     {
-                        for (var i = min; i <= max ; i++)
+                        for (var i = max; i >= 0; i--)
                             yield return map[index][i];
                     }
+
                     break;
                 case 1:
                     if (flip == 0)
                     {
-                        for (var i = max; i >= min; i--)
+                        for (var i = max; i >= 0; i--)
                             yield return map[i][index];
                     }
                     else
                     {
-                        for (var i = min; i <= max ; i++)
-                            yield return map[i][index];
+                        for (var i = max; i >= 0 ; i--)
+                            yield return map[i][reversedIndex];
                     }
                     break;
                 case 2:
                     if (flip == 0)
                     {
-                        for (var i = max; i >= min; i--)
+                        for (var i = max; i >= 0; i--)
                             yield return map[reversedIndex][i];
                     }
                     else
                     {
-                        for (var i = min; i <= max ; i++)
+                        for (var i = 0; i <= max ; i++)
                             yield return map[reversedIndex][i];
                     }
                     break;
                 case 3:
-                    if (flip == 1)
+                    if (flip == 0)
                     {
-                        for (var i = max; i >= min; i--)
+                        for (var i = 0; i <= max; i++)
                             yield return map[i][reversedIndex];
                     }
                     else
                     {
-                        for (var i = min; i <= max; i++)
-                            yield return map[i][reversedIndex];
+                        for (var i = 0; i <= max; i++)
+                            yield return map[i][index];
                     }
                     break;
-                
             }
         }
+        
         public override object GiveAnswer1()
         {
             var bordersMap = new Dictionary<int, string[]>();
@@ -274,7 +281,7 @@ namespace AdventCalendar2020.Day20
         protected override void SetupTestData(int id)
         {
             _expectedResult1 = 20899048083289L;
-//            _expectedResult2 = 273L;
+            _expectedResult2 = 273;
             _testData = @"Tile 2311:
 ..##.#..#.
 ##..#.....
