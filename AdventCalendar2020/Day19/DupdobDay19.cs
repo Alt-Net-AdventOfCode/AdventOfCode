@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using AOCHelpers;
 
 namespace AdventCalendar2020.Day19
@@ -21,18 +22,7 @@ namespace AdventCalendar2020.Day19
                 // rule
                 var id = int.Parse(line.Substring(0, pos));
                 var rule = line.Substring(pos + 1).Trim();
-                if (rule.StartsWith('"'))
-                {
-                    new SingleChar(id, rule[1]);
-                }
-                else
-                {
-                    var groups = rule.Split('|');
-                    var parsed = new List<List<int>>(groups.Length);
-                    parsed.AddRange(groups.Select(block => block.Trim().Split(' ').Select(int.Parse).ToList()));
-
-                    new CombinationMatch(id, parsed);
-                }
+                Matcher.RegisterRule(id, rule);
             }
             else
             {
@@ -42,25 +32,18 @@ namespace AdventCalendar2020.Day19
 
         public override object GiveAnswer1()
         {
-            var count = 0;
-            foreach (var code in _codes)
-            {
-                if (Matcher.Match(code))
-                {
-                    count++;
-                }
-            }
-
-            return count;
-            //return _codes.Count(Matcher.Match);
+            var asRegEx = new Regex(Matcher.GetRegex(), RegexOptions.Compiled);
+            return _codes.Count(code => asRegEx.IsMatch(code));
         }
 
         public override object GiveAnswer2()
         {
+            var rule42 = Matcher.GetRuleRegex(42);
+            var rule31 = Matcher.GetRuleRegex(31);
             // update rules
-            ParseLine(0, "8: 42 | 42 8");
-            ParseLine(0, "11: 42 31 | 42 11 31");
-            Matcher.ComputeLens();
+            Matcher.SetRuleRegex(8, $"(?:({rule42})+)");
+            // failed to find how to define recursive patterns, assumed it could be recurs ed 4 times :-), which proved to be sufficient
+            Matcher.SetRuleRegex(11, $"(?'rec'({rule42}{rule31}|{rule42}{rule42}{rule31}{rule31}|{rule42}{rule42}{rule42}{rule31}{rule31}{rule31}|{rule42}{rule42}{rule42}{rule42}{rule31}{rule31}{rule31}{rule31}))");
             return GiveAnswer1();
         }
 
@@ -122,133 +105,83 @@ aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba";
             _codes.Clear();
         }
 
-        abstract class Matcher
+        private abstract class Matcher
         {
-            protected static readonly Dictionary<int, Matcher> _rules = new();
-            protected int _id;
+            protected static readonly Dictionary<int, Matcher> Rules = new();
 
-            protected Matcher(int id)
+            public static void RegisterRule(int id, string rule)
             {
-                _id = id;
-                _rules[id] = this;
+                if (rule.StartsWith('"'))
+                {
+                    Rules[id] = new SingleChar(rule[1]);
+                }
+                else
+                {
+                    var groups = rule.Split('|');
+                    var parsed = new List<List<int>>(groups.Length);
+                    parsed.AddRange(groups.Select(block => block.Trim().Split(' ').Select(int.Parse).ToList()));
+                    Rules[id] = new CombinationMatch(parsed);
+                }
             }
-
-            public static bool Match(string code)
-            {
-                var pos = 0;
-                return _rules[0].Match(code, ref pos) && pos == code.Length;
-            }
-
-            public static void ComputeLens()
-            {
-                _rules[0].Len(new List<int>());
-            }
-            public abstract (int,int) Len(IList<int> seen);
             
-            public abstract bool Match(string code, ref int pos);
+            public abstract string AsRegex();
+            protected abstract void SetRegex(string regex);
+
+            public static string GetRuleRegex(int rule)
+            {
+                return Rules[rule].AsRegex();
+            }
+
+            public static void SetRuleRegex(int rule, string regex)
+            {
+                Rules[rule].SetRegex(regex);
+            }
+            
+            public static string GetRegex()
+            {
+                return '^'+Rules[0].AsRegex()+'$';
+            }
         }
 
         class SingleChar : Matcher
         {
             private readonly char _match;
-            public SingleChar(int id, char car) : base(id)
+            public SingleChar(char car)
             {
                 _match = car;
             }
 
-            public override (int,int) Len(IList<int> _)
+            public override string AsRegex()
             {
-                return (1,1);
+                return _match.ToString();
             }
 
-            public override bool Match(string code, ref int pos)
+            protected override void SetRegex(string regex)
             {
-                if (pos >= code.Length)
-                {
-                    return false;
-                }
-
-                if (code[pos] != _match) return false;
-                pos++;
-                return true;
-
             }
         }
 
         class CombinationMatch : Matcher
         {
             private readonly IEnumerable<List<int>> _subMatches;
-            private (int min, int max) _cachedLen;
 
-            public CombinationMatch(int id, IEnumerable<List<int>> subs) : base(id)
+            private string _forcedRegex;
+            
+            public CombinationMatch(IEnumerable<List<int>> subs)
             {
                 _subMatches = subs;
             }
 
-            public override (int, int) Len(IList<int> seen)
+            public override string AsRegex()
             {
-                if (seen.Contains(_id))
-                {
-                    // there is a loop
-                    return (0, int.MaxValue);
-                }
-
-                var fMin = int.MaxValue;
-                var fMax = 0;
                 
-                var nextSeen = seen.Append(_id).ToList();
-                foreach (var subMatch in _subMatches)
-                {
-                    var min = 0;
-                    var max = 0;
-                    foreach (var id in subMatch)
-                    {
-                        var (m, M) = _rules[id].Len(nextSeen);
-                        if (M == int.MaxValue || max == int.MaxValue)
-                        {
-                            max = int.MaxValue;
-                        }
-                        else
-                        {
-                            max +=M;
-                        }
-                        min += m;
-                    }
-
-                    fMin = Math.Min(fMin, min);
-                    fMax = Math.Max(fMax, max);
-                }
-
-                _cachedLen = (fMin, fMax);
-                return _cachedLen;
+                return _forcedRegex ?? '('+
+                    string.Join('|', _subMatches.Select(x => string.Concat(x.Select(t => Rules[t].AsRegex())))) + ')';
             }
 
-            public override bool Match(string code, ref int pos)
+            protected override void SetRegex(string regex)
             {
-                if (pos > code.Length - _cachedLen.min)
-                {
-                    return false;
-                }
-                foreach (var subMatch in _subMatches)
-                {
-                    var initPos = pos;
-                    var isMatch = true;
-                    foreach (var matcher in subMatch)
-                    {
-                        if (_rules[matcher].Match(code, ref pos)) continue;
-                        isMatch = false;
-                        break;
-                    }
-
-                    if (isMatch)
-                    {
-                        return true;
-                    }
-
-                    pos = initPos;
-                }
-
-                return false;
+                _forcedRegex = regex;
             }
         }
         

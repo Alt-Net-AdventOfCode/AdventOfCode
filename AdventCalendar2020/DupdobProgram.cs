@@ -28,11 +28,11 @@ using AOCHelpers;
 
 namespace AdventCalendar2020
 {
-    static class DupdobProgram
+    internal static class DupdobProgram
     {
         private static void Main()
         {    
-            new DupdobDay20().OutputAnswers();
+            new DupdobDay19().OutputAnswers();
         }
 
         private static void FullCalendar()
@@ -80,6 +80,7 @@ namespace AdventCalendar2020
             new DupdobDay22().OutputAnswers();
             new DupdobDay23().OutputAnswers();
             new DupdobDay24().OutputAnswers();
+            new DupdobDay25().OutputAnswers();
         }
     }
 }
