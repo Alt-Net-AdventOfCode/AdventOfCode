@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -8,7 +7,7 @@ namespace AdventCalendar2020.Day19
 {
     public class DupdobDay19: DupdobDayWithTest
     {
-        private readonly List<string> _codes = new List<string>();
+        private readonly List<string> _codes = new();
 
         protected override void ParseLine(int index, string line)
         {
