@@ -9,7 +9,6 @@ namespace AdventCalendar2020.Day22
     {
         protected override void ParseLine(int index, string line)
         {
-            throw new System.NotImplementedException();
         }
 
         protected override void Parse(string input)
