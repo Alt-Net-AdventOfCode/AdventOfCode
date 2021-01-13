@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Metadata.Ecma335;
@@ -56,71 +57,48 @@ HOH";
         public override object GiveAnswer1()
         {
             var possible = new HashSet<string>();
-            foreach (var replacement in _replacements)
+            foreach (var (source, dest) in _replacements)
             {
-                var position = _molecule.IndexOf(replacement.source, StringComparison.Ordinal);
+                var position = _molecule.IndexOf(source, StringComparison.Ordinal);
                 while (position>=0)
                 {
                     possible.Add(_molecule.Substring(0, position) 
-                                 + replacement.dest + _molecule.Substring(position+replacement.source.Length));
-                    position = _molecule.IndexOf(replacement.source, position + replacement.source.Length, StringComparison.Ordinal);
+                                 + dest + _molecule.Substring(position+source.Length));
+                    position = _molecule.IndexOf(source, position + source.Length, StringComparison.Ordinal);
                 }
             }
 
             return possible.Count;
         }
 
+        // 68, 56, 58, 47, 46, 43
         public override object GiveAnswer2()
         {
-            var reversedMap = _replacements.Where(entry => _molecule.Contains(entry.dest) || _replacements.Any(t => entry.dest.Contains(t.source))).ToDictionary(entry => entry.dest, entry => entry.source);
+            var reversedMap = _replacements
+                .Where(entry => _molecule.Contains(entry.dest) || _replacements.Any(t => entry.dest.Contains(t.source)))
+                .ToDictionary(entry => entry.dest, entry => entry.source);
 
             var count = 0;
-            var sortedEntries = reversedMap.Keys.OrderBy(t => -t.Length).ToList();
-
-            var queue = new List<(string current, int step)> {(_molecule, 0)};
-            while (queue.Count>0)
+            var sortedEntries = reversedMap.Shuffle();
+            var current = _molecule;
+            while (current != "e")
             {
-                (string current, int step) cursor = (string.Empty, 0);
-                foreach (var valueTuple in queue.Where(valueTuple => valueTuple.current.Length < cursor.current.Length ||cursor.current.Length == 0))
+                var text = current;
+                foreach (var keyValuePair in sortedEntries)
                 {
-                    cursor = valueTuple;
+                    current = current.ReplaceAll(keyValuePair.Key, keyValuePair.Value, out var repl);
+                    count += repl;
                 }
 
-                var current = cursor.current;
-                var curCount = cursor.step;
-
-                queue.Remove((cursor));
-                foreach (var precursor in EnumeratePrecursors(current, sortedEntries, reversedMap))
+                if (text == current)
                 {
-                    if (precursor == "e")
-                    {
-                        queue.Clear();
-                        count = curCount + 1;
-                        break;
-                    }
-
-                    if (queue.All(t => t.current != precursor))
-                    {
-                        queue.Add((precursor, curCount+1));
-                    }
+                    current = _molecule;
+                    sortedEntries = sortedEntries.Shuffle();
+                    count = 0;
                 }
             }
+
             return count;
-        }
-
-        private static IEnumerable<string> EnumeratePrecursors(string molecule, IList<string> molecules,
-            IDictionary<string, string> conversions)
-        {
-            foreach (var precursor in molecules)
-            {
-                for (var start = molecule.IndexOf(precursor, StringComparison.Ordinal);
-                    start >= 0;
-                    start = molecule.IndexOf(precursor, start + precursor.Length, StringComparison.Ordinal))
-                {
-                    yield return molecule.Substring(0, start) + conversions[precursor] +
-                                 molecule.Substring(start + precursor.Length);
-                }
-            }
         }
 
         private string _molecule;

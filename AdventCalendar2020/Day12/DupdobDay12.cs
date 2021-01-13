@@ -7,8 +7,8 @@ namespace AdventCalendar2020.Day12
 {
     public class DupdobDay12 : DupdobDayWithTest
     {
-        private (int dx, int dy)[] _directions = new (int dx, int dy)[]{(1, 0), (0,1), (-1, 0), (0,-1)};
-        private List<(char opt, int dist)> _instructions = new List<(char opt, int dist)>();
+        private readonly (int dx, int dy)[] _directions = new (int dx, int dy)[]{(1, 0), (0,1), (-1, 0), (0,-1)};
+        private readonly List<(char opt, int dist)> _instructions = new List<(char opt, int dist)>();
         protected override void SetupTestData(int _)
         {
             _testData = @"F10
@@ -78,26 +78,21 @@ F11";
             return Math.Abs(x) + Math.Abs(y);
         }
 
-        private (int dx, int dy) RotateDir(int dir, int dx, int dy)
+        private static (int dx, int dy) RotateDir(int dir, int dx, int dy)
         {
             if (dir < 0)
             {
                 dir += 4;
             }
 
-            switch (dir)
+            return dir switch
             {
-                case 1:
-                    return (-dy, dx);
-                case 2:
-                    return (-dx, -dy);
-                case 3:
-                    return (dy, -dx);
-                case 0:
-                    return (dx, dy);
-            }
-
-            return (0, 0);
+                1 => (-dy, dx),
+                2 => (-dx, -dy),
+                3 => (dy, -dx),
+                0 => (dx, dy),
+                _ => (0, 0)
+            };
         }
 
         public override object GiveAnswer2()
