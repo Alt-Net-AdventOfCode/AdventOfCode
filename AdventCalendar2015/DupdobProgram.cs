@@ -7,7 +7,7 @@ namespace AdventCalendar2015
     {
         private static void Main(string[] args)
         {
-            new DupdobDay20().OutputAnswers();
+            new DupdobDay21().OutputAnswers();
         }
 
         private static void GiveAllAnswers()
@@ -40,6 +40,7 @@ namespace AdventCalendar2015
             day.SetData();
             Console.WriteLine("Day {0}: (1) = {1} , (2) = {2}", day.Day, day.GiveAnswer1(), day.GiveAnswer2());
             new DupdobDay19().OutputAnswers();
+            new DupdobDay20().OutputAnswers();
         }
     }
 }
