@@ -1,14 +1,25 @@
 using System;
 using System.Text.RegularExpressions;
+using AOCHelpers;
 
 namespace AdventCalendar2015
 {
-    public class DupdobDay6
+    public class DupdobDay6: DupdobDayWithTest
     {
-        public int TotalBrightness(string input = Input)
+        public override object GiveAnswer1()
+        {
+            return TurnedOnLightCount();
+        }
+
+        public override object GiveAnswer2()
+        {
+            return TotalBrightness();
+        }
+
+        public int TotalBrightness()
         {
             var lights = new int[1000,1000];
-            Analyze(input, lights, x => x+2, x => x+1, x => Math.Max(0, x-1));
+            Analyze(Input, lights, x => x+2, x => x+1, x => Math.Max(0, x-1));
             var result = 0;
             for (var xIndex = 0; xIndex < lights.GetLength(1); xIndex++)
             {
@@ -26,7 +37,7 @@ namespace AdventCalendar2015
         {
             foreach (var line in input.Split('\n'))
             {
-                var match = matcher.Match(line);
+                var match = Matcher.Match(line);
                 if (!match.Success)
                 {
                     throw new ApplicationException($"Line matching failed {line}");
@@ -59,10 +70,10 @@ namespace AdventCalendar2015
             }
         }
         
-        public int TurnedOnLightCount(string input = Input)
+        public int TurnedOnLightCount()
         {
             var lights = new bool[1000,1000];
-            Analyze(input, lights, b => !b, b => true, b => false);
+            Analyze(Input, lights, b => !b, b => true, b => false);
             var result = 0;
             for (var xIndex = 0; xIndex < lights.GetLength(1); xIndex++)
             {
@@ -78,8 +89,8 @@ namespace AdventCalendar2015
             return result;
         }
         
-        private static Regex matcher = new Regex("(turn off|turn on|toggle) (\\d+,\\d+) through (\\d+,\\d+)");
-        private const string Input =
+        private static readonly Regex Matcher = new("(turn off|turn on|toggle) (\\d+,\\d+) through (\\d+,\\d+)");
+        protected override string Input =>
 @"toggle 461,550 through 564,900
 turn off 370,39 through 425,839
 turn off 464,858 through 833,915
@@ -381,5 +392,17 @@ turn off 209,780 through 572,894
 turn on 766,112 through 792,868
 turn on 222,12 through 856,241";
 
+        protected override void ParseLine(int index, string line)
+        {
+        }
+
+        public override int Day => 6;
+        protected override void SetupTestData(int id)
+        {
+        }
+
+        protected override void SetupRunData()
+        {
+        }
     }
 }

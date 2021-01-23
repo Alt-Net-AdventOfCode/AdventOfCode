@@ -7,13 +7,21 @@ namespace AdventCalendar2015
     {
         private static void Main(string[] args)
         {
-            new DupdobDay24().OutputAnswers();
+            GiveAllAnswers();
         }
 
         private static void GiveAllAnswers()
         {
             var day1 = new DupdobDay1();
             Console.WriteLine("Day 1: (1) = {0} , (2)= {1}.", day1.ComputeDay1(), day1.ComputeDay2());
+            new DupdobDay2().OutputAnswers();
+            new DupdobDay3().OutputAnswers();
+            new DupdobDay4().OutputAnswers();
+            new DupdobDay5().OutputAnswers();
+            new DupdobDay6().OutputAnswers();
+            new DupdobDay7().OutputAnswers();
+            new DupdobDay8().OutputAnswers();
+            new DupdobDay9().OutputAnswers();
             var day10 = new DupdobDay10();
             day10.Parse();
             Console.WriteLine("Day 10: (1) = {0} , (2) = {1}", day10.RepeatedLookAndSay(40),
@@ -44,6 +52,8 @@ namespace AdventCalendar2015
             new DupdobDay21().OutputAnswers();
             new DupdobDay22().OutputAnswers();
             new DupdobDay23().OutputAnswers();
+            new DupdobDay24().OutputAnswers();
+            new DupdobDay25().OutputAnswers();
         }
     }
 }

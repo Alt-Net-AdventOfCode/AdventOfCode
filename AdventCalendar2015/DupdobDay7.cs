@@ -1,18 +1,28 @@
 using System;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
+using AOCHelpers;
 
 namespace AdventCalendar2015
 {
-    public class DupdobDay7
+    public class DupdobDay7: DupdobDayWithTest
     {
-        public int FindSignal_a(string input = Input)
+        public override object GiveAnswer1()
+        {
+            return FindSignal_a();
+        }
+
+        public override object GiveAnswer2()
+        {
+            return FindSignal_aWhenForcing();
+        }
+
+        public int FindSignal_a()
         {
             var state = new Dictionary<string, Gate>();
-            foreach (var line in input.Split('\n'))
+            foreach (var line in Input.Split('\n'))
             {
-                var matched = _definitionMatcher.Match(line);
+                var matched = DefinitionMatcher.Match(line);
                 if (!matched.Success)
                 {
                     throw new ApplicationException($"Failed to parse {line}.");
@@ -22,12 +32,12 @@ namespace AdventCalendar2015
             return state["a"].Evaluate(state);
         }
 
-        public int FindSignal_aWhenForcing(string input = Input)
+        public int FindSignal_aWhenForcing()
         {
             var state = new Dictionary<string, Gate>();
-            foreach (var line in input.Split('\n'))
+            foreach (var line in Input.Split('\n'))
             {
-                var matched = _definitionMatcher.Match(line);
+                var matched = DefinitionMatcher.Match(line);
                 if (!matched.Success)
                 {
                     throw new ApplicationException($"Failed to parse {line}.");
@@ -40,7 +50,7 @@ namespace AdventCalendar2015
 
         private class Gate
         {
-            private string _formula;
+            private readonly string _formula;
             private ushort? _value;
 
             public Gate(string formula)
@@ -69,7 +79,7 @@ namespace AdventCalendar2015
                     return _value.Value;
                 }
 
-                var matched = _matcher.Match(_formula);
+                var matched = Matcher.Match(_formula);
                 if (!matched.Success)
                 {
                     throw new ApplicationException($"Failed to parse {_formula}.");
@@ -106,9 +116,9 @@ namespace AdventCalendar2015
             }
         }
         
-        private static Regex _definitionMatcher = new Regex("^(.+) -> (\\w+)", RegexOptions.Compiled);
-        private static Regex _matcher = new Regex("^((NOT )?(\\w+))$|((\\w+) (RSHIFT|LSHIFT|OR|AND) (\\w+))$", RegexOptions.Compiled);
-        private const string Input =
+        private static readonly Regex DefinitionMatcher = new Regex("^(.+) -> (\\w+)", RegexOptions.Compiled);
+        private static readonly Regex Matcher = new Regex("^((NOT )?(\\w+))$|((\\w+) (RSHIFT|LSHIFT|OR|AND) (\\w+))$", RegexOptions.Compiled);
+        protected override string Input =>
 @"bn RSHIFT 2 -> bo
 lf RSHIFT 1 -> ly
 fo RSHIFT 3 -> fq
@@ -448,5 +458,18 @@ ab AND ad -> ae
 NOT ac -> ad
 1 AND ht -> hu
 NOT hn -> ho";
+
+        protected override void ParseLine(int index, string line)
+        {
+        }
+
+        public override int Day => 7;
+        protected override void SetupTestData(int id)
+        {
+        }
+
+        protected override void SetupRunData()
+        {
+        }
     }
 }

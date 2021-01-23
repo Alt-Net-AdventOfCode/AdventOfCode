@@ -1,38 +1,47 @@
 using System;
 using System.Text.RegularExpressions;
+using AOCHelpers;
 
 namespace AdventCalendar2015
 {
-    public class DupdobDay9
+    public class DupdobDay9: DupdobDayWithTest
     {
-        public void Parse(string input = Input)
+        protected override void ParseLine(int index, string line)
         {
-            foreach (var line in input.Split('\n'))
+            var matched = _matcher.Match(line);
+            if (!matched.Success)
             {
-                var matched = matcher.Match(line);
-                if (!matched.Success)
-                {
-                    throw new ApplicationException($"Failed to parse {line}.");
-                }
-
-                graph.AddEdge(matched.Groups[1].Value, matched.Groups[2].Value, int.Parse(matched.Groups[3].Value),
-                    true);
+                throw new ApplicationException($"Failed to parse {line}.");
             }
+
+            _graph.AddEdge(matched.Groups[1].Value, matched.Groups[2].Value, int.Parse(matched.Groups[3].Value),
+                true);
         }
 
-        public int FindShortestPath()
+        public override object GiveAnswer1()
         {
-            return graph.TravelingSalesman();
-        }        
-        
-        public int FindLongestPath()
-        {
-            return graph.LongestPath();
+            return FindShortestPath();
         }
 
-        private readonly Graph graph = new Graph();
-        private readonly Regex matcher = new Regex("(\\w+) to (\\w+) = (\\d+)", RegexOptions.Compiled);
-        private const string Input =
+        public override object GiveAnswer2()
+        {
+            return FindLongestPath();
+        }
+
+        private int FindShortestPath()
+        {
+            return _graph.TravelingSalesman();
+        }
+
+        private int FindLongestPath()
+        {
+            return _graph.LongestPath();
+        }
+
+        private readonly Graph _graph = new();
+        private readonly Regex _matcher = new("(\\w+) to (\\w+) = (\\d+)", RegexOptions.Compiled);
+        public override int Day => 9;
+        protected override string Input =>
 @"Faerun to Norrath = 129
 Faerun to Tristram = 58
 Faerun to AlphaCentauri = 13
@@ -61,5 +70,13 @@ Arbre to Straylight = 40
 Snowdin to Tambi = 15
 Snowdin to Straylight = 99
 Tambi to Straylight = 70";
+
+        protected override void SetupTestData(int id)
+        {
+        }
+
+        protected override void SetupRunData()
+        {
+        }
     }
 }

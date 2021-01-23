@@ -1,34 +1,45 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using AOCHelpers;
 
 namespace AdventCalendar2015
 {
-    public class DupdobDay5
+    public class DupdobDay5 : DupdobDayWithTest
     {
         private bool IsNice(string value)
         {
-            if (naughtyPatterns.Any(value.Contains))
+            if (_naughtyPatterns.Any(value.Contains))
             {
                 return false;
             }
 
-            if (!nicePatterns.Any(value.Contains))
+            if (!_nicePatterns.Any(value.Contains))
             {
                 return false;
             }
 
             return value.Count(x => Vowels.Contains(x)) >= 3;
         }
- 
-        public int CountNice(string input= Input)
+
+        public override object GiveAnswer1()
         {
-            return input.Split('\n').Count(IsNice);
+            return CountNice();
         }
-        
-        public int CountNicer(string input= Input)
+
+        public override object GiveAnswer2()
         {
-            return input.Split('\n').Count(IsNicer);
+            return CountNicer();
+        }
+
+        private int CountNice()
+        {
+            return _list.Count(IsNice);
+        }
+
+        private int CountNicer()
+        {
+            return _list.Count(IsNicer);
         }
 
         private bool IsNicer(string value)
@@ -49,7 +60,7 @@ namespace AdventCalendar2015
                         return false;
                     }
 
-                    if (value.IndexOf(value.Substring(i, 2), i+2)>=0)
+                    if (value.IndexOf(value.Substring(i, 2), i+2, StringComparison.Ordinal)>=0)
                     {
                         foundRepeatingBlock = true;
                     }
@@ -59,15 +70,16 @@ namespace AdventCalendar2015
         }
         
         private const string Vowels = "aeiou";
-        private List<string> naughtyPatterns = new List<string>{"ab", "cd", "pq", "xy"}; 
-        private List<string> nicePatterns = new List<string>
+        private readonly List<string> _naughtyPatterns = new List<string>{"ab", "cd", "pq", "xy"}; 
+        private readonly List<string> _nicePatterns = new()
         {
             "aa", "bb", "cc", "dd", "ee", "ff", "gg", "hh", "ii",
             "jj", "kk", "ll", "mm", "nn", "oo", "pp", "qq", "rr", "ss", "tt", "uu", "vv", "ww", "xx", "yy", "zz"
-        }; 
-        
-        private const string Input =
-@"zgsnvdmlfuplrubt
+        };
+
+        private List<string> _list = new();
+
+        protected override string Input => @"zgsnvdmlfuplrubt
 vlhagaovgqjmgvwq
 ffumlmqwfcsyqpss
 zztdcqzqddaazdjp
@@ -1068,5 +1080,18 @@ pxdfvcpvwaddrzwv
 phdqqxleqdjfgfbg
 cqfikbgxvjmnfncy";
 
+        protected override void ParseLine(int index, string line)
+        {
+            _list.Add(line);
+        }
+
+        public override int Day => 5;
+        protected override void SetupTestData(int id)
+        {
+        }
+
+        protected override void SetupRunData()
+        {
+        }
     }
 }

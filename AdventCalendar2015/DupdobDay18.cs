@@ -93,15 +93,13 @@ namespace AdventCalendar2015
                 nextMap[nextMap.GetUpperBound(0), 0] = true;
                 currentMap = nextMap;
             }
-
-            Dump(currentMap);
             return Score(currentMap, b => b);
         }
         private void Dump(bool[,] currentMap)
         {
-            for (int i = 0; i < currentMap.GetLength(1); i++)
+            for (var i = 0; i < currentMap.GetLength(1); i++)
             {
-                for (int j = 0; j < currentMap.GetLength(0); j++)
+                for (var j = 0; j < currentMap.GetLength(0); j++)
                 {
                     Console.Write( currentMap[j,i] ? '#':'.');
                 }
@@ -267,7 +265,7 @@ namespace AdventCalendar2015
 ###.#.#.##.######......#.#.#.#.#........#..#..###.#.#.#..#.........#..#....#.#..#..#..###.##......##
 ##.#########...#...###..#.###.....#.#.##.........###....#.####.#...###.#..##..#.###..#..##......#.##";
 
-        public override int Day => 19;
+        public override int Day => 18;
 
     }
 }

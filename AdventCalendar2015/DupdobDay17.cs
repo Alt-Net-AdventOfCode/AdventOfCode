@@ -45,7 +45,6 @@ namespace AdventCalendar2015
             return validCombinations;
         }
 
-        // 1014876 trop
         private void CountSolutions(IEnumerable<int> containers, in int targetVolume, ref int validCombinations, 
             IEnumerable<int> selected)
         {
@@ -64,7 +63,6 @@ namespace AdventCalendar2015
                 {
                     validCombinations++;
                     _combinations.Add(selected.Append(container).ToList());
-                    Console.WriteLine("Found :{0}.", string.Join(',', selected.Append(container)));
                     continue;
                 }
                 

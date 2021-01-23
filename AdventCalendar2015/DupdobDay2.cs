@@ -1,26 +1,31 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using AOCHelpers;
 
 namespace AdventCalendar2015
 {
-    public class DupdobDay2
+    public class DupdobDay2 : DupdobDayWithTest
     {
-        private List<(int l, int w, int h)> valueTuples;
+        private List<(int l, int w, int h)> _valueTuples = new List<(int l, int w, int h)>();
 
-        public IEnumerable<(int l, int w, int h)> ParseInput(string input = null)
+        protected override void ParseLine(int index, string line)
         {
-            valueTuples = new List<(int l, int w, int h)>();
-            foreach (var packageDimensions in (input??Input).Split('\n'))
-            {
-                var dimensions = packageDimensions.Split('x').Select(int.Parse).ToArray();
-                valueTuples.Add((dimensions[0], dimensions[1], dimensions[2]));
-            }
-
-            return valueTuples;
+            var dimensions = line.Split('x').Select(int.Parse).ToArray();
+            _valueTuples.Add((dimensions[0], dimensions[1], dimensions[2]));
         }
 
-        public int ComputeNeededPaper((int l, int w, int h) dimensions)
+        public override object GiveAnswer1()
+        {
+            return _valueTuples.Sum(ComputeNeededPaper);
+        }
+
+        public override object GiveAnswer2()
+        {
+            return _valueTuples.Sum(ComputeNeededRibbon);
+        }
+
+        private int ComputeNeededPaper((int l, int w, int h) dimensions)
         {
             var side0 = dimensions.l * dimensions.w;
             var side1 = dimensions.l * dimensions.h;
@@ -29,19 +34,18 @@ namespace AdventCalendar2015
             return (side0 + side1 + side2) * 2 + Math.Min(side2, Math.Min(side0, side1));
         }
 
-        public int ComputeNeededRibbon((int l, int w, int h) dimensions)
+        private int ComputeNeededRibbon((int l, int w, int h) dimensions)
         {
             var bow = dimensions.l * dimensions.w * dimensions.h;
             var wrap = (dimensions.l + dimensions.w + dimensions.h -
                         Math.Max(Math.Max(dimensions.l, dimensions.h), dimensions.w))*2;
             return bow + wrap;
-
         }
 
         public int Fold(Func<(int, int, int), int> func)
         {
             var res = 0;
-            foreach (var tuple in valueTuples)
+            foreach (var tuple in _valueTuples)
             {
                 res += func(tuple);
             }
@@ -49,8 +53,7 @@ namespace AdventCalendar2015
             return res;
         }
         
-        private const string Input = 
- @"3x11x24
+        protected override string Input => @"3x11x24
 13x5x19
 1x9x27
 24x8x21
@@ -1050,5 +1053,14 @@ namespace AdventCalendar2015
 3x12x15
 24x25x17
 14x6x11";
+
+        public override int Day => 2;
+        protected override void SetupTestData(int id)
+        {
+        }
+
+        protected override void SetupRunData()
+        {
+        }
     }
 }

@@ -1,17 +1,28 @@
 using System.Linq;
+using AOCHelpers;
 
 namespace AdventCalendar2015
 {
-    public class DupdobDay8
+    public class DupdobDay8 : DupdobDayWithTest
     {
-        public int SumOverhead(string input = Input)
+        public override object GiveAnswer1()
         {
-            return input.Split('\n').Sum(line => Overhead(line));
+            return SumOverhead();
         }
-        
-        public int SumEncodedOverhead(string input = Input)
+
+        public override object GiveAnswer2()
         {
-            return input.Split('\n').Sum(line => EncodedOverhead(line));
+            return SumEncodedOverhead();
+        }
+
+        private int SumOverhead()
+        {
+            return Input.Split('\n').Sum(line => Overhead(line));
+        }
+
+        private int SumEncodedOverhead()
+        {
+            return Input.Split('\n').Sum(line => EncodedOverhead(line));
         }
         
         private int Overhead(string line)
@@ -58,7 +69,8 @@ namespace AdventCalendar2015
 
             return charNb - line.Length+2;
         }
-        private const string Input = 
+        
+        protected override string Input =>
 @"""\xa8br\x8bjr\""""
 ""nq""
 ""zjrfcpbktjmrzgsz\xcaqsc\x03n\""huqab""
@@ -359,5 +371,18 @@ namespace AdventCalendar2015
 ""nywbv\\""
 ""twc\\ehfqxhgomgrgwpxyzmnkioj""
 ""qludrkkvljljd\\xvdeum\x4e""";
+
+        protected override void ParseLine(int index, string line)
+        {
+        }
+
+        public override int Day => 8;
+        protected override void SetupTestData(int id)
+        {
+        }
+
+        protected override void SetupRunData()
+        {
+        }
     }
 }

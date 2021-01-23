@@ -62,7 +62,6 @@ namespace AdventCalendar2015
                 if (maxHapinness < temp)
                 {
                     maxHapinness = temp;
-                    Console.WriteLine("{0} = {1}", maxHapinness, string.Join(',', list));
                 }
             }
 

@@ -77,6 +77,6 @@ namespace AdventCalendar2015
 
         private int _target;
         protected override string Input => "33100000";  
-        public override int Day => 21;
+        public override int Day => 20;
     }
 }
