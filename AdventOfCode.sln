@@ -10,6 +10,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdventCalendar2018", "Adven
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AOCHelpers", "AOCHelpers\AOCHelpers.csproj", "{A50D65CF-6FDA-4971-992B-739470375E6A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdventCalendar2016", "AdventCalendar2016\AdventCalendar2016.csproj", "{3A5D9D14-2C75-47B9-A753-6248AD4EE7CA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +38,9 @@ Global
 		{A50D65CF-6FDA-4971-992B-739470375E6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A50D65CF-6FDA-4971-992B-739470375E6A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A50D65CF-6FDA-4971-992B-739470375E6A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3A5D9D14-2C75-47B9-A753-6248AD4EE7CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A5D9D14-2C75-47B9-A753-6248AD4EE7CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A5D9D14-2C75-47B9-A753-6248AD4EE7CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A5D9D14-2C75-47B9-A753-6248AD4EE7CA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
