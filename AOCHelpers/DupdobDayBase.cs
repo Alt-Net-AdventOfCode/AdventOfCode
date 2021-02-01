@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 
 namespace AOCHelpers
@@ -54,6 +55,9 @@ namespace AOCHelpers
 
         protected abstract string Input { get; }
         public abstract int Day { get; }
-
+        public static DupdobDayBase BuildFromType(Type type)
+        {
+            return type.GetConstructor(Array.Empty<Type>()).Invoke(Array.Empty<object>()) as DupdobDayBase;
+        }
     }
 }
