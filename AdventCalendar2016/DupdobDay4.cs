@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using AOCHelpers;
 
@@ -8,18 +9,19 @@ namespace AdventCalendar2016
 {
     public class DupdobDay4 : DupdobDayWithTest
     {
-        private List<string> words = new();
+        private readonly List<string> _words = new();
+        private readonly List<string> _rooms = new();
 
         private Regex parser = new Regex("(.*)-(\\d+)\\[([a-z]*)\\]$", RegexOptions.Compiled);
         protected override void ParseLine(int index, string line)
         {
-            words.Add(line);
+            _words.Add(line);
         }
 
         public override object GiveAnswer1()
         {
             var result = 0;
-            foreach (var entry in words)
+            foreach (var entry in _words)
             {
                 var hits = new Dictionary<char, int>();
                 var match = parser.Match(entry);
@@ -57,10 +59,38 @@ namespace AdventCalendar2016
                 if (index == 5)
                 {
                     result += int.Parse(match.Groups[2].Value);
+                    _rooms.Add(entry);
                 }
             }
 
             return result;
+        }
+
+        public override object GiveAnswer2()
+        {
+            foreach (var line in _rooms)
+            {
+                var match = parser.Match(line);
+                var word = match.Groups[1].Value;
+                var id = int.Parse(match.Groups[2].Value);
+                var builder = new StringBuilder();
+                foreach (var letter in word)
+                {
+                    if (letter == '-')
+                    {
+                        builder.Append(' ');
+                        continue;
+                    }
+                    builder.Append((char)('a' + ((letter - 'a' + id) % 26)));
+                }
+
+                if (builder.ToString().Contains("northpole"))
+                {
+                    return id;
+                }
+            }
+
+            return 0;
         }
 
         protected override string Input => @"aczupnetwp-mfyyj-opalcexpye-977[peyac]
