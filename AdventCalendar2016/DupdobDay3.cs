@@ -47,7 +47,7 @@ namespace AdventCalendar2016
 
          return transposed.Count(IsTriangle);
         }
-
+  
         protected override void SetupRunData()
         {
          _triangles.Clear();
