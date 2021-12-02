@@ -13,7 +13,13 @@ namespace AOCHelpers
         protected virtual void Parse(string input)
         {
             var index=0;
-            foreach (var line in input.Split('\n'))
+            var lines = input.Split('\n');
+            // we discard the last line if it is empty (trailing newline)
+            if (lines[^1].Length == 0)
+            {
+                lines = lines[0..^1];
+            }
+            foreach (var line in lines)
             {
                 ParseLine(index++, line);
             }
