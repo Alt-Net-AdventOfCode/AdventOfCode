@@ -6,7 +6,16 @@ namespace AdventCalendar2016
 {
     internal static class DupdobProgram
     {
-        private static readonly Type[] Solvers = {typeof(DupdobDay5), typeof(DupdobDay4), typeof(DupdobDay3), typeof(DupdobDay2), typeof(DupdobDay1)};
+        private static readonly Type[] Solvers =
+        {
+            typeof(DupdobDay7), 
+            typeof(DupdobDay6), 
+            typeof(DupdobDay5), 
+            typeof(DupdobDay4), 
+            typeof(DupdobDay3), 
+            typeof(DupdobDay2), 
+            typeof(DupdobDay1)
+        };
         static void Main(string[] args)
         {
             var day = DupdobDayBase.BuildFromType(Solvers[0]);
