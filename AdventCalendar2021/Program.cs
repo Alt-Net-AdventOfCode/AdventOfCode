@@ -1,4 +1,4 @@
-﻿using AdventCalendar2021.Day_2;
+﻿using AdventCalendar2021.Day_3;
 
 namespace AdventCalendar2021
 {
@@ -6,7 +6,7 @@ namespace AdventCalendar2021
     {
         static void Main(string[] args)
         {
-            new DupdobDay2().OutputAnswers();
+            new DupdobDay3().OutputAnswers();
         }
     }
 }
