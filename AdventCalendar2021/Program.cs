@@ -6,7 +6,7 @@ namespace AdventCalendar2021
     {
         static void Main(string[] args)
         {
-            new DupdobDay3().OutputAnswers();
+            new DupdobDay4().OutputAnswers();
         }
     }
 }
