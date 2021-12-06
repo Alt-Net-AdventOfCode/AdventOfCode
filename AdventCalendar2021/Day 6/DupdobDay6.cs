@@ -1,0 +1,102 @@
+using System.Collections.Generic;
+using System.Linq;
+using System.Security;
+
+namespace AdventCalendar2021
+{
+    public class DupdobDay6: AdvancedDay
+    {
+        private List<long> _data = new();
+        public DupdobDay6() : base(6)
+        {
+        }
+
+        protected override void ParseLine(int index, string line)
+        {
+            _data = line.Split(',').Select(long.Parse).ToList();
+        }
+
+        public override object GiveAnswer1()
+        {
+            /*var current = _data;
+            for (var i = 0; i < 80; i++)
+            {
+                current = NextDay(current);
+            }
+
+            return current.Count;*/
+            var result = 0L;
+            foreach (var i in _data)
+            {
+                result += Children(i-9, 80);
+            }
+
+            return result;
+        }
+
+        public override object GiveAnswer2()
+        {
+            var result = 0L;
+            _cache.Clear();
+            foreach (var i in _data)
+            {
+                result += Children(i-9, 256);
+            }
+
+            return result;
+        }
+
+        private readonly Dictionary<long, long> _cache = new (256);
+        private long Children(long initial, long days)
+        {
+            if (initial > days)
+            {
+                return 1;
+            }
+
+            if (_cache.ContainsKey(initial))
+            {
+                return _cache[initial];
+            }
+            var children = 1L;
+            for (var i = initial+9; i < days; i += 7)
+            {
+                // we need to get descendants of our child 
+                children += Children(i, days);
+            }
+
+            _cache[initial] = children;
+            return children;
+        }
+
+        private List<int> NextDay(List<int> current)
+        {
+            var result = new List<int>(current.Count * 8 / 7);
+            foreach (var fish in current)
+            {
+                if (fish == 0)
+                {
+                    result.Add(6);
+                    result.Add(8);
+                }
+                else
+                {
+                    result.Add(fish-1);
+                }
+            }
+
+            return result;
+        }
+
+        protected override void SetupTestData(int id)
+        {
+            _testData = @"3,4,3,1,2";
+            _expectedResult1 = 5934L;
+        }
+
+        protected override void SetupRunData()
+        {
+            _data.Clear();
+        }
+    }
+}
