@@ -1,8 +1,7 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace AdventCalendar2021.Day_3
+namespace AdventCalendar2021
 {
     public class DupdobDay3 : AdvancedDay
     {
@@ -82,26 +81,18 @@ namespace AdventCalendar2021.Day_3
             }
 
 
-            var result = 0;
             IEnumerable<string> scanner = _data;
             var bit = 0;
             var current = scanner.Count();
             while (current > 1)
             {
-                if (scanner.Count(s => s[bit] == '1')*2 >= current)
-                {
-                    scanner = scanner.Where(s => s[bit] == '1').ToList();
-                }
-                else
-                {
-                    scanner = scanner.Where(s => s[bit] == '0').ToList();
-                }
+                scanner = scanner.Count(s => s[bit] == '1')*2 >= current ? scanner.Where(s => s[bit] == '1').ToList() : scanner.Where(s => s[bit] == '0').ToList();
 
                 bit++;
                 current = scanner.Count();
             }
 
-            result = Convert(scanner.First());
+            var result = Convert(scanner.First());
             bit = 0;
             scanner = _data;
             current = scanner.Count();

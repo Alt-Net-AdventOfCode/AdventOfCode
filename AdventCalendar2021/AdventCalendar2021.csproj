@@ -9,4 +9,10 @@
       <ProjectReference Include="..\AOCHelpers\AOCHelpers.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Remove="AdventCalendar2021.csproj.DotSettings" />
+      <None Remove="AocDay1-MyInput.txt" />
+      <None Remove="AocDay3-MyInput.txt" />
+    </ItemGroup>
+
 </Project>

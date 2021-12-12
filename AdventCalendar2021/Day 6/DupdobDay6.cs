@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Security;
 
 namespace AdventCalendar2021
 {
@@ -67,25 +66,6 @@ namespace AdventCalendar2021
 
             _cache[initial] = children;
             return children;
-        }
-
-        private List<int> NextDay(List<int> current)
-        {
-            var result = new List<int>(current.Count * 8 / 7);
-            foreach (var fish in current)
-            {
-                if (fish == 0)
-                {
-                    result.Add(6);
-                    result.Add(8);
-                }
-                else
-                {
-                    result.Add(fish-1);
-                }
-            }
-
-            return result;
         }
 
         protected override void SetupTestData(int id)

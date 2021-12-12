@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace AdventCalendar2021.Day_2
+namespace AdventCalendar2021
 {
     public class DupdobDay2 : AdvancedDay
     {

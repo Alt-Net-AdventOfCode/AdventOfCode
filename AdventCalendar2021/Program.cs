@@ -1,10 +1,10 @@
 ﻿namespace AdventCalendar2021
 {
-    class Program
+    static class Program
     {
-        static void Main(string[] args)
+        private static void Main()
         {
-            new DupdobDay9().OutputAnswers();
+            new DupdobDay13().OutputAnswers();
         }
     }
 }

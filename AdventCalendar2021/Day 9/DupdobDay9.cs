@@ -1,7 +1,5 @@
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Reflection.Emit;
 
 namespace AdventCalendar2021
 {
@@ -31,7 +29,6 @@ namespace AdventCalendar2021
 
         public override object GiveAnswer2()
         {
-            var score = 1;
             var basinsSizes = new List<int>();
             for (var y = 0; y < _data.Count; y++)
             {

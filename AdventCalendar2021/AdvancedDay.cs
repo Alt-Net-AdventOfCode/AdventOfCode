@@ -20,7 +20,7 @@ namespace AdventCalendar2021
             get
             {
                 // did we already got our data?
-                var input = GetAocInputFile("../../../", SessionId, Day);
+                var input = GetAocInputFile($"../../../Day{Day,2}/", SessionId, Day);
                 return input;
             }
         }
@@ -38,10 +38,15 @@ namespace AdventCalendar2021
         static string GetAocInputFile(string pathName, string sessionId, int day)
         {
             string input;
-            var fileName =  Path.Combine( pathName, $"AocDay{day}-MyInput.txt");
-            if (!File.Exists(fileName))
+            var fileName =  Path.Combine( pathName, $"AocDay{day,2}-MyInput.txt");
+            if (File.Exists(fileName))
             {
-                var uri = new Uri($"https://adventofcode.com/2021/day/{day}/input");
+                // get the data we already fetched
+                input = File.ReadAllText(fileName);
+            }
+            else
+            {
+                var uri = new Uri($"https://adventofcode.com/{Year}/day/{day}/input");
                 using var handler = new HttpClientHandler() { CookieContainer = new CookieContainer() };
                 using var client = new HttpClient(handler);
                 // add our identifier to the request
@@ -51,11 +56,6 @@ namespace AdventCalendar2021
                 input = client.GetStringAsync(uri).Result;
                 // save it for the next run
                 File.WriteAllText(fileName, input);
-            }
-            else
-            {
-                // get the data we already fetched
-                input = File.ReadAllText(fileName);
             }
 
             return input;

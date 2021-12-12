@@ -26,39 +26,30 @@ namespace AdventCalendar2016
                 var match = false;
                 var mustStop = false;
                 var inBrackets = false;
-                do
+                for (var i = 0; i < line.Length-3; i++)
                 {
-                    for (var i = start; i < end-3; i++)
+                    if (line[i] == '[')
                     {
-                        if (line[i] != line[i + 1] && line[i] == line[i+3] && line[i + 1] == line[i + 2])
+                        inBrackets = true;
+                        continue;
+                    }
+                    else if (line[i] == ']')
+                    {
+                        inBrackets = false;
+                        continue;
+                    }
+                    if (line[i] != line[i + 1] && line[i] == line[i+3] && line[i + 1] == line[i + 2])
+                    {
+                        // we have a match
+                        match = true;
+                        if (inBrackets)
                         {
-                            // we have a match
-                            match = inBrackets;
-                            mustStop = !inBrackets;
                             break;
                         }
                     }
+                }
 
-                    if (mustStop)
-                    {
-                        break;
-                    }
-
-                    start = end + 1;
-                    if (start > line.Length)
-                    {
-                        break;
-                    }
-                    end = line.IndexOf( inBrackets ? ']' : '[', start);
-                    inBrackets = !inBrackets;
-                    if (end == -1)
-                    {
-                        end = line.Length;
-                    }                    
-                    
-                } while (start < line.Length);
-
-                if (mustStop)
+                if (match && !inBrackets)
                 {
                     score++;
                 }

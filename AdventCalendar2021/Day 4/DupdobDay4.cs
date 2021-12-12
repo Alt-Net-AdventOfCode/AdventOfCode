@@ -95,20 +95,19 @@ namespace AdventCalendar2021
         
         private class Card
         {
-            private int[,] numbers = new int[5, 5];
-            private bool[,] draws = new bool[5, 5];
-            private int _loadedLine = 0;
+            private readonly int[,] _numbers = new int[5, 5];
+            private readonly bool[,] _draws = new bool[5, 5];
+            private int _loadedLine;
 
-            public bool AddLine(string line)
+            public void AddLine(string line)
             {
                 var entries = line.Split(' ').Where(s => !string.IsNullOrEmpty(s)).Select(int.Parse).ToList();
                 for (var i = 0; i < 5; i++)
                 {
-                    numbers[_loadedLine, i] = entries[i];
+                    _numbers[_loadedLine, i] = entries[i];
                 }
 
                 _loadedLine++;
-                return _loadedLine == 5;
             }
 
             public bool Draw(int drawnNumber)
@@ -117,9 +116,9 @@ namespace AdventCalendar2021
                 {
                     for (int y = 0; y < 5; y++)
                     {
-                        if (numbers[y, x] == drawnNumber)
+                        if (_numbers[y, x] == drawnNumber)
                         {
-                            draws[y, x] = true;
+                            _draws[y, x] = true;
                             return IsWinning();
                         }
                     }
@@ -135,7 +134,7 @@ namespace AdventCalendar2021
                     var fullCol = true;
                     for (var y = 0; y < 5; y++)
                     {
-                        if (draws[y, x]) continue;
+                        if (_draws[y, x]) continue;
                         fullCol = false;
                         break;
                     }
@@ -150,7 +149,7 @@ namespace AdventCalendar2021
                     var fullLine = true;
                     for (var x = 0; x < 5; x++)
                     {
-                        if (draws[y, x]) continue;
+                        if (_draws[y, x]) continue;
                         fullLine = false;
                         break;
                     }
@@ -171,9 +170,9 @@ namespace AdventCalendar2021
                 {
                     for (int y = 0; y < 5; y++)
                     {
-                        if (!draws[y, x])
+                        if (!_draws[y, x])
                         {
-                            current += numbers[y, x];
+                            current += _numbers[y, x];
                         }
                     }
                 }
