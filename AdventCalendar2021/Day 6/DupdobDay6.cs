@@ -17,13 +17,6 @@ namespace AdventCalendar2021
 
         public override object GiveAnswer1()
         {
-            /*var current = _data;
-            for (var i = 0; i < 80; i++)
-            {
-                current = NextDay(current);
-            }
-
-            return current.Count;*/
             var result = 0L;
             foreach (var i in _data)
             {
@@ -46,6 +39,7 @@ namespace AdventCalendar2021
         }
 
         private readonly Dictionary<long, long> _cache = new (256);
+        
         private long Children(long initial, long days)
         {
             if (initial > days)
