@@ -9,10 +9,15 @@ namespace AdventCalendar2021
     public abstract class AdvancedDay : DupdobDayWithTest
     {
         private const int Year = 2021;
-        private const string SessionId = "53616c7465645f5fb4c94bfcf4deb0c66bff4f49ffd026330b69d806269a4f31ebe0f5a60f696c11fe2e96a5f02a6fbb";
+        private readonly string _sessionId;
         protected AdvancedDay(int day)
         {
             Day = day;
+            _sessionId = Environment.GetEnvironmentVariable("AOC_SESSION");
+            if (string.IsNullOrEmpty(_sessionId))
+
+                throw new InvalidOperationException(
+                    "AOC_SESSION environment variable must contain an Advent Of Code session id.");
         }
 
         protected override string Input
@@ -20,7 +25,7 @@ namespace AdventCalendar2021
             get
             {
                 // did we already got our data?
-                var input = GetAocInputFile($"../../../Day{Day,2}/", SessionId, Day);
+                var input = GetAocInputFile($"../../../Day{Day,2}/", _sessionId, Day);
                 return input;
             }
         }
