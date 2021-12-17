@@ -94,9 +94,9 @@ namespace AdventCalendar2021
             return _data.Sum(DeduceOutput);
         }
 
-        protected override void SetupTestData(int id)
+        protected override void SetupTestData()
         {
-            _testData = @"be cfbegad cbdgef fgaecd cgeb fdcge agebfd fecdb fabcd edb |
+            TestData = @"be cfbegad cbdgef fgaecd cgeb fdcge agebfd fecdb fabcd edb |
 fdgacbe cefdb cefbgd gcbe
 edbfga begcd cbg gc gcadebf fbgde acbgfd abcde gfcbed gfec |
 fcgedb cgb dgebacf gc
@@ -116,11 +116,11 @@ egadfb cdbfeg cegd fecab cgb gbdefca cg fgcdab egfdb bfceg |
 gbdfcae bgc cg cgb
 gcafb gcf dcaebfg ecagb gf abcdeg gaef cafbge fdbac fegbdc |
 fgae cfgab fg bagce";
-            _expectedResult1 = 26;
-            _expectedResult2 = 61229;
+            ExpectedResult1 = 26;
+            ExpectedResult2 = 61229;
         }
 
-        protected override void SetupRunData()
+        protected override void CleanUp()
         {
             _data.Clear();
         }

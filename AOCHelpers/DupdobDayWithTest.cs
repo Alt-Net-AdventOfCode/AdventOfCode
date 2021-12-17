@@ -1,52 +1,70 @@
 using System;
+using System.Collections.Generic;
 
 namespace AOCHelpers
 {
     public abstract class DupdobDayWithTest: DupdobDayBase
     {
-        protected abstract void SetupTestData(int id);
-        protected abstract void SetupRunData();
+        protected virtual void SetupTestData()
+        {
+        }
+
+        protected abstract void CleanUp();
         
         public override void OutputAnswers()
         {
-            SetupTestData(1);
-            if (_expectedResult1 != null)
-            {
-                if (_testData == null)
-                {
-                    throw new InvalidOperationException("Define _testData.");
-                }
-
-                var firstData = _testData;
-                Parse(_testData);
-
-                var answer = GiveAnswer1();
-                if (!Compare(answer, _expectedResult1))
-                {
-                    throw new InvalidOperationException(_expectedResult1 == null ? "Define _expectedResult1." : $"Incorrect answer : {answer}, expected {_expectedResult1}.");
-                } 
-                SetupTestData(2);
-                if (_expectedResult2 != null)
-                {
-                    if (_testData != firstData)
-                    {
-                        Parse(_testData);
-                    }
-                    answer = GiveAnswer2();
-                    if (!Compare(answer, _expectedResult2))
-                    {
-                        throw new InvalidOperationException(_expectedResult1 == null
-                            ? "Define _expectedResult2."
-                            : $"Incorrect answer : {answer}, expected {_expectedResult2}.");
-                    }
-                }
-            }
+            SetupTestData();
+            if (!RunTests()) return;
             
-            SetupRunData();
             base.OutputAnswers();
         }
 
-        private bool Compare(object a, object b)
+        protected virtual IEnumerable<(string intput, object result)> GetTestData(bool secondQuestion)
+        {
+            if ((secondQuestion ? ExpectedResult2 : ExpectedResult1) == null)
+                yield break;
+            if (TestData == null)
+            {
+                throw new InvalidOperationException("Define _testData.");
+            }
+            yield return (TestData, secondQuestion ? ExpectedResult2 : ExpectedResult1);
+        }
+        
+        private bool RunTests()
+        {
+            foreach (var (data, expected) in GetTestData(false))
+            {
+                Parse(data);
+                var answer = GiveAnswer1();
+                if (Compare(answer, expected))
+                {
+                    Console.WriteLine($"Correct answer 1: {answer} (for {data}).");
+                    CleanUp();
+                    continue;
+                }
+                Console.WriteLine($"Incorrect answer 1: {answer}, expected {expected} (for {data}).");
+                return false;
+            }
+
+
+            foreach (var (data, expected) in GetTestData(true))
+            {
+                Parse(data);
+                var answer = GiveAnswer2();
+                if (Compare(answer, expected))
+                {
+                    Console.WriteLine($"Correct answer 2: {answer} (for {data}).");
+                    CleanUp();
+                    continue;
+                }
+                Console.WriteLine($"Incorrect answer 2: {answer}, expected {expected} (for {data}).");
+                return false;
+            }
+
+            return true;
+        }
+
+        private static bool Compare(object a, object b)
         {
             return a switch
             {
@@ -57,8 +75,8 @@ namespace AOCHelpers
             };
         }
 
-        protected string _testData;
-        protected object _expectedResult1;
-        protected object _expectedResult2;
+        protected string TestData;
+        protected object ExpectedResult1;
+        protected object ExpectedResult2;
     }
 }

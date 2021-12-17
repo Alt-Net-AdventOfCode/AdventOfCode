@@ -62,16 +62,16 @@ namespace AdventCalendar2016
         {
             return base.GiveAnswer2();
         }
-        protected override void SetupTestData(int id)
+        protected override void SetupTestData()
         {
-            _testData = @"abba[mnop]qrst
+            TestData = @"abba[mnop]qrst
 abcd[bddb]xyyx
 aaaa[qwer]tyui
 ioxxoj[asdfgh]zxcvbn";
-            _expectedResult1 = 2;
+            ExpectedResult1 = 2;
         }
 
-        protected override void SetupRunData()
+        protected override void CleanUp()
         {
             _lines.Clear();
         }

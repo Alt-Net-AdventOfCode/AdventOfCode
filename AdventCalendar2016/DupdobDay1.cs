@@ -59,13 +59,13 @@ namespace AdventCalendar2016
             return Math.Abs(pos.x) + Math.Abs(pos.y);        
         }
 
-        protected override void SetupTestData(int id)
+        protected override void SetupTestData()
         {
-            _testData = "R5, L5, R5, R3";
-            _expectedResult1 = 12;
+            TestData = "R5, L5, R5, R3";
+            ExpectedResult1 = 12;
         }
 
-        protected override void SetupRunData()
+        protected override void CleanUp()
         {
             _instructions.Clear();
         }

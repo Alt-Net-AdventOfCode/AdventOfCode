@@ -51,14 +51,14 @@ namespace AdventCalendar2020.Day25
 19072108";
 
         public override int Day => 25;
-        protected override void SetupTestData(int id)
+        protected override void SetupTestData()
         {
-            _testData = @"5764801
+            TestData = @"5764801
 17807724";
-            _expectedResult1 = 14897079L;
+            ExpectedResult1 = 14897079L;
         }
 
-        protected override void SetupRunData()
+        protected override void CleanUp()
         {
             
         }

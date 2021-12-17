@@ -61,9 +61,9 @@ namespace AdventCalendar2015
             return sets;
         }
 
-        protected override void SetupTestData(int id)
+        protected override void SetupTestData()
         {
-            _testData = @"1
+            TestData = @"1
 2
 3
 4
@@ -73,10 +73,10 @@ namespace AdventCalendar2015
 9
 10
 11";
-            _expectedResult1 = 99L;
+            ExpectedResult1 = 99L;
         }
 
-        protected override void SetupRunData()
+        protected override void CleanUp()
         {
             _packages.Clear();
         }

@@ -92,11 +92,11 @@ namespace AdventCalendar2021
             return FindPathsAlt("start", new HashSet<string>(), string.Empty);
         }
 
-        protected override void SetupTestData(int id)
+        protected override void SetupTestData()
         {
-            _expectedResult1 = 19;
-            _expectedResult2 = 103;
-            _testData = @"dc-end
+            ExpectedResult1 = 19;
+            ExpectedResult2 = 103;
+            TestData = @"dc-end
 HN-start
 start-kj
 dc-start
@@ -108,7 +108,7 @@ kj-HN
 kj-dc";
         }
 
-        protected override void SetupRunData()
+        protected override void CleanUp()
         {
             _data.Clear();
             _smallCaves.Clear();

@@ -397,11 +397,11 @@ turn on 222,12 through 856,241";
         }
 
         public override int Day => 6;
-        protected override void SetupTestData(int id)
+        protected override void SetupTestData()
         {
         }
 
-        protected override void SetupRunData()
+        protected override void CleanUp()
         {
         }
     }

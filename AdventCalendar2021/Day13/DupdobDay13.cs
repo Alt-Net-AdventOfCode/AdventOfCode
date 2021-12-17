@@ -86,11 +86,11 @@ namespace AdventCalendar2021
             return null;
         }
 
-        protected override void SetupTestData(int id)
+        protected override void SetupTestData()
         {
-            _expectedResult1 = 17;
+            ExpectedResult1 = 17;
             // no expected result for step 2 as it requires visual inspection
-            _testData = @"6,10
+            TestData = @"6,10
 0,14
 9,10
 0,3
@@ -113,7 +113,7 @@ fold along y=7
 fold along x=5";
         }
 
-        protected override void SetupRunData()
+        protected override void CleanUp()
         {
             _readingDots = true;
             _dots.Clear();

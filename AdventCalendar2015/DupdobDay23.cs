@@ -11,16 +11,16 @@ namespace AdventCalendar2015
             _program.Add(line);
         }
 
-        protected override void SetupTestData(int id)
+        protected override void SetupTestData()
         {
-            _testData = @"inc b
+            TestData = @"inc b
 jio b, +2
 tpl b
 inc b";
-            _expectedResult1 = 2;
+            ExpectedResult1 = 2;
         }
 
-        protected override void SetupRunData()
+        protected override void CleanUp()
         {
             _program.Clear();
         }

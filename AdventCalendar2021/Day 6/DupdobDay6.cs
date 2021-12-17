@@ -62,13 +62,13 @@ namespace AdventCalendar2021
             return children;
         }
 
-        protected override void SetupTestData(int id)
+        protected override void SetupTestData()
         {
-            _testData = @"3,4,3,1,2";
-            _expectedResult1 = 5934L;
+            TestData = @"3,4,3,1,2";
+            ExpectedResult1 = 5934L;
         }
 
-        protected override void SetupRunData()
+        protected override void CleanUp()
         {
             _data.Clear();
         }

@@ -9,18 +9,18 @@ namespace AdventCalendar2020.Day12
     {
         private readonly (int dx, int dy)[] _directions = new (int dx, int dy)[]{(1, 0), (0,1), (-1, 0), (0,-1)};
         private readonly List<(char opt, int dist)> _instructions = new List<(char opt, int dist)>();
-        protected override void SetupTestData(int _)
+        protected override void SetupTestData()
         {
-            _testData = @"F10
+            TestData = @"F10
 N3
 F7
 R90
 F11";
-            _expectedResult1 = 25;
-            _expectedResult2 = 286;
+            ExpectedResult1 = 25;
+            ExpectedResult2 = 286;
         }
 
-        protected override void SetupRunData()
+        protected override void CleanUp()
         {
             _instructions.Clear();
         }

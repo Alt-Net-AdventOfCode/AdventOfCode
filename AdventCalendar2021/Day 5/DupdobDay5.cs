@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 
 namespace AdventCalendar2021
 {
     public class DupdobDay5 : AdvancedDay
     {
-        private List<Line> _lines = new();
+        private readonly List<Line> _lines = new();
         public DupdobDay5() : base(5)
         {
         }
@@ -68,10 +67,6 @@ namespace AdventCalendar2021
         public override object GiveAnswer2()
         {
             Dictionary<(int x, int y), int> map = new Dictionary<(int x, int y), int>();
-            var minX = int.MaxValue;
-            var minY = int.MaxValue;
-            var maxX = int.MinValue;
-            var maxY = int.MinValue;
             foreach (var line in _lines)
             {
                 var startX = line.X1;
@@ -103,9 +98,9 @@ namespace AdventCalendar2021
             return map.Values.Count(t => t>1);
         }
 
-        protected override void SetupTestData(int id)
+        protected override void SetupTestData()
         {
-            _testData = @"0,9 -> 5,9
+            TestData = @"0,9 -> 5,9
 8,0 -> 0,8
 9,4 -> 3,4
 2,2 -> 2,1
@@ -115,11 +110,11 @@ namespace AdventCalendar2021
 3,4 -> 1,4
 0,0 -> 8,8
 5,5 -> 8,2";
-            _expectedResult1 = 5;
-            _expectedResult2 = 12;
+            ExpectedResult1 = 5;
+            ExpectedResult2 = 12;
         }
 
-        protected override void SetupRunData()
+        protected override void CleanUp()
         {
             _lines.Clear();
         }

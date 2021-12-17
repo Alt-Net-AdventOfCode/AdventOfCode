@@ -122,11 +122,11 @@ namespace AdventCalendar2015
             return state.PlayerHitPoints <= 0 ? int.MaxValue : PlayGame(true, currentMinSpent, state, nextEffects);
         }
         
-        protected override void SetupTestData(int id)
+        protected override void SetupTestData()
         {
         }
 
-        protected override void SetupRunData()
+        protected override void CleanUp()
         {
         }
 

@@ -1055,11 +1055,11 @@ namespace AdventCalendar2015
 14x6x11";
 
         public override int Day => 2;
-        protected override void SetupTestData(int id)
+        protected override void SetupTestData()
         {
         }
 
-        protected override void SetupRunData()
+        protected override void CleanUp()
         {
         }
     }

@@ -147,14 +147,14 @@ namespace AdventCalendar2020.Day22
             return score;
         }
 
-        protected override void SetupRunData()
+        protected override void CleanUp()
         {
         }
 
 
-        protected override void SetupTestData(int id)
+        protected override void SetupTestData()
         {
-            _testData = @"Player 1:
+            TestData = @"Player 1:
 9
 2
 6
@@ -167,7 +167,7 @@ Player 2:
 4
 7
 10";
-            _expectedResult1 = 306L;
+            ExpectedResult1 = 306L;
            // _expectedResult2 = 291L;
         }
 

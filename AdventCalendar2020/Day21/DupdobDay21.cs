@@ -57,17 +57,17 @@ namespace AdventCalendar2020.Day21
             return string.Join(',',list);
         }
 
-        protected override void SetupTestData(int id)
+        protected override void SetupTestData()
         {
-            _testData = @"mxmxvkd kfcds sqjhc nhms (contains dairy, fish)
+            TestData = @"mxmxvkd kfcds sqjhc nhms (contains dairy, fish)
 trh fvjkl sbzzf mxmxvkd (contains dairy)
 sqjhc fvjkl (contains soy)
 sqjhc mxmxvkd sbzzf (contains fish)";
-            _expectedResult1 = 5L;
-            _expectedResult2 = "mxmxvkd,sqjhc,fvjkl";
+            ExpectedResult1 = 5L;
+            ExpectedResult2 = "mxmxvkd,sqjhc,fvjkl";
         }
 
-        protected override void SetupRunData()
+        protected override void CleanUp()
         {
             _food.Clear();
         }

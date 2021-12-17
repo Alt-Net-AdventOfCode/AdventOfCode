@@ -58,14 +58,14 @@ namespace AdventCalendar2016
 
         protected override string Input => "cxdnnyjw";
         public override int Day => 5;
-        protected override void SetupTestData(int id)
+        protected override void SetupTestData()
         {
-            _testData = "abc";
-            _expectedResult1 = "18f47a30";
-            _expectedResult2 = "05ace8e3";
+            TestData = "abc";
+            ExpectedResult1 = "18f47a30";
+            ExpectedResult2 = "05ace8e3";
         }
 
-        protected override void SetupRunData()
+        protected override void CleanUp()
         {
         }
     }

@@ -7,9 +7,9 @@ namespace AdventCalendar2020.Day11
 {
     public class DupdobDay11: DupdobDayWithTest
     {
-        protected override void SetupTestData(int _)
+        protected override void SetupTestData()
         {
-            _testData =@"L.LL.LL.LL
+            TestData =@"L.LL.LL.LL
 LLLLLLL.LL
 L.L.L..L..
 LLLL.LL.LL
@@ -19,11 +19,11 @@ L.LLLLL.LL
 LLLLLLLLLL
 L.LLLLLL.L
 L.LLLLL.LL";
-            _expectedResult1 = 37;
-            _expectedResult2 = 26;
+            ExpectedResult1 = 37;
+            ExpectedResult2 = 26;
         }
 
-        protected override void SetupRunData()
+        protected override void CleanUp()
         {
             // clean any pending data
             _map.Clear();

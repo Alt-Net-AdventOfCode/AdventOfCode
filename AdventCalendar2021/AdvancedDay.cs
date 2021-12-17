@@ -40,7 +40,7 @@ namespace AdventCalendar2021
         /// <remarks>The first call for a given will get the data from AoC site and cache it locally. If the file
         /// exist, returns the file content.
         /// </remarks>
-        static string GetAocInputFile(string pathName, string sessionId, int day)
+        private static string GetAocInputFile(string pathName, string sessionId, int day)
         {
             string input;
             var fileName =  Path.Combine( pathName, $"AocDay{day,2}-MyInput.txt");
@@ -52,7 +52,7 @@ namespace AdventCalendar2021
             else
             {
                 var uri = new Uri($"https://adventofcode.com/{Year}/day/{day}/input");
-                using var handler = new HttpClientHandler() { CookieContainer = new CookieContainer() };
+                using var handler = new HttpClientHandler { CookieContainer = new CookieContainer() };
                 using var client = new HttpClient(handler);
                 // add our identifier to the request
                 handler.CookieContainer.Add(new Cookie("session",

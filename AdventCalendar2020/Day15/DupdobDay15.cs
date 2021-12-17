@@ -9,13 +9,13 @@ namespace AdventCalendar2020.Day15
         private IDictionary<int, int> _map = new Dictionary<int, int>();
         private int _lastNumber;
 
-        protected override void SetupTestData(int id)
+        protected override void SetupTestData()
         {
-            _testData = @"0,3,6";
+            TestData = @"0,3,6";
             _nbTurns = 10;
-            _expectedResult1 = 0;
+            ExpectedResult1 = 0;
         }
-        protected override void SetupRunData()
+        protected override void CleanUp()
         {
             _nbTurns = 2020;
             _map.Clear();

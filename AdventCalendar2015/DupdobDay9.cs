@@ -71,11 +71,11 @@ Snowdin to Tambi = 15
 Snowdin to Straylight = 99
 Tambi to Straylight = 70";
 
-        protected override void SetupTestData(int id)
+        protected override void SetupTestData()
         {
         }
 
-        protected override void SetupRunData()
+        protected override void CleanUp()
         {
         }
     }

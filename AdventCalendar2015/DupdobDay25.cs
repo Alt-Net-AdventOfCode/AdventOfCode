@@ -33,13 +33,13 @@ namespace AdventCalendar2015
         private int _col;
         protected override string Input => @"To continue, please consult the code grid in the manual.  Enter the code at row 2947, column 3029.";
         public override int Day => 25;
-        protected override void SetupTestData(int id)
+        protected override void SetupTestData()
         {
-            _testData = @"To continue, please consult the code grid in the manual.  Enter the code at row 2, column 1.";
-            _expectedResult1 = 31916031;
+            TestData = @"To continue, please consult the code grid in the manual.  Enter the code at row 2, column 1.";
+            ExpectedResult1 = 31916031;
         }
 
-        protected override void SetupRunData()
+        protected override void CleanUp()
         {
         }
     }

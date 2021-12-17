@@ -118,15 +118,15 @@ namespace AdventCalendar2020.Day23
             
         }
 
-        protected override void SetupTestData(int id)
+        protected override void SetupTestData()
         {
-            _testData = @"389125467";
+            TestData = @"389125467";
             _nbRuns = 10;
-            _expectedResult1 = "92658374";
-            _expectedResult2 = 149245887792L;
+            ExpectedResult1 = "92658374";
+            ExpectedResult2 = 149245887792L;
         }
 
-        protected override void SetupRunData()
+        protected override void CleanUp()
         {
             _nbRuns = 100;
         }

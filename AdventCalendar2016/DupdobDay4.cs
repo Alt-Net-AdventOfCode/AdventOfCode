@@ -1069,12 +1069,12 @@ tpspahyf-nyhkl-kfl-aljouvsvnf-981[flahk]
 bxaxipgn-vgpst-qphzti-rdcipxcbtci-635[ipctx]";
 
         public override int Day => 4;
-        protected override void SetupTestData(int id)
+        protected override void SetupTestData()
         {
          
         }
 
-        protected override void SetupRunData()
+        protected override void CleanUp()
         {
 
         }

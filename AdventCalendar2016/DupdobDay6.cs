@@ -625,9 +625,9 @@ kmcookjd
 lkvcisxx
 xsluniob";
         public override int Day => 6;
-        protected override void SetupTestData(int id)
+        protected override void SetupTestData()
         {
-            _testData = @"eedadn
+            TestData = @"eedadn
 drvtee
 eandsr
 raavrd
@@ -643,11 +643,11 @@ vntsnd
 vrdear
 dvrsen
 enarar";
-            _expectedResult1 = "easter";
-            _expectedResult2 = "advent";
+            ExpectedResult1 = "easter";
+            ExpectedResult2 = "advent";
         }
 
-        protected override void SetupRunData()
+        protected override void CleanUp()
         {
             _lines.Clear();
         }

@@ -278,11 +278,11 @@ namespace AdventCalendar2020.Day20
         {
         }
 
-        protected override void SetupTestData(int id)
+        protected override void SetupTestData()
         {
-            _expectedResult1 = 20899048083289L;
-            _expectedResult2 = 273;
-            _testData = @"Tile 2311:
+            ExpectedResult1 = 20899048083289L;
+            ExpectedResult2 = 273;
+            TestData = @"Tile 2311:
 ..##.#..#.
 ##..#.....
 #...##..#.
@@ -392,7 +392,7 @@ Tile 3079:
 ";
         }
 
-        protected override void SetupRunData()
+        protected override void CleanUp()
         {
             _tiles.Clear();
         }

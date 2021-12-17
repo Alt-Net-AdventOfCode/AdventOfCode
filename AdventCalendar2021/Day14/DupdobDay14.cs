@@ -127,11 +127,11 @@ namespace AdventCalendar2021
             return occurrences[^1] - occurrences[0];
         }
 
-        protected override void SetupTestData(int id)
+        protected override void SetupTestData()
         {
-            _expectedResult1 = 1588;
-            _expectedResult2 = 2188189693529L;
-            _testData = @"NNCB
+            ExpectedResult1 = 1588;
+            ExpectedResult2 = 2188189693529L;
+            TestData = @"NNCB
 
 CH -> B
 HH -> N
@@ -151,7 +151,7 @@ CC -> N
 CN -> C";
         }
 
-        protected override void SetupRunData()
+        protected override void CleanUp()
         {
             _data.Clear();
         }

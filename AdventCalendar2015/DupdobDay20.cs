@@ -65,13 +65,13 @@ namespace AdventCalendar2015
             return -1;
         }
 
-        protected override void SetupTestData(int id)
+        protected override void SetupTestData()
         {
-            _testData = "70";
-            _expectedResult1 = 4;
+            TestData = "70";
+            ExpectedResult1 = 4;
         }
 
-        protected override void SetupRunData()
+        protected override void CleanUp()
         {
         }
 

@@ -15,16 +15,16 @@ namespace AdventCalendar2020.Day18
             _expressions.Add(line);
         }
 
-        protected override void SetupTestData(int id)
+        protected override void SetupTestData()
         {
-            _testData = @"((2+4*9)*(6+9*8+6)+6)+2+4*2
+            TestData = @"((2+4*9)*(6+9*8+6)+6)+2+4*2
 2 * 3 + (4 * 5)
 5 + (8 * 3 + 9 + 3 * 4 * 3)";
-            _expectedResult1 = 14095L;
-            _expectedResult2 = 23340+1491L;
+            ExpectedResult1 = 14095L;
+            ExpectedResult2 = 23340+1491L;
         }
 
-        protected override void SetupRunData()
+        protected override void CleanUp()
         {
             _expressions.Clear();
         }

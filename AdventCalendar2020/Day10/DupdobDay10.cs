@@ -7,9 +7,9 @@ namespace AdventCalendar2020.Day10
     public class DupdobDay10: DupdobDayWithTest
     {
         
-        protected override void SetupTestData(int _)
+        protected override void SetupTestData()
         {
-            _testData = @"28
+            TestData = @"28
 33
 18
 42
@@ -40,11 +40,11 @@ namespace AdventCalendar2020.Day10
 34
 10
 3";
-            _expectedResult1 = 220;
-            _expectedResult2 = 19208L;
+            ExpectedResult1 = 220;
+            ExpectedResult2 = 19208L;
         }
 
-        protected override void SetupRunData()
+        protected override void CleanUp()
         {
            _adapters.Clear();
         }

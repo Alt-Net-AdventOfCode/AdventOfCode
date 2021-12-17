@@ -13,7 +13,7 @@ namespace AdventCalendar2016
          _triangles.Add( fields.Select(int.Parse).ToList());
         }
 
-        protected override void SetupTestData(int id)
+        protected override void SetupTestData()
         {
         }
 
@@ -48,7 +48,7 @@ namespace AdventCalendar2016
          return transposed.Count(IsTriangle);
         }
   
-        protected override void SetupRunData()
+        protected override void CleanUp()
         {
          _triangles.Clear();
         }

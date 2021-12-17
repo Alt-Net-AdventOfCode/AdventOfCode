@@ -41,11 +41,11 @@ namespace AdventCalendar2015
 
         protected override string Input => "bgvyzdsv";
         public override int Day => 4;
-        protected override void SetupTestData(int id)
+        protected override void SetupTestData()
         {
         }
 
-        protected override void SetupRunData()
+        protected override void CleanUp()
         {
         }
     }

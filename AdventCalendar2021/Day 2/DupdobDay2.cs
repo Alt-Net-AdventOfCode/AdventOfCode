@@ -66,19 +66,19 @@ namespace AdventCalendar2021
             return f * d;
         }
 
-        protected override void SetupTestData(int id)
+        protected override void SetupTestData()
         {
-            _testData = @"forward 5
+            TestData = @"forward 5
 down 5
 forward 8
 up 3
 down 8
 forward 2";
-            _expectedResult1 = 150;
-            _expectedResult2 = 900;
+            ExpectedResult1 = 150;
+            ExpectedResult2 = 900;
         }
 
-        protected override void SetupRunData()
+        protected override void CleanUp()
         {
             _commands.Clear();
         }

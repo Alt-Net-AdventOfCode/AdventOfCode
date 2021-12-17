@@ -125,9 +125,9 @@ namespace AdventCalendar2020.Day24
         private Dictionary<(int y, int x), bool> _initialMap;
         private int _nbDays;
 
-        protected override void SetupTestData(int id)
+        protected override void SetupTestData()
         {
-            _testData = @"sesenwnenenewseeswwswswwnenewsewsw
+            TestData = @"sesenwnenenewseeswwswswwnenewsewsw
 neeenesenwnwwswnenewnwwsewnenwseswesw
 seswneswswsenwwnwse
 nwnwneseeswswnenewneswwnewseswneseene
@@ -147,12 +147,12 @@ nenewswnwewswnenesenwnesewesw
 eneswnwswnwsenenwnwnwwseeswneewsenese
 neswnwewnwnwseenwseesewsenwsweewe
 wseweeenwnesenwwwswnew";
-            _expectedResult1 = 10;
-            _expectedResult2 = 12;
+            ExpectedResult1 = 10;
+            ExpectedResult2 = 12;
             _nbDays = 2;
         }
 
-        protected override void SetupRunData()
+        protected override void CleanUp()
         {
             _moves.Clear();
             _nbDays = 100;

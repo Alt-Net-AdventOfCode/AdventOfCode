@@ -46,9 +46,9 @@ namespace AdventCalendar2020.Day19
             return GiveAnswer1();
         }
 
-        protected override void SetupTestData(int id)
+        protected override void SetupTestData()
         {
-            _testData = @"42: 9 14 | 10 1
+            TestData = @"42: 9 14 | 10 1
 9: 14 27 | 1 26
 10: 23 14 | 28 1
 1: ""a""
@@ -95,11 +95,11 @@ aaaabbaaaabbaaa
 aaaabbaabbaaaaaaabbbabbbaaabbaabaaa
 babaaabbbaaabaababbaabababaaab
 aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba";
-            _expectedResult1 = 3;
-            _expectedResult2 = 12;
+            ExpectedResult1 = 3;
+            ExpectedResult2 = 12;
         }
 
-        protected override void SetupRunData()
+        protected override void CleanUp()
         {
             _codes.Clear();
         }

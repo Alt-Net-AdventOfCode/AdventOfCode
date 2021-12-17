@@ -121,9 +121,9 @@ namespace AdventCalendar2020.Day16
             return mappedIndex.Keys.Where(field => field.StartsWith("departure")).Aggregate(1L, (current, field) => current * _yourTicket[mappedIndex[field]]);
         }
 
-        protected override void SetupTestData(int id)
+        protected override void SetupTestData()
         {
-            _testData = @"class: 1-3 or 5-7
+            TestData = @"class: 1-3 or 5-7
 row: 6-11 or 33-44
 seat: 13-40 or 45-50
 
@@ -136,10 +136,10 @@ nearby tickets:
 55,2,20
 38,6,12
 ";
-            _expectedResult1 = 71L;
+            ExpectedResult1 = 71L;
         }
 
-        protected override void SetupRunData()
+        protected override void CleanUp()
         {
             _tickets.Clear();
             _phase = 0;

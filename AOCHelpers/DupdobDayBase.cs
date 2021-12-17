@@ -12,13 +12,13 @@ namespace AOCHelpers
 
         protected virtual void Parse(string input)
         {
-            var index=0;
             var lines = input.Split('\n');
-            // we discard the last line if it is empty (trailing newline)
+            // we discard the last line if it is empty (trailing newline), but we keep any internal newlines
             if (lines[^1].Length == 0)
             {
                 lines = lines[0..^1];
             }
+            var index=0;
             foreach (var line in lines)
             {
                 ParseLine(index++, line);
@@ -62,7 +62,7 @@ namespace AOCHelpers
         public abstract int Day { get; }
         public static DupdobDayBase BuildFromType(Type type)
         {
-            return type.GetConstructor(Array.Empty<Type>()).Invoke(Array.Empty<object>()) as DupdobDayBase;
+            return type.GetConstructor(Array.Empty<Type>())?.Invoke(Array.Empty<object>()) as DupdobDayBase;
         }
     }
 }

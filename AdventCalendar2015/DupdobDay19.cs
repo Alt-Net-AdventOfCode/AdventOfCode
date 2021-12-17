@@ -9,32 +9,29 @@ namespace AdventCalendar2015
 {
     public class DupdobDay19: DupdobDayWithTest
     {
-        protected override void SetupTestData(int phase)
+        protected override IEnumerable<(string intput, object result)> GetTestData(bool secondQuestion)
         {
-            if (phase == 1)
+            if (secondQuestion)
             {
-                _testData = @"H => HO
+                yield return (@"H => HO
 H => OH
 O => HH
 
-HOHOHO";
-                _expectedResult1 = 7;
+HOHOHO", 7);
             }
             else
             {
-                _testData = @"e => H
+                yield return (@"e => H
 e => O
 H => HO
 H => OH
 O => HH
 
-HOH";
-                _replacements.Clear();
-                _expectedResult2 = 3;
+HOH", 3);
             }
         }
-    
-        protected override void SetupRunData()
+        
+        protected override void CleanUp()
         {
             _replacements.Clear();
         }

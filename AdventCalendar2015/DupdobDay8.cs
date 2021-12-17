@@ -377,11 +377,11 @@ namespace AdventCalendar2015
         }
 
         public override int Day => 8;
-        protected override void SetupTestData(int id)
+        protected override void SetupTestData()
         {
         }
 
-        protected override void SetupRunData()
+        protected override void CleanUp()
         {
         }
     }

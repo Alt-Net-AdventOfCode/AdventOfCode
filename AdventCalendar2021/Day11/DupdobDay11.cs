@@ -114,9 +114,9 @@ namespace AdventCalendar2021
             return t+1;
         }
 
-        protected override void SetupTestData(int id)
+        protected override void SetupTestData()
         {
-            _testData = @"5483143223
+            TestData = @"5483143223
 2745854711
 5264556173
 6141336146
@@ -126,11 +126,11 @@ namespace AdventCalendar2021
 6882881134
 4846848554
 5283751526";
-            _expectedResult1 = 1656L;
-            _expectedResult2 = 195;
+            ExpectedResult1 = 1656L;
+            ExpectedResult2 = 195;
         }
 
-        protected override void SetupRunData()
+        protected override void CleanUp()
         {
             _data.Clear();
         }

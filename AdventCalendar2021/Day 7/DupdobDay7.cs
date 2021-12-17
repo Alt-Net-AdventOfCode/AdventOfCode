@@ -48,14 +48,14 @@ namespace AdventCalendar2021
             _data.AddRange(line.Split(',').Select(int.Parse));
         }
 
-        protected override void SetupTestData(int id)
+        protected override void SetupTestData()
         {
-            _testData = @"16,1,2,0,4,2,7,1,2,14";
-            _expectedResult1 = 37;
-            _expectedResult2 = 168;
+            TestData = @"16,1,2,0,4,2,7,1,2,14";
+            ExpectedResult1 = 37;
+            ExpectedResult2 = 168;
         }
 
-        protected override void SetupRunData()
+        protected override void CleanUp()
         {
             _data.Clear();
         }

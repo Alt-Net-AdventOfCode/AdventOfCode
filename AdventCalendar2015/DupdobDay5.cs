@@ -1086,11 +1086,11 @@ cqfikbgxvjmnfncy";
         }
 
         public override int Day => 5;
-        protected override void SetupTestData(int id)
+        protected override void SetupTestData()
         {
         }
 
-        protected override void SetupRunData()
+        protected override void CleanUp()
         {
         }
     }

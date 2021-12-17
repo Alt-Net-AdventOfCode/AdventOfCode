@@ -79,15 +79,15 @@ namespace AdventCalendar2020.Day13
             return busTime;
         }
 
-        protected override void SetupTestData(int _)
+        protected override void SetupTestData()
         {
-            _testData = @"939
+            TestData = @"939
             7,13,x,x,59,x,31,19";
-            _expectedResult1 = 295L;
-            _expectedResult2 = 1068781L;
+            ExpectedResult1 = 295L;
+            ExpectedResult2 = 1068781L;
         }
 
-        protected override void SetupRunData()
+        protected override void CleanUp()
         {
             _buses.Clear();
             _busesId.Clear();

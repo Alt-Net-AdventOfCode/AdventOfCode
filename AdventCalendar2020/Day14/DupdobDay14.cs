@@ -8,15 +8,15 @@ namespace AdventCalendar2020.Day14
 {
     public class DupdobDay14 : DupdobDayWithTest
     {
-        protected override void SetupTestData(int _)
+        protected override void SetupTestData()
         {
-            _testData = @"mask = XXXXXXXXXXXXXXXXXXXXXXXXXXXXX1XXXX0X
+            TestData = @"mask = XXXXXXXXXXXXXXXXXXXXXXXXXXXXX1XXXX0X
 mem[8] = 11
 mem[7] = 101
 mem[8] = 0";
-            _expectedResult1 = 165L;
+            ExpectedResult1 = 165L;
         }
-        protected override void SetupRunData()
+        protected override void CleanUp()
         {
             _memory.Clear();
             _instructions.Clear();

@@ -115,9 +115,9 @@ namespace AdventCalendar2021
             return result;        
         }
 
-        protected override void SetupTestData(int id)
+        protected override void SetupTestData()
         {
-            _testData = @"00100
+            TestData = @"00100
 11110
 10110
 10111
@@ -129,11 +129,11 @@ namespace AdventCalendar2021
 11001
 00010
 01010";
-            _expectedResult1 = 198;
-            _expectedResult2 = 230;
+            ExpectedResult1 = 198;
+            ExpectedResult2 = 230;
         }
 
-        protected override void SetupRunData()
+        protected override void CleanUp()
         {
             _data.Clear();
         }

@@ -86,18 +86,18 @@ namespace AdventCalendar2021
             _data.Add(heights);
         }
 
-        protected override void SetupTestData(int id)
+        protected override void SetupTestData()
         {
-            _testData = @"2199943210
+            TestData = @"2199943210
 3987894921
 9856789892
 8767896789
 9899965678";
-            _expectedResult1 = 15;
-            _expectedResult2 = 1134;
+            ExpectedResult1 = 15;
+            ExpectedResult2 = 1134;
         }
 
-        protected override void SetupRunData()
+        protected override void CleanUp()
         {
             _data.Clear();
         }

@@ -91,9 +91,9 @@ namespace AdventCalendar2021
             _data.Add(line);
         }
 
-        protected override void SetupTestData(int id)
+        protected override void SetupTestData()
         {
-            _testData = @"[({(<(())[]>[[{[]{<()<>>
+            TestData = @"[({(<(())[]>[[{[]{<()<>>
 [(()[<>])]({[<{<<[]>>(
 {([(<{}[<>[]}>{[]{[(<()>
 (((({<>}<{<{<>}{[]{[]{}
@@ -103,11 +103,11 @@ namespace AdventCalendar2021
 [<(<(<(<{}))><([]([]()
 <{([([[(<>()){}]>(<<{{
 <{([{{}}[<[[[<>{}]]]>[]]";
-            _expectedResult1 = 26397;
-            _expectedResult2 = 288957L;
+            ExpectedResult1 = 26397;
+            ExpectedResult2 = 288957L;
         }
 
-        protected override void SetupRunData()
+        protected override void CleanUp()
         {
             _data.Clear();
         }

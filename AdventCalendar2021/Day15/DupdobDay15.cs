@@ -174,16 +174,16 @@ namespace AdventCalendar2021
             return distToStart[(localMap[0].Count - 1, localMap.Count - 1)];
         }
 
-        protected override void SetupRunData()
+        protected override void CleanUp()
         {
             _map.Clear();
         }
 
-        protected override void SetupTestData(int id)
+        protected override void SetupTestData()
         {
-            _expectedResult1 = 40;
-            _expectedResult2 = 315;
-            _testData = @"1163751742
+            ExpectedResult1 = 40;
+            ExpectedResult2 = 315;
+            TestData = @"1163751742
 1381373672
 2136511328
 3694931569

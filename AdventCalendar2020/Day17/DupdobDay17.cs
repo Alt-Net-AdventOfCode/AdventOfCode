@@ -195,17 +195,17 @@ namespace AdventCalendar2020.Day17
             return map.Count;
         }
 
-        protected override void SetupTestData(int id)
+        protected override void SetupTestData()
         {
-            _testData = @".#.
+            TestData = @".#.
 ..#
 ###";
-            _expectedResult1 = 112;
-            _expectedResult2 = 848;
+            ExpectedResult1 = 112;
+            ExpectedResult2 = 848;
             _nbTurns = 6;
         }
 
-        protected override void SetupRunData()
+        protected override void CleanUp()
         {
             _activeCells.Clear();
         }
