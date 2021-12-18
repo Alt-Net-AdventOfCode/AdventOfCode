@@ -19,20 +19,30 @@ namespace AOCHelpers
             base.OutputAnswers();
         }
 
-        protected virtual IEnumerable<(string intput, object result)> GetTestData(bool secondQuestion)
+        protected virtual IEnumerable<(string intput, object result)> GetTestData1()
         {
-            if ((secondQuestion ? ExpectedResult2 : ExpectedResult1) == null)
+            if (ExpectedResult1 == null)
                 yield break;
             if (TestData == null)
             {
                 throw new InvalidOperationException("Define _testData.");
             }
-            yield return (TestData, secondQuestion ? ExpectedResult2 : ExpectedResult1);
+            yield return (TestData, ExpectedResult1);
+        }
+        protected virtual IEnumerable<(string intput, object result)> GetTestData2()
+        {
+            if (ExpectedResult2 == null)
+                yield break;
+            if (TestData == null)
+            {
+                throw new InvalidOperationException("Define _testData.");
+            }
+            yield return (TestData, ExpectedResult2);
         }
         
         private bool RunTests()
         {
-            foreach (var (data, expected) in GetTestData(false))
+            foreach (var (data, expected) in GetTestData1())
             {
                 Parse(data);
                 var answer = GiveAnswer1();
@@ -46,8 +56,7 @@ namespace AOCHelpers
                 return false;
             }
 
-
-            foreach (var (data, expected) in GetTestData(true))
+            foreach (var (data, expected) in GetTestData2())
             {
                 Parse(data);
                 var answer = GiveAnswer2();

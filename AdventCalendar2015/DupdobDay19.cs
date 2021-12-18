@@ -1,34 +1,29 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Metadata.Ecma335;
 using AOCHelpers;
 
 namespace AdventCalendar2015
 {
     public class DupdobDay19: DupdobDayWithTest
     {
-        protected override IEnumerable<(string intput, object result)> GetTestData(bool secondQuestion)
+        protected override IEnumerable<(string intput, object result)> GetTestData1()
         {
-            if (secondQuestion)
-            {
-                yield return (@"H => HO
-H => OH
-O => HH
-
-HOHOHO", 7);
-            }
-            else
-            {
-                yield return (@"e => H
+            yield return (@"e => H
 e => O
 H => HO
 H => OH
 O => HH
 
 HOH", 3);
-            }
+        }
+        protected override IEnumerable<(string intput, object result)> GetTestData2()
+        {
+            yield return (@"H => HO
+H => OH
+O => HH
+
+HOHOHO", 7);
         }
         
         protected override void CleanUp()

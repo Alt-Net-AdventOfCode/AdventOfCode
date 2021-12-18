@@ -31,9 +31,14 @@ namespace AdventCalendar2021
             _maxY = int.Parse(match.Groups[4].Value);
         }
 
-        protected override IEnumerable<(string intput, object result)> GetTestData(bool secondQuestion)
+        protected override IEnumerable<(string intput, object result)> GetTestData1()
         {
-            yield return ("target area: x=20..30, y=-10..-5", secondQuestion ? 112 : 45);
+            yield return ("target area: x=20..30, y=-10..-5", 45);
+        }
+
+        protected override IEnumerable<(string intput, object result)> GetTestData2()
+        {
+            yield return ("target area: x=20..30, y=-10..-5", 112);
         }
 
         public override object GiveAnswer1()

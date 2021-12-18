@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text.RegularExpressions;
 
 namespace AOCHelpers
 {
@@ -42,20 +41,6 @@ namespace AOCHelpers
         public virtual object GiveAnswer2()
         {
             return "undef";
-        }
-        
-        protected static bool Extract(Regex regex, string line, out string val)
-        {
-            var match = regex.Match(line);
-            if (!match.Success)
-            {
-                Console.WriteLine("Failed to parse line {0}.", line);
-                val = null;
-                return false;
-            }
-
-            val = match.Groups[1].Value;
-            return true;
         }
 
         protected abstract string Input { get; }

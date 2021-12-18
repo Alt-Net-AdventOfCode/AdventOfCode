@@ -163,26 +163,24 @@ namespace AdventCalendar2021
             _data = null;
         }
 
-        protected override IEnumerable<(string intput, object result)> GetTestData(bool secondQuestion)
+        protected override IEnumerable<(string intput, object result)> GetTestData1()
         {
-            if (secondQuestion)
-            {
-                yield return ("C200B40A82", 3L);
-                yield return ("04005AC33890", 54L);
-                yield return ("880086C3E88112", 7L);
-                yield return ("CE00C43D881120", 9L);
-                yield return ("D8005AC2A8F0", 1L);
-                yield return ("F600BC2D8F", 0L);
-                yield return ("9C005AC2F8F0", 0L);
-                yield return ("9C0141080250320F1802104A08", 1L);
-            }
-            else
-            {
-                yield return ("8A004A801A8002F478", 16L);
-                yield return ("620080001611562C8802118E34", 12L);
-                yield return ("C0015000016115A2E0802F182340", 23L);
-                yield return ("A0016C880162017C3686B18A3D4780", 31L);
-            }
+            yield return ("8A004A801A8002F478", 16L);
+            yield return ("620080001611562C8802118E34", 12L);
+            yield return ("C0015000016115A2E0802F182340", 23L);
+            yield return ("A0016C880162017C3686B18A3D4780", 31L);
+        }
+
+        protected override IEnumerable<(string intput, object result)> GetTestData2()
+        {
+            yield return ("C200B40A82", 3L);
+            yield return ("04005AC33890", 54L);
+            yield return ("880086C3E88112", 7L);
+            yield return ("CE00C43D881120", 9L);
+            yield return ("D8005AC2A8F0", 1L);
+            yield return ("F600BC2D8F", 0L);
+            yield return ("9C005AC2F8F0", 0L);
+            yield return ("9C0141080250320F1802104A08", 1L);
         }
     }
 }
