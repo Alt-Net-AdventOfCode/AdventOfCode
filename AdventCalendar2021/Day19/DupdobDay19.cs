@@ -1,145 +1,18 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security;
 using System.Text.RegularExpressions;
 
 namespace AdventCalendar2021
 {
     public class DupdobDay19 : AdvancedDay
     {
-        private class Scanner
+        private readonly Regex _header = new("--- scanner (\\d*) ---");
+
+        private readonly List<Scanner> _scanners = new();
+
+        public DupdobDay19() : base(19)
         {
-            public readonly List<int[]> Beacons = new();
-            private long[][] _distances;
-
-            private int[,] _rotation;
-            private int[] _translation;
-            
-            public void ComputeDistances()
-            {
-                _distances = new long[Beacons.Count][];
-                for (var i = 0; i < _distances.Length; i++)
-                {
-                    _distances[i] = new long[_distances.Length];
-                }
-                for (var i = 0; i < Beacons.Count; i++)
-                {
-                    _distances[i][i] = 0;
-                    for (var j = i + 1; j < Beacons.Count; j++)
-                    {
-                        var dist = Vector(Beacons[i], Beacons[j]);
-                        var distance = dist[0]*dist[0] + dist[1]*dist[1] + dist[2]*dist[2];
-                        _distances[i][j] = distance;
-                        _distances[j][i] = distance;
-                    }
-                }
-            }
-
-            public List<(int,int)> FindMatchingBeacons(Scanner other)
-            {
-                var matchingPairs = new List<(int a, int b)>();
-                for (var i = 0; i < Beacons.Count; i++)
-                {
-                    for (var j = 0; j < other.Beacons.Count; j++)
-                    {
-                        if (_distances[i].Intersect(other._distances[j]).Count() < 12) continue;
-                        matchingPairs.Add((i,j));
-                        break;
-                    } 
-                }
-
-                return matchingPairs;
-            }
-
-            public (int[,] rotation, int[] translation) ExtractTransformation(Scanner other, IReadOnlyList<(int a, int b)> matchingPairs)
-            {
-                // identify how the scanners are relatively positioned
-                // we use couple of stars
-                var matrix = new int[3, 3];
-                for (var x = 0; x < 2; x++)
-                {
-                    for (var y = 0; y < 2; y++)
-                    {
-                        matrix[x, y] = 0;
-                    }
-                }
-
-                var found = false;
-                for (var i = 0; i < matchingPairs.Count; i++)
-                {
-                    for (var j = i + 1; j < matchingPairs.Count; j++)
-                    {
-                        var v = Vector(Beacons[matchingPairs[i].a], Beacons[matchingPairs[j].a]);
-                        if (Math.Abs(v[0]) != Math.Abs(v[1])
-                            && Math.Abs(v[0]) != Math.Abs(v[1])
-                            && Math.Abs(v[1]) != Math.Abs(v[2]))
-                        {
-                            var w = Vector(other.Beacons[matchingPairs[i].b], other.Beacons[matchingPairs[j].b]);
-                            if (Math.Abs(v[0]) == Math.Abs(w[0]))
-                            {
-                                matrix[0, 0] = v[0] / w[0];
-                                if (Math.Abs(v[1]) == Math.Abs(w[1]))
-                                {
-                                    matrix[1, 1] = v[1] / w[1];
-                                    matrix[2, 2] = v[2] / w[2];
-                                }
-                                else
-                                {
-                                    matrix[2, 1] = v[1] / w[2];
-                                    matrix[1, 2] = v[2] / w[1];
-                                }
-                            }
-                            else if (Math.Abs(v[0]) == Math.Abs(w[1]))
-                            {
-                                matrix[1, 0] = v[0] / w[1];
-                                if (Math.Abs(v[1]) == Math.Abs(w[0]))
-                                {
-                                    matrix[0, 1] = v[1] / w[0];
-                                    matrix[2, 2] = v[2] / w[2];
-                                }
-                                else
-                                {
-                                    matrix[2, 1] = v[1] / w[2];
-                                    matrix[1, 2] = v[2] / w[1];
-                                }
-                            }
-                            else
-                            {
-                                matrix[2, 0] = v[0] / w[2];
-                                if (Math.Abs(v[1]) == Math.Abs(w[1]))
-                                {
-                                    matrix[1, 1] = v[1] / w[1];
-                                    matrix[0, 2] = v[2] / w[0];
-                                }
-                                else
-                                {
-                                    matrix[0, 1] = v[1] / w[0];
-                                    matrix[1, 2] = v[2] / w[1];
-                                }
-                            }
-
-                            found = true;
-                        }
-
-                        if (found)
-                        {
-                            break;
-                        }
-                    }
-
-                    if (found)
-                    {
-                        break;
-                    }
-                }
-
-                // we need to find the needed translation
-                var firstBeacon = Beacons[matchingPairs[0].a];
-                var otherFirstBeacon = Apply(matrix, other.Beacons[matchingPairs[0].b]);
-                var vector1 = Vector(otherFirstBeacon, firstBeacon);
-                return (matrix, vector1);
-            }
         }
 
         private static int[] Vector(IReadOnlyList<int> a, IReadOnlyList<int> b)
@@ -188,13 +61,6 @@ namespace AdventCalendar2021
                 }
             }
             return result;
-        }
-
-        private readonly List<Scanner> _scanners = new();
-
-        private readonly Regex _header = new("--- scanner (\\d*) ---");
-        public DupdobDay19() : base(19)
-        {
         }
 
         protected override void ParseLine(int index, string line)
@@ -401,9 +267,8 @@ namespace AdventCalendar2021
             for (var i = 0; i < _scanners.Count; i++)
             {
                 var (_, rotation, translation) = transformations[i];
-                foreach (var beacon in _scanners[i].Beacons)
+                foreach (var translated in _scanners[i].Beacons.Select(beacon => Translate(Apply(rotation, beacon), translation)))
                 {
-                    var translated = Translate(Apply(rotation, beacon), translation);
                     beacons.Add((translated[0], translated[1], translated[2]));
                 }
             }
@@ -418,6 +283,138 @@ namespace AdventCalendar2021
 
         protected override void CleanUp()
         {
+        }
+
+        private class Scanner
+        {
+            public readonly List<int[]> Beacons = new();
+            private long[][] _distances;
+
+            public void ComputeDistances()
+            {
+                _distances = new long[Beacons.Count][];
+                for (var i = 0; i < _distances.Length; i++)
+                {
+                    _distances[i] = new long[_distances.Length];
+                }
+                for (var i = 0; i < Beacons.Count; i++)
+                {
+                    _distances[i][i] = 0;
+                    for (var j = i + 1; j < Beacons.Count; j++)
+                    {
+                        var dist = Vector(Beacons[i], Beacons[j]);
+                        var distance = dist[0]*dist[0] + dist[1]*dist[1] + dist[2]*dist[2];
+                        _distances[i][j] = distance;
+                        _distances[j][i] = distance;
+                    }
+                }
+            }
+
+            public List<(int,int)> FindMatchingBeacons(Scanner other)
+            {
+                var matchingPairs = new List<(int a, int b)>();
+                for (var i = 0; i < Beacons.Count; i++)
+                {
+                    for (var j = 0; j < other.Beacons.Count; j++)
+                    {
+                        if (_distances[i].Intersect(other._distances[j]).Count() < 12) continue;
+                        matchingPairs.Add((i,j));
+                        break;
+                    } 
+                }
+
+                return matchingPairs;
+            }
+
+            public (int[,] rotation, int[] translation) ExtractTransformation(Scanner other, IReadOnlyList<(int a, int b)> matchingPairs)
+            {
+                // identify how the scanners are relatively positioned
+                // we use couple of stars
+                var matrix = new int[3, 3];
+                for (var x = 0; x < 2; x++)
+                {
+                    for (var y = 0; y < 2; y++)
+                    {
+                        matrix[x, y] = 0;
+                    }
+                }
+
+                var found = false;
+                for (var i = 0; i < matchingPairs.Count; i++)
+                {
+                    for (var j = i + 1; j < matchingPairs.Count; j++)
+                    {
+                        var v = Vector(Beacons[matchingPairs[i].a], Beacons[matchingPairs[j].a]);
+                        if (Math.Abs(v[0]) != Math.Abs(v[1])
+                            && Math.Abs(v[0]) != Math.Abs(v[1])
+                            && Math.Abs(v[1]) != Math.Abs(v[2]))
+                        {
+                            var w = Vector(other.Beacons[matchingPairs[i].b], other.Beacons[matchingPairs[j].b]);
+                            if (Math.Abs(v[0]) == Math.Abs(w[0]))
+                            {
+                                matrix[0, 0] = v[0] / w[0];
+                                if (Math.Abs(v[1]) == Math.Abs(w[1]))
+                                {
+                                    matrix[1, 1] = v[1] / w[1];
+                                    matrix[2, 2] = v[2] / w[2];
+                                }
+                                else
+                                {
+                                    matrix[2, 1] = v[1] / w[2];
+                                    matrix[1, 2] = v[2] / w[1];
+                                }
+                            }
+                            else if (Math.Abs(v[0]) == Math.Abs(w[1]))
+                            {
+                                matrix[1, 0] = v[0] / w[1];
+                                if (Math.Abs(v[1]) == Math.Abs(w[0]))
+                                {
+                                    matrix[0, 1] = v[1] / w[0];
+                                    matrix[2, 2] = v[2] / w[2];
+                                }
+                                else
+                                {
+                                    matrix[2, 1] = v[1] / w[2];
+                                    matrix[1, 2] = v[2] / w[1];
+                                }
+                            }
+                            else
+                            {
+                                matrix[2, 0] = v[0] / w[2];
+                                if (Math.Abs(v[1]) == Math.Abs(w[1]))
+                                {
+                                    matrix[1, 1] = v[1] / w[1];
+                                    matrix[0, 2] = v[2] / w[0];
+                                }
+                                else
+                                {
+                                    matrix[0, 1] = v[1] / w[0];
+                                    matrix[1, 2] = v[2] / w[1];
+                                }
+                            }
+
+                            found = true;
+                        }
+
+                        if (found)
+                        {
+                            break;
+                        }
+                    }
+
+                    if (found)
+                    {
+                        break;
+                    }
+                }
+
+                // we need to find the needed translation
+                var firstBeacon = Beacons[matchingPairs[0].a];
+                var otherFirstBeacon = Apply(matrix, other.Beacons[matchingPairs[0].b]);
+                var vector1 = Vector(otherFirstBeacon, firstBeacon);
+                
+                return (matrix, vector1);
+            }
         }
     }
 }
