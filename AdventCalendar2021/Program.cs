@@ -4,7 +4,7 @@
     {
         private static void Main()
         {
-            new DupdobDay22().OutputAnswers();
+            new DupdobDay25().OutputAnswers();
         }
     }
 }

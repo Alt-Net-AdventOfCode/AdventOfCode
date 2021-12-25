@@ -1,8 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 
 namespace AdventCalendar2021
@@ -52,7 +49,7 @@ Player 2 starting position: 8", 444356092776315L);
             do
             {
                 currentPlayer = (currentPlayer + 1) % 2;
-                var position = ((positions[currentPlayer] + (dice + 1) * 3) - 1) % 10 + 1;
+                var position = Move(positions[currentPlayer], (dice+1)*3);// ((positions[currentPlayer] + (dice + 1) * 3) - 1) % 10 + 1;
                 positions[currentPlayer] = position;
                 dice += 3;
                 scores[currentPlayer] += positions[currentPlayer];
@@ -98,7 +95,7 @@ Player 2 starting position: 8", 444356092776315L);
 
         private static int Move(int pos, int step)
         {
-            return (pos + step - 1) % 9 + 1;
+            return (pos + step - 1) % 10 + 1;
         }
     }
 }

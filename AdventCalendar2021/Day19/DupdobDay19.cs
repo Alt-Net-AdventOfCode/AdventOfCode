@@ -326,6 +326,8 @@ namespace AdventCalendar2021
                 return matchingPairs;
             }
 
+            // returns the rotation matrix and the translation vector to transform other's beacons into this referential
+            // to translate, one must firs rotate the beacon then translate it (adding the translation vector).
             public (int[,] rotation, int[] translation) ExtractTransformation(Scanner other, IReadOnlyList<(int a, int b)> matchingPairs)
             {
                 // identify how the scanners are relatively positioned
@@ -411,8 +413,12 @@ namespace AdventCalendar2021
                 // we need to find the needed translation
                 var firstBeacon = Beacons[matchingPairs[0].a];
                 var otherFirstBeacon = Apply(matrix, other.Beacons[matchingPairs[0].b]);
-                var vector1 = Vector(otherFirstBeacon, firstBeacon);
+                var vector1 = Vector(firstBeacon, otherFirstBeacon);
                 
+                // test
+                otherFirstBeacon = other.Beacons[matchingPairs[0].b];
+                otherFirstBeacon = Apply(matrix, otherFirstBeacon);
+                otherFirstBeacon = Translate(otherFirstBeacon, vector1);
                 return (matrix, vector1);
             }
         }
