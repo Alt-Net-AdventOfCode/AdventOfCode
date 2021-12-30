@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security;
 using System.Xml.Schema;
 
 namespace AdventCalendar2021
@@ -32,7 +33,7 @@ namespace AdventCalendar2021
                 return result;
             }
             
-            private int Energy => Kind switch { 'A' => 1, 'B' => 10, 'C' => 100, 'D' => 1000 };
+            private int Energy => Kind switch { 'A' => 1, 'B' => 10, 'C' => 100, 'D' => 1000, _=>0 };
         }
 
         private readonly List<AmphiPod> _amphiPods = new(8);
@@ -89,9 +90,9 @@ namespace AdventCalendar2021
                     var energy = list.Sum(p => p.TotalEnergy);  
                     if (energy>minimalEnergy)
                         continue;
+                    PrintGame(list);
                     if (IsAWin(list))
                     {
-                        PrintGame(list);
                         minimalEnergy = Math.Min(energy, minimalEnergy);
                     }
                     else
@@ -101,17 +102,37 @@ namespace AdventCalendar2021
                 }
             }
 
+            if (_printCount > 0)
+            {
+                Console.WriteLine("---No more moves--");
+            }
             return minimalEnergy;
         }
 
+        private int _printCount = 100;
         private void PrintGame(IReadOnlyCollection<AmphiPod> pods)
         {
-            Console.Clear();
+            if (_printCount == 0)
+            {
+                return;
+            }
+
+            _printCount--;
+            var map = new[] { "#############".ToArray(), 
+                "#...........#".ToArray(), 
+                "###.#.#.#.###".ToArray(), 
+                "  #.#.#.#.#".ToArray(), 
+                "  #########".ToArray()};
             foreach (var amphiPod in pods)
             {
-                Console.SetCursorPosition(amphiPod.X, amphiPod.Y);
-                Console.Write(amphiPod.Kind);
+                map[amphiPod.Y][amphiPod.X] = amphiPod.Kind;
             }
+
+            foreach (var line in map)
+            {
+                Console.WriteLine(line);
+            }
+            Console.WriteLine();
         }
         
         private bool IsAWin(IEnumerable<AmphiPod> allPods)

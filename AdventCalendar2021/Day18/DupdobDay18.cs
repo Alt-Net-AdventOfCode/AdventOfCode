@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Xml.Schema;
 
 namespace AdventCalendar2021
 {
@@ -138,7 +136,7 @@ namespace AdventCalendar2021
             public static NailNumber Parse(CharEnumerator enumerator)
             {
                 NailNumber result = null;
-                if (!enumerator.MoveNext()) return result;
+                if (!enumerator.MoveNext()) return null;
                 switch (enumerator.Current)
                 {
                     case '[':
@@ -259,7 +257,6 @@ namespace AdventCalendar2021
         public override object GiveAnswer2()
         {
             var result = 0L;
-            (int i, int j) max = (0, 0);
             for (var i = 0; i < _data.Count; i++)
             {
                 for (var j = 0; j < _data.Count; j++)
@@ -274,7 +271,6 @@ namespace AdventCalendar2021
                     if (nextScore > result)
                     {
                         result = nextScore;
-                        max = (i, j);
                     }
                 }
             }

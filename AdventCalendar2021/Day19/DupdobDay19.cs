@@ -10,6 +10,7 @@ namespace AdventCalendar2021
         private readonly Regex _header = new("--- scanner (\\d*) ---");
 
         private readonly List<Scanner> _scanners = new();
+        private Dictionary<int, (int[,] rotation, int[] translation)> _transforms;
 
         public DupdobDay19() : base(19)
         {
@@ -53,11 +54,13 @@ namespace AdventCalendar2021
         {
             var result = new int[3,3];
             for(var k = 0; k <3; k++)
-            for (var i = 0; i < 3; i++)
             {
-                for (var j = 0; j < 3; j++)
+                for (var i = 0; i < 3; i++)
                 {
-                    result[i,k] += matrixA[i, j] * matrixB[j,k];
+                    for (var j = 0; j < 3; j++)
+                    {
+                        result[k, i] += matrixA[k, j] * matrixB[j, i];
+                    }
                 }
             }
             return result;
@@ -220,7 +223,7 @@ namespace AdventCalendar2021
 
         protected override IEnumerable<(string intput, object result)> GetTestData2()
         {
-            return base.GetTestData2();
+            yield return (GetTestData1().First().intput, 3621);
         }
 
         public override object GiveAnswer1()
@@ -229,44 +232,37 @@ namespace AdventCalendar2021
             {
                 scanner.ComputeDistances();
             }
-            // we need find marching pairs of scanners
-            Dictionary<int, (int referenceScanner, int[,] rotation, int[] translation)> 
-                transformations = new();
+            // we need find matching pairs of scanners
+            Dictionary<int, Dictionary<int, List<(int a, int b)>>> matchingStarsPerScanner = new();
             for (var i = 0; i < _scanners.Count; i++)
             {
-                var scannerA = _scanners[i];
-                for (var j = 0; j < _scanners.Count; j++)
+                if (!matchingStarsPerScanner.ContainsKey(i))
                 {
-                    if (i==j)
+                    matchingStarsPerScanner[i] = new();
+                }
+                for (var j = i+1; j < _scanners.Count; j++)
+                {
+                    var pairs = _scanners[i].FindMatchingBeacons(_scanners[j]);
+                    if (pairs.Count < 12)
+                        // don't bother
                         continue;
-                    var scannerB = _scanners[j];
-                    var pairs = scannerA.FindMatchingBeacons(scannerB);
-                    if (pairs.Count < 12) continue;
-                    var (rotation, translation) = scannerA.ExtractTransformation(scannerB, pairs);
-                    transformations[i] = (j, rotation, translation);
-                    break;
+                    matchingStarsPerScanner[i][j] = pairs;
+                    if (!matchingStarsPerScanner.ContainsKey(j))
+                    {
+                        matchingStarsPerScanner[j] = new Dictionary<int, List<(int a, int b)>>();
+                    }
+                    matchingStarsPerScanner[j][i] = pairs.Select(tuple => (tuple.Item2,tuple.Item1)).ToList();
                 }
             }
+            // now we need to use them to convert every scanner to scanner 0 coordinates
+            _transforms = new();
             
-            // simplify transformation
-            for (var i = 1; i < transformations.Count; i++)
-            {
-                var (reference, rotation, translation) = transformations[i];
-                while (reference!=0)
-                {
-                    var (ref2, rot2, trans2) = transformations[reference];
-                    rotation = Multiply(rotation, rot2);
-                    translation = Translate(Apply(rot2, translation), trans2);
-                    reference = ref2;
-                }
-
-                transformations[i] = (reference, rotation, translation);
-            }
+            FindTransform(0, _transforms, matchingStarsPerScanner);
 
             var beacons = new HashSet<(int x, int y, int z)>();
             for (var i = 0; i < _scanners.Count; i++)
             {
-                var (_, rotation, translation) = transformations[i];
+                var (rotation, translation) = _transforms[i];
                 foreach (var translated in _scanners[i].Beacons.Select(beacon => Translate(Apply(rotation, beacon), translation)))
                 {
                     beacons.Add((translated[0], translated[1], translated[2]));
@@ -276,13 +272,99 @@ namespace AdventCalendar2021
             return beacons.Count;
         }
 
+        private void FindTransform(int i, 
+            Dictionary<int,(int[,] rotation, int[] translation)> transformations,
+            IReadOnlyDictionary<int, Dictionary<int, List<(int a, int b)>>> matchingStarsPerScanner)
+        {
+
+            if (transformations.ContainsKey(i))
+            {
+                return;
+            }
+
+            if (i == 0)
+            {
+                transformations[0] = (new[,] { { 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 } }, new []{0,0,0});
+            }
+            // can we transform it to scanner 0 coordinates? 
+            else if (matchingStarsPerScanner[i].ContainsKey(0))
+            {
+                var (rotation, translation) = _scanners[i].ExtractTransformation(_scanners[0], matchingStarsPerScanner[i][0]);
+                transformations[i] = (rotation, translation);
+            }
+            else
+            // is there any matching scanner that we can transform from ?
+            {
+                foreach (var j in matchingStarsPerScanner[i].Keys.Where(transformations.ContainsKey))
+                {
+                    // yes we can
+                    var (referenceRotation, referenceTranslation) = transformations[j];
+                    var (rotation, translation) = _scanners[i].ExtractTransformation(_scanners[j], 
+                        matchingStarsPerScanner[i][j]);
+                    rotation = Multiply(referenceRotation, rotation);
+                    translation = Translate(Apply(referenceRotation, translation), referenceTranslation);
+                    transformations[i] = (rotation, translation);
+                    break;
+                }
+            }
+
+            foreach (var id in matchingStarsPerScanner[i].Keys)
+            {
+                FindTransform(id, transformations, matchingStarsPerScanner);
+            }
+        }
+
         public override object GiveAnswer2()
         {
-            return base.GiveAnswer2();
+            foreach (var scanner in _scanners)
+            {
+                scanner.ComputeDistances();
+            }
+            // we need find matching pairs of scanners
+            Dictionary<int, Dictionary<int, List<(int a, int b)>>> matchingStarsPerScanner = new();
+            for (var i = 0; i < _scanners.Count; i++)
+            {
+                if (!matchingStarsPerScanner.ContainsKey(i))
+                {
+                    matchingStarsPerScanner[i] = new();
+                }
+                for (var j = i+1; j < _scanners.Count; j++)
+                {
+                    var pairs = _scanners[i].FindMatchingBeacons(_scanners[j]);
+                    if (pairs.Count < 12)
+                        // don't bother
+                        continue;
+                    matchingStarsPerScanner[i][j] = pairs;
+                    if (!matchingStarsPerScanner.ContainsKey(j))
+                    {
+                        matchingStarsPerScanner[j] = new Dictionary<int, List<(int a, int b)>>();
+                    }
+                    matchingStarsPerScanner[j][i] = pairs.Select(tuple => (tuple.Item2,tuple.Item1)).ToList();
+                }
+            }
+            // now we need to use them to convert every scanner to scanner 0 coordinates
+            _transforms = new();
+            
+            FindTransform(0, _transforms, matchingStarsPerScanner);
+            var maxDist = 0;
+            for (var i = 0; i < _transforms.Count; i++)
+            {
+                var (_, p1) = _transforms[i];
+                for (var j = i + 1; j < _transforms.Count; j++)
+                {
+                    var (_, p2) = _transforms[j];
+                    var dist = Math.Abs(p1[0] - p2[0]) + Math.Abs(p1[1] - p2[1]) + Math.Abs(p1[2] - p2[2]);
+                    maxDist = Math.Max(maxDist, dist);
+                }
+            }
+
+            return maxDist;
         }
 
         protected override void CleanUp()
         {
+            _scanners.Clear();
+            _transforms.Clear();
         }
 
         private class Scanner
@@ -332,14 +414,7 @@ namespace AdventCalendar2021
             {
                 // identify how the scanners are relatively positioned
                 // we use couple of stars
-                var matrix = new int[3, 3];
-                for (var x = 0; x < 2; x++)
-                {
-                    for (var y = 0; y < 2; y++)
-                    {
-                        matrix[x, y] = 0;
-                    }
-                }
+                var rotation = new int[3, 3];
 
                 var found = false;
                 for (var i = 0; i < matchingPairs.Count; i++)
@@ -354,44 +429,44 @@ namespace AdventCalendar2021
                             var w = Vector(other.Beacons[matchingPairs[i].b], other.Beacons[matchingPairs[j].b]);
                             if (Math.Abs(v[0]) == Math.Abs(w[0]))
                             {
-                                matrix[0, 0] = v[0] / w[0];
+                                rotation[0, 0] = v[0] / w[0];
                                 if (Math.Abs(v[1]) == Math.Abs(w[1]))
                                 {
-                                    matrix[1, 1] = v[1] / w[1];
-                                    matrix[2, 2] = v[2] / w[2];
+                                    rotation[1, 1] = v[1] / w[1];
+                                    rotation[2, 2] = v[2] / w[2];
                                 }
                                 else
                                 {
-                                    matrix[2, 1] = v[1] / w[2];
-                                    matrix[1, 2] = v[2] / w[1];
+                                    rotation[2, 1] = v[1] / w[2];
+                                    rotation[1, 2] = v[2] / w[1];
                                 }
                             }
                             else if (Math.Abs(v[0]) == Math.Abs(w[1]))
                             {
-                                matrix[1, 0] = v[0] / w[1];
+                                rotation[1, 0] = v[0] / w[1];
                                 if (Math.Abs(v[1]) == Math.Abs(w[0]))
                                 {
-                                    matrix[0, 1] = v[1] / w[0];
-                                    matrix[2, 2] = v[2] / w[2];
+                                    rotation[0, 1] = v[1] / w[0];
+                                    rotation[2, 2] = v[2] / w[2];
                                 }
                                 else
                                 {
-                                    matrix[2, 1] = v[1] / w[2];
-                                    matrix[1, 2] = v[2] / w[1];
+                                    rotation[0, 2] = v[2] / w[0];
+                                    rotation[2, 1] = v[1] / w[2];
                                 }
                             }
                             else
                             {
-                                matrix[2, 0] = v[0] / w[2];
+                                rotation[2, 0] = v[0] / w[2];
                                 if (Math.Abs(v[1]) == Math.Abs(w[1]))
                                 {
-                                    matrix[1, 1] = v[1] / w[1];
-                                    matrix[0, 2] = v[2] / w[0];
+                                    rotation[1, 1] = v[1] / w[1];
+                                    rotation[0, 2] = v[2] / w[0];
                                 }
                                 else
                                 {
-                                    matrix[0, 1] = v[1] / w[0];
-                                    matrix[1, 2] = v[2] / w[1];
+                                    rotation[1, 2] = v[2] / w[1];
+                                    rotation[0, 1] = v[1] / w[0];
                                 }
                             }
 
@@ -411,15 +486,18 @@ namespace AdventCalendar2021
                 }
 
                 // we need to find the needed translation
-                var firstBeacon = Beacons[matchingPairs[0].a];
-                var otherFirstBeacon = Apply(matrix, other.Beacons[matchingPairs[0].b]);
-                var vector1 = Vector(firstBeacon, otherFirstBeacon);
-                
-                // test
-                otherFirstBeacon = other.Beacons[matchingPairs[0].b];
-                otherFirstBeacon = Apply(matrix, otherFirstBeacon);
-                otherFirstBeacon = Translate(otherFirstBeacon, vector1);
-                return (matrix, vector1);
+                var firstBeacon = other.Beacons[matchingPairs[0].b];
+                var targetBeacon = Beacons[matchingPairs[0].a];
+                var translation = Vector(firstBeacon, Apply(rotation, targetBeacon));
+                firstBeacon = other.Beacons[matchingPairs[1].b];
+                targetBeacon = Beacons[matchingPairs[1].a];
+                var transformed = Translate(Apply(rotation, targetBeacon), translation);
+                if (transformed[0] != firstBeacon[0] || transformed[1] != firstBeacon[1] ||
+                    transformed[2] != firstBeacon[2])
+                {
+                    throw new InvalidOperationException("Matrix generation failed");
+                }
+                return (rotation, translation);
             }
         }
     }

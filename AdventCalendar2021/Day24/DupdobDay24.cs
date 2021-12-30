@@ -8,9 +8,9 @@ namespace AdventCalendar2021
     {
         private class State
         {
-            private int _x;
+            public int X { get; private set; }
             private int _y;
-            private int _z;
+            public int Z { get; private set; }
             private int _w;
             private readonly string _input;
             public bool Stop { get; private set; }
@@ -22,20 +22,20 @@ namespace AdventCalendar2021
                 this._input = input;
             }
 
-            public int GetVar(string name) => name switch { "x" => _x, "y" => _y, "z" => _z, "w" => _w, _ => int.Parse(name) };
+            public int GetVar(string name) => name switch { "x" => X, "y" => _y, "z" => Z, "w" => _w, _ => int.Parse(name) };
 
             public void SetVar(string name, int value)
             {
                 switch (name)
                 {
                     case "x":
-                        _x = value;
+                        X = value;
                         break;
                     case "y":
                         _y = value;
                         break;
                     case "z":
-                        _z = value;
+                        Z = value;
                         break;
                     case "w":
                         _w = value;
@@ -54,7 +54,7 @@ namespace AdventCalendar2021
                 return result;
             }
 
-            public bool Ok => _z == 0;
+            public bool Ok => Z == 0;
         }
 
         private readonly List<Action<State>> _program = new ();
@@ -98,10 +98,13 @@ namespace AdventCalendar2021
             yield break;
         }
 
+        // < 99964995919919
         public override object GiveAnswer1()
         {
-            var increment = 1;
-            for (var i = 1; i < 10; i++)
+            var foundDigit = 11197951L;
+            var scan = 100;
+            Dictionary<long, int> matches = new ();
+            for (var i = foundDigit*scan+scan-1; i >=foundDigit*scan; i-=1)
             {
                 var start = i;
                 var text = start.ToString();
@@ -119,9 +122,24 @@ namespace AdventCalendar2021
                     }
                 }
 
-                increment *= 10;
+                if (state.X == 0)
+                {
+                    matches.Add(i, state.Z);
+                    if (state.Ok)
+                        return i;
+                }
             }
 
+            var minZ = int.MaxValue;
+            var minVal = 0L;
+            foreach (var pair in matches)
+            {
+                if (pair.Value < minZ)
+                {
+                    minZ = pair.Value;
+                    minVal = pair.Key;
+                }
+            }
             return 0;
         }
         // 
