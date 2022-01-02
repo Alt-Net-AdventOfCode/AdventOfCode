@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security;
-using System.Xml.Schema;
 
 namespace AdventCalendar2021
 {
@@ -10,33 +8,40 @@ namespace AdventCalendar2021
     {
         private class AmphiPod
         {
-            public char Kind;
+            public readonly char Kind;
             public int X;
             public int Y;
 
             private int _moveDone;
             private int _energy;
+            private readonly int _energyFactor;
 
             public bool CanMove => _moveDone < 2;
             public int TotalEnergy => _energy;
-            
+
+            public AmphiPod(char kind)
+            {
+                Kind = kind;
+                _energyFactor = kind switch { 'A' => 1, 'B' => 10, 'C' => 100, 'D' => 1000, _=>0 };
+            }
+
             public AmphiPod Move((int x, int y) target)
             {
-                var result = new AmphiPod
+                var result = new AmphiPod(Kind)
                 {
                     X = target.x,
                     Y = target.y,
                 };
-                result.Kind = Kind;
-                result._energy = _energy+ Math.Abs(result.X - X) + Math.Abs(result.Y - Y)*Energy;
+                result._energy = _energy+ (Math.Abs(result.X - X) + Math.Abs(result.Y - Y))*_energyFactor;
                 result._moveDone = _moveDone+1;
                 return result;
             }
-            
-            private int Energy => Kind switch { 'A' => 1, 'B' => 10, 'C' => 100, 'D' => 1000, _=>0 };
         }
 
         private readonly List<AmphiPod> _amphiPods = new(8);
+
+        private readonly Dictionary<(int x, int y), AmphiPod> _startPosition =
+            new();
 
         public DupdobDay23() : base(23)
         {
@@ -47,19 +52,20 @@ namespace AdventCalendar2021
             for (var i = 0; i < line.Length; i++)
             {
                 if (line[i] < 'A' || line[i] > 'D') continue;
-                var amphi = new AmphiPod
+                var amphi = new AmphiPod (line[i])
                 {
-                    Kind = line[i],
                     X = i,
                     Y = index
                 };
                 _amphiPods.Add(amphi);
+                _startPosition[(i, index)] = amphi;
             }
         }
 
         protected override void CleanUp()
         {
             _amphiPods.Clear();
+            _startPosition.Clear();
         }
 
         protected override IEnumerable<(string intput, object result)> GetTestData1()
@@ -81,12 +87,12 @@ namespace AdventCalendar2021
         {
             foreach (var amphiPod in state)
             {
-                var newState = state.Where(p => p.X != amphiPod.X || p.Y != amphiPod.Y).ToList();
+                var newState = state.Where(p => p != amphiPod).ToList();
                 var moves = PossibleMoves(amphiPod, newState);
                 foreach (var move in moves)
                 {
                     var movedPod = amphiPod.Move(move);
-                    var list = newState.Prepend(movedPod).ToList();
+                    var list = newState.Append(movedPod).ToList();
                     var energy = list.Sum(p => p.TotalEnergy);  
                     if (energy>minimalEnergy)
                         continue;
@@ -214,7 +220,7 @@ namespace AdventCalendar2021
                     case 0:
                         result.Add((x, 3));
                         break;
-                    case 1 when matchingPods[0].Kind == pod.X:
+                    case 1 when matchingPods[0].Kind == pod.Kind:
                         result.Add((x,2));
                         break;
                 }
