@@ -4,6 +4,8 @@ namespace AOCHelpers
 {
     public abstract class DupdobDayBase
     {
+        protected bool _skipAnswer1;
+        
         public void SetData(string input = null)
         {
             Parse(input ?? Input);
@@ -29,7 +31,10 @@ namespace AOCHelpers
         public virtual void OutputAnswers()
         {
             SetData();
-            Console.Write($"Day {Day}: {GiveAnswer1()}");
+            if (!_skipAnswer1)
+            {
+                Console.Write($"Day {Day}: {GiveAnswer1()}");
+            }
             Console.WriteLine($" & {GiveAnswer2()}");
         }
         
