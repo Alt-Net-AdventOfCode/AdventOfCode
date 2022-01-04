@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Xml.Schema;
 
 namespace AdventCalendar2021
 {
@@ -98,49 +97,32 @@ namespace AdventCalendar2021
             yield break;
         }
 
-        // < 99964995919919
+        // solution was found by manual analysis of the code 
         public override object GiveAnswer1()
         {
-            var foundDigit = 11197951L;
-            var scan = 100;
-            Dictionary<long, int> matches = new ();
-            for (var i = foundDigit*scan+scan-1; i >=foundDigit*scan; i-=1)
-            {
-                var start = i;
-                var text = start.ToString();
-                if (text.Contains('0'))
-                {
-                    continue;
-                }
-                var state = new State(text);
-                foreach (var action in _program)
-                {
-                    action(state);
-                    if (state.Stop)
-                    {
-                        break;
-                    }
-                }
+            const long foundDigit = 91297395919993;
+            return RunProgram(foundDigit);
+        }
 
-                if (state.X == 0)
+        public override object GiveAnswer2()
+        {
+            const long foundDigit = 71131151917891;
+            return RunProgram(foundDigit);
+        }
+
+        private object RunProgram(long foundDigit)
+        {
+            var state = new State(foundDigit.ToString());
+            foreach (var action in _program)
+            {
+                action(state);
+                if (state.Stop)
                 {
-                    matches.Add(i, state.Z);
-                    if (state.Ok)
-                        return i;
+                    break;
                 }
             }
 
-            var minZ = int.MaxValue;
-            var minVal = 0L;
-            foreach (var pair in matches)
-            {
-                if (pair.Value < minZ)
-                {
-                    minZ = pair.Value;
-                    minVal = pair.Key;
-                }
-            }
-            return 0;
+            return state.Ok ? foundDigit : 0;
         }
         // 
     }
