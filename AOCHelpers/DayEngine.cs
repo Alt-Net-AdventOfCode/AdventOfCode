@@ -2,9 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.NetworkInformation;
 using System.Reflection;
+using System.Runtime.Serialization.Json;
 using System.Threading.Tasks;
 
 namespace AOCHelpers
@@ -227,6 +230,8 @@ namespace AOCHelpers
             }
         }
 
+        private static bool IsAcceptableInAFileName(string name) => name.Length <= 20 && name.All(character => char.IsDigit(character) || char.IsLetter(character) || "-_#*".Contains(character));
+
         private bool PostAnswer(int question, string value)
         {
             var data = new Dictionary<string, string>
@@ -235,7 +240,12 @@ namespace AOCHelpers
                 ["level"] = question.ToString()
             };
             var url = $"{Url}{Day}/answer";
-            var responseFilename = Path.Combine(DataPath, $"Answer{question} for {value}.html");
+            var answerId = value;
+            if (!IsAcceptableInAFileName(answerId))
+            {
+                answerId = answerId.GetHashCode().ToString();
+            }
+            var responseFilename = Path.Combine(DataPath, $"Answer{question} for {answerId}.html");
             string responseText;
             // if we already have the response file...
             if (File.Exists(responseFilename))
@@ -271,7 +281,7 @@ namespace AOCHelpers
             _myData = File.Exists(fileName) ? File.ReadAllTextAsync(fileName) : _client.GetStringAsync($"{Url}{Day}/input");
         }
 
-        public void RegisterTestData(int question, string data, int expected)
+        public void RegisterTestData(int question, string data, object expected)
         {
             if (!_testData.ContainsKey(question))
             {
