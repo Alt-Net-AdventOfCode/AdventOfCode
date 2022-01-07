@@ -8,7 +8,6 @@ namespace AdventCalendar2016
     {
         private static readonly Type[] Solvers =
         {
-            typeof(DupdobDay7), 
             typeof(DupdobDay6), 
             typeof(DupdobDay5), 
             typeof(DupdobDay4), 
@@ -18,8 +17,9 @@ namespace AdventCalendar2016
         };
         static void Main(string[] args)
         {
-            var day = DupdobDayBase.BuildFromType(Solvers[0]);
-            day.OutputAnswers();
+            DayEngine.Year = 2016;
+            var engine = new DayEngine();
+            engine.RunDay<DupdobDay8>();
         }
 
         static void GiveAllDays()
