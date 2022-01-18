@@ -27,8 +27,8 @@ namespace AdventCalendar2016
 
             return screen;
         }
-        
-        public override void ParseLine(string line, int index, int lineCount)
+
+        protected override void ParseLine(string line, int index, int lineCount)
         {
             var match = _rectangle.Match(line);
             if (match.Success)

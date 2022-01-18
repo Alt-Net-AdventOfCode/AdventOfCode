@@ -19,7 +19,7 @@ namespace AdventCalendar2016
         {
             DayEngine.Year = 2016;
             var engine = new DayEngine();
-            engine.RunDay<DupdobDay9>();
+            engine.RunDay<DupdobDay10>();
         }
 
         static void GiveAllDays()

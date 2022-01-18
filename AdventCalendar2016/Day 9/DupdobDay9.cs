@@ -6,8 +6,8 @@ namespace AdventCalendar2016
     public class DupdobDay9: Algorithm
     {
         private string _compressedData;
-        
-        public override void ParseLine(string line, int index, int lineCount)
+
+        protected override void ParseLine(string line, int index, int lineCount)
         {
             _compressedData = line;
         }

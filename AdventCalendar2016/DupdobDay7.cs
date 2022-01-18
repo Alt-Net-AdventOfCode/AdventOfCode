@@ -7,8 +7,8 @@ namespace AdventCalendar2016
     public class DupdobDay7 : Algorithm
     {
         private readonly List<string> _lines = new();
-  
-        public override void ParseLine(string line, int index, int lineCount)
+
+        protected override void ParseLine(string line, int index, int lineCount)
         {
            _lines.Add(line);
         }
