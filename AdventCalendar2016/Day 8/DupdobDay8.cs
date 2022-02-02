@@ -2,11 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using AoC;
 using AOCHelpers;
 
 namespace AdventCalendar2016
 {
-    public class DupdobDay8 : Algorithm
+    public class DupdobDay8 : SolverWithLineParser
     {
         private readonly Regex _rectangle = new("rect (\\d*)x(\\d*)", RegexOptions.Compiled);
         private readonly Regex _rotateRow = new("rotate row y=(\\d*) by (\\d*)", RegexOptions.Compiled);
@@ -138,13 +139,13 @@ namespace AdventCalendar2016
             return Console.ReadLine();
         }
 
-        public override void SetupRun(DayEngine dayEngine)
+        public override void SetupRun(Engine engine)
         {
-            dayEngine.Day = 8;
-            dayEngine.RegisterTestData(1, @"rect 3x2
+            engine.Day = 8;
+            engine.RegisterTestDataAndResult(@"rect 3x2
 rotate column x=1 by 1
 rotate row y=0 by 4
-rotate column x=1 by 1", 6);
+rotate column x=1 by 1", 6, 1);
         }
     }
 }

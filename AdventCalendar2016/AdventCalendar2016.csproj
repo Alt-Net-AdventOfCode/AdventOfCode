@@ -7,10 +7,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\AOCHelpers\AOCHelpers.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Day11" />
+      <ProjectReference Include="..\AoC\AoC.csproj" />
     </ItemGroup>
 
 </Project>

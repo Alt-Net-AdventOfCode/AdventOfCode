@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using AoC;
 using AOCHelpers;
 
 namespace AdventCalendar2016
@@ -17,9 +18,8 @@ namespace AdventCalendar2016
         };
         static void Main(string[] args)
         {
-            DayEngine.Year = 2016;
-            var engine = new DayEngine();
-            engine.RunDay<DupdobDay10>();
+            var engine = new Engine(2016);
+            engine.RunDay<DupdobDay11>();
         }
 
         static void GiveAllDays()

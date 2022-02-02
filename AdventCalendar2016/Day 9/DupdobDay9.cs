@@ -1,9 +1,10 @@
 using System.Linq;
+using AoC;
 using AOCHelpers;
 
 namespace AdventCalendar2016
 {
-    public class DupdobDay9: Algorithm
+    public class DupdobDay9: SolverWithLineParser
     {
         private string _compressedData;
 
@@ -71,15 +72,15 @@ namespace AdventCalendar2016
             return answer;
         }
 
-        public override void SetupRun(DayEngine dayEngine)
+        public override void SetupRun(Engine engine)
         {
-            dayEngine.Day = 9;
-            dayEngine.RegisterTestData(1, "ADVENT", 6);
-            dayEngine.RegisterTestData(1, "A(1x5)BC", 7);
-            dayEngine.RegisterTestData(1, "(3x3)XYZ", 9);
-            dayEngine.RegisterTestData(1, "A(2x2)BCD(2x2)EFG", 11);
-            dayEngine.RegisterTestData(1, "(6x1)(1x3)A", 6);
-            dayEngine.RegisterTestData(1, "X(8x2)(3x3)ABCY", 18);
+            engine.Day = 9;
+            engine.RegisterTestDataAndResult("ADVENT", 6, 1);
+            engine.RegisterTestDataAndResult("A(1x5)BC", 7, 1);
+            engine.RegisterTestDataAndResult("(3x3)XYZ", 9, 1);
+            engine.RegisterTestDataAndResult("A(2x2)BCD(2x2)EFG", 11, 1);
+            engine.RegisterTestDataAndResult("(6x1)(1x3)A", 6, 1);
+            engine.RegisterTestDataAndResult("X(8x2)(3x3)ABCY", 18, 1);
         }
     }
 }

@@ -1,19 +1,20 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
+using AoC;
 using AOCHelpers;
 
 namespace AdventCalendar2016
 {
-    public class DupdobDay10 : Algorithm
+    public class DupdobDay10 : SolverWithLineParser
     {
         private readonly Regex _input = new("value (\\d*) goes to bot (\\d*)");
         private readonly Regex _comparing = new("bot (\\d*) gives low to (output|bot) (\\d*) and high to (bot|output) (\\d*)");
 
         private readonly Dictionary<int, Bot> _bots = new();
-        private Dictionary<int, Bin> _bins = new();
+        
+        private readonly Dictionary<int, Bin> _bins = new();
 
         private interface IInput
         {
@@ -36,12 +37,6 @@ namespace AdventCalendar2016
         private class Bin
         {
             protected readonly List<IInput> Values = new(2);
-            private readonly int _id;
-
-            public Bin(int id)
-            {
-                _id = id;
-            }
 
             public void AddSource(IInput value)
             {
@@ -89,10 +84,6 @@ namespace AdventCalendar2016
                     }
                 }
             }
-
-            public Bot(int id) : base(id)
-            {
-            }
         }
 
         protected override void ParseLine(string line, int index, int lineCount)
@@ -126,7 +117,7 @@ namespace AdventCalendar2016
         {
             if (!_bins.ContainsKey(id))
             {
-                _bins[id] = new Bin(id);
+                _bins[id] = new Bin();
             }
             return _bins[id];
         }
@@ -135,7 +126,7 @@ namespace AdventCalendar2016
         {
             if (!_bots.ContainsKey(id))
             {
-                _bots[id] = new Bot(id);
+                _bots[id] = new Bot();
             }
             return _bots[id];
         }
@@ -158,15 +149,15 @@ namespace AdventCalendar2016
             return _bins[0].FirstValue() * _bins[1].FirstValue() * _bins[2].FirstValue();
         }
 
-        public override void SetupRun(DayEngine dayEngine)
+        public override void SetupRun(Engine engine)
         {
-            dayEngine.Day = 10;
-            dayEngine.RegisterTestData(1, @"value 5 goes to bot 2
+            engine.Day = 10;
+            engine.RegisterTestDataAndResult(@"value 5 goes to bot 2
 bot 2 gives low to bot 1 and high to bot 0
 value 3 goes to bot 1
 bot 1 gives low to output 1 and high to bot 0
 bot 0 gives low to output 2 and high to output 0
-value 2 goes to bot 2", -1);
+value 2 goes to bot 2", -1, 1);
         }
     }
 }

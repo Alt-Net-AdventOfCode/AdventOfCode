@@ -1,35 +1,28 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace AOCHelpers
+namespace AoC
 {
-    public class DayEngine : IDisposable
+    public class Engine : IDisposable
     {
         // default path
         private string DataPath => $"../../../Day{Day,2}/";
         // default input cache name
-        private string DataCacheFileName => Path.Combine(DataPath, $"AocDay{Day,2}-MyInput.txt");
-        // AoC day main URL
-        private static string Url => $"https://adventofcode.com/{Year}/day/";
         // AoC answers RegEx
         private static readonly Regex GoodAnswer = new (".*That's the right answer!.*");
         private static readonly Regex TooSoon = new (".*You have (\\d*)m? (\\d*)s? left to wait\\..*");
-        private readonly string _sessionId;
         private int _currentDay;
         private Task<string> _myData;
         private Task _pendingWrite;
+        private readonly AoCClientBase _client;
 
         private readonly Dictionary<int, List<(string data, object result)>> _testData = new();
-        private HttpClientHandler _handler;
-        private HttpClient _client;
 
         /// <summary>
         /// Gets/sets the current day 
@@ -39,79 +32,54 @@ namespace AOCHelpers
             get => _currentDay;
             set
             {
-                if (value == _currentDay)
-                {
-                    return;
-                }
                 _currentDay = value;
-                _testData.Clear();
-                InitiatePersonalInputFetching();
+                InitiatePersonalInputFetching(_currentDay);
             }
         }
+        private string DataCacheFileName => Path.Combine(DataPath, $"InputAoc-{Day,2}-{_client.Year,4}.txt");
 
-        /// <summary>
-        /// Gets/Sets the current year
-        /// </summary>
-        public static int Year { get; set; }
-
-        /// <summary>
-        /// Gets the personal AoC input (either from aoc website or local cache if it exists)
-        /// </summary>
-        /// <remarks>Data fetching is initiated earlier.</remarks>
-        private string MyData
+        public Engine(int year, AoCClientBase client = null)
         {
-            get
-            {
-                var result = _myData.Result;
-                if (File.Exists(DataCacheFileName))
-                {
-                    return result;
-                }
-                Directory.CreateDirectory(Path.GetDirectoryName(DataCacheFileName) ?? throw new InvalidOperationException());
-                _pendingWrite= File.WriteAllTextAsync(DataCacheFileName, result);
-
-                return result;
-            }
+            _client = client ?? new AoCClient(year);
         }
 
-
-        public DayEngine()
-        {
-            _sessionId = Environment.GetEnvironmentVariable("AOC_SESSION");
-            if (string.IsNullOrEmpty(_sessionId))
-            {
-                throw new InvalidOperationException(
-                    "AOC_SESSION environment variable must contain an Advent Of Code session id.");
-            }
-        }
         /// <summary>
         /// Runs a given day.
         /// </summary>
-        /// <typeparam name="T"><see cref="Algorithm"/> type for the day.</typeparam>
+        /// <typeparam name="T"><see cref="ISolver"/> type for the day.</typeparam>
         /// <exception cref="InvalidOperationException">when the method fails to create an instance of the algorithm.</exception>
-        public void RunDay<T>() where T:Algorithm
+        public void RunDay<T>() where T:ISolver
         {
             var dayAlgoType = typeof(T);
             var constructorInfo = dayAlgoType.GetConstructor(Type.EmptyTypes);
-            if (constructorInfo?.Invoke(null) is not T dayAlgo)
+            if (constructorInfo == null)
             {
-                throw new InvalidOperationException($"Failed to build the algorithm instance. Make sure there is a parameterless constructor for {nameof(T)}.");
+                throw new ApplicationException($"Can't find a parameterless constructor for {dayAlgoType}.");
             }
+            ISolver Builder() => constructorInfo.Invoke(null) as ISolver ?? throw new Exception($"Can't build an instance of {dayAlgoType.Name}.");
+
+            RunDay(Builder);
+        }
+
+        public void RunDay(Func<ISolver> builder)
+        {
+            var dayAlgo = builder();
+            Day = 0;
             dayAlgo.SetupRun(this);
-            
-            // tests if data are provided
-            if (_testData.Count > 0)
+            if (Day == 0)
             {
-                if (!RunTests(constructorInfo))
-                {
-                    // tests have failed, no need to continue
-                    return;
-                }
+                Console.Error.WriteLine("Pleas specify current day via the Day property");
+                return;
             }
+
+            // tests if data are provided
+            var algorithms = new Dictionary<string, ISolver>();
+            if (_testData.Count > 0 && !RunTest(1, builder, algorithms)) return;
             // perform the actual run
-            dayAlgo.Parse(MyData);
-            if (CheckResponse(1, dayAlgo.GetAnswer1())) return;
-            if (CheckResponse(2, dayAlgo.GetAnswer2())) return;
+            var data = RetrieveMyData();
+            if (CheckResponse(1, GetAnswer(dayAlgo, 1, data))) return;
+            if (_testData.Count > 0 && !RunTest(2, builder, algorithms)) return;
+            if (CheckResponse(2, GetAnswer(dayAlgo, 2, data))) return;
             EnsureDataIsCached();
         }
 
@@ -122,13 +90,13 @@ namespace AOCHelpers
                 Console.Error.WriteLine($"No answer provided! Please overload GetAnswer{id}() with your code.");
                 return false;
             }
-            Console.WriteLine($"Day {Day}-{id}: {answer2} [{Year}].");
+            Console.WriteLine($"Day {Day}-{id}: {answer2} [{_client.Year}].");
             return !PostAnswer(id, answer2.ToString());
         }
 
+        // ensure data are cached properly
         private void EnsureDataIsCached()
         {
-            // ensure data are cached properly
             if (_pendingWrite == null)
             {
                 return;
@@ -136,28 +104,28 @@ namespace AOCHelpers
             // wait for cache writing completion
             if (!_pendingWrite.IsCompleted)
             {
-                _pendingWrite.Wait(500);
+                if (!_pendingWrite.Wait(500))
+                {
+                    Console.Error.WriteLine("Local caching of input may have failed!");
+                }
             }
 
             _pendingWrite = null;
         }
-
-        private bool RunTests(ConstructorInfo constructor)
+        
+        private static object GetAnswer(ISolver algorithm, int id, string data)
         {
-            Console.WriteLine("*** Run tests ***");
-            var algorithms = new Dictionary<string, Algorithm>();
-            if (!RunTest(1, constructor, algorithms)) return false;
-            if (!RunTest(2, constructor, algorithms)) return false;
-            Console.WriteLine("*** Tests succeeded ***");
-            return true;
-        }
-
-        private static object GetAnswer(int id, Algorithm algorithm)
-        {
-            return id == 1 ? algorithm.GetAnswer1() : algorithm.GetAnswer2();
+            var clock = new Stopwatch();
+            Console.WriteLine($"Computing answer {id} ({DateTime.Now:HH:mm:ss}).");
+            clock.Start();
+            var answer = id == 1 ? algorithm.GetAnswer1(data) : algorithm.GetAnswer2(data);
+            clock.Stop();
+            var message = clock.ElapsedMilliseconds < 2000 ? $"{clock.ElapsedMilliseconds} ms" : $"{clock.Elapsed:c}";
+            Console.WriteLine($"Took {message}.");
+            return answer;
         }
         
-        private bool RunTest(int id, ConstructorInfo constructor, Dictionary<string, Algorithm> algorithms)
+        private bool RunTest(int id, Func<ISolver> builder, Dictionary<string, ISolver> algorithms)
         {
             if (!_testData.ContainsKey(id))
             {
@@ -171,15 +139,10 @@ namespace AOCHelpers
                 var testAlgo = algorithms.GetValueOrDefault(data);
                 if (testAlgo == null)
                 {
-                    testAlgo = constructor.Invoke(null) as Algorithm;
-                    if (testAlgo == null)
-                    {
-                        throw new Exception($"Can't build an instance of {constructor.DeclaringType?.Name}.");
-                    }
-                    testAlgo.Parse(data);
+                    testAlgo = builder();
                     algorithms[data] = testAlgo;
                 }
-                var answer = GetAnswer(id, testAlgo);
+                var answer = GetAnswer(testAlgo, id, data);
                 if (!answer.Equals(expected))
                 {
                     Console.Error.WriteLine($"Test failed: got {answer} instead of {expected} using:");
@@ -226,9 +189,20 @@ namespace AOCHelpers
             }
         }
 
-
         private static bool IsAcceptableInAFileName(string name) => name.Length <= 20 && name.All(character => char.IsDigit(character) || char.IsLetter(character) || "-_#*".Contains(character));
 
+        private string RetrieveMyData()
+        {
+            var result = _myData.Result;
+            if (File.Exists(DataCacheFileName))
+            {
+                return result;
+            }
+            Directory.CreateDirectory(Path.GetDirectoryName(DataCacheFileName) ?? throw new InvalidOperationException());
+            _pendingWrite= File.WriteAllTextAsync(DataCacheFileName, result);
+            return result;
+        }
+        
         /// <summary>
         /// Posts an answer to the AoC website.
         /// </summary>
@@ -272,9 +246,6 @@ namespace AOCHelpers
             }
             // is it the correct answer ?
             var result = GoodAnswer.IsMatch(resultText);
-            if (!result)
-            {
-            }
             
             if (_pendingWrite is { IsCompleted: false })
             {
@@ -303,15 +274,9 @@ namespace AOCHelpers
             }
             else
             {
-                var url = $"{Url}{Day}/answer";
-                var data = new Dictionary<string, string>
-                {
-                    ["answer"] = value,
-                    ["level"] = question.ToString()
-                };
-                var response = _client.PostAsync(url, new FormUrlEncodedContent(data));
-                responseText = response.Result.Content.ReadAsStringAsync().Result;
+                var response = _client.PostAnswer(question, value);
                 responseTime = DateTime.Now;
+                responseText = response.Result;
             }
 
             return responseText;
@@ -340,31 +305,56 @@ namespace AOCHelpers
         /// <summary>
         /// Retrieves personal data (associated to the AoC session ID).
         /// </summary>
+        /// <param name="day">day to fetch</param>
         /// <remarks>Input retrieval is done asynchronously, so it can happen in parallel with testing.</remarks>
-        private void InitiatePersonalInputFetching()
+        private void InitiatePersonalInputFetching(int day)
         {
-            _handler = new HttpClientHandler { CookieContainer = new CookieContainer() };
-            _client = new HttpClient(_handler);
-            // add our identifier to the request
-            _handler.CookieContainer.Add(new Cookie("session",
-                _sessionId, "/", ".adventofcode.com"));
+            _testData.Clear();
+            if (day == _client.Day || day == 0)
+            {
+                return;
+            }
+            _client.SetCurrentDay(day);
             var fileName = DataCacheFileName;
-            _myData = File.Exists(fileName) ? File.ReadAllTextAsync(fileName) : _client.GetStringAsync($"{Url}{Day}/input");
+            _myData = File.Exists(fileName) ? File.ReadAllTextAsync(fileName) : _client.RequestPersonalInput();
         }
 
         /// <summary>
         /// Registers test data so that they are used.
         /// </summary>
-        /// <param name="question">question id (1 or 2)</param>
         /// <param name="data">input data as a string.</param>
         /// <param name="expected">expected result (either string or a number).</param>
-        public void RegisterTestData(int question, string data, object expected)
+        /// <param name="question">question id (1 or 2)</param>
+        public Engine RegisterTestDataAndResult(string data, object expected, int question)
         {
             if (!_testData.ContainsKey(question))
             {
                 _testData[question] = new List<(string data, object result)>();
             }
             _testData[question].Add((data, expected));
+            return this;
+        }
+
+        public Engine RegisterTestData(string data, int question = 1)
+        {
+            if (!_testData.ContainsKey(question))
+            {
+                _testData[question] = new List<(string data, object result)>();
+            }
+
+            _testData[question].Add((data, null));
+            return this;
+        }
+
+        public Engine RegisterTestResult(object result, int question = 1)
+        {
+            if (!_testData.ContainsKey(question))
+            {
+                throw new ApplicationException("You must call RegisterTestData before colling this method.");
+            }
+
+            _testData[question][^1] = (_testData[question][^1].data, result);
+            return this;
         }
 
         /// <summary>
@@ -374,7 +364,6 @@ namespace AOCHelpers
         {
             _myData?.Dispose();
             _pendingWrite?.Dispose();
-            _handler?.Dispose();
             _client?.Dispose();
             GC.SuppressFinalize(this);
         }

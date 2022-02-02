@@ -35,7 +35,7 @@ namespace AdventCalendar2021
 
         public DupdobDay23() : base(23)
         {
-            _skipAnswer1 = true;
+            SkipAnswer1 = true;
         }
 
         protected override void ParseLine(int index, string line)
