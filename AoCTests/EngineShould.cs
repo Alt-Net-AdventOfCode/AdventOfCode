@@ -51,7 +51,7 @@ namespace AoC.AoCTests
             var mockFileSystem = GetFileSystem();
             using var console = new CaptureConsole();
           
-            fakeClient.SetAnswerResponseFilename("WrongAnswer.html");
+            fakeClient.SetAnswerResponseFilename(1,"WrongAnswer.html");
             var engine = new Engine(2015, fakeClient, mockFileSystem);
             var algo = new FakeSolver(10, 58, null);
             engine.RunDay( ()=> algo);
@@ -59,7 +59,8 @@ namespace AoC.AoCTests
             Check.That(algo.GetAnswer1Calls).IsEqualTo(1);
             Check.That(algo.GetAnswer2Calls).IsEqualTo(0);
 
-            Check.That(console.Output.Contains("AoC site response"));
+            Check.That(console.Output).Contains("AoC site response");
+            Check.That(console.Output).Contains("Day 10-1:");
             Check.That(mockFileSystem.AllFiles.Count()).Is(2);
             Check.That(mockFileSystem.AllFiles.Any(p => Regex.IsMatch(p, "Answer1.*\\.html")));
         }
@@ -71,13 +72,14 @@ namespace AoC.AoCTests
             using var console = new CaptureConsole();
             var mockFileSystem = GetFileSystem();
             
-            fakeClient.SetAnswerResponseFilename("GoodAnswer.html");
+            fakeClient.SetAnswerResponseFilename(1, "GoodAnswer.html");
             var engine = new Engine(2015, fakeClient, mockFileSystem);
             var algo = new FakeSolver(10, 12, null);
             engine.RunDay( ()=> algo);
 
             Check.That(algo.GetAnswer1Calls).IsEqualTo(1);
-            Check.That(console.Output.Contains("AoC site response"));
+            Check.That(console.Output).Contains("AoC site response");
+            Check.That(console.Output).Contains("Day 10-1:");
             Check.That(algo.GetAnswer2Calls).IsEqualTo(1);
             Check.That(mockFileSystem.AllFiles.Count()).Is(2);
             Check.That(mockFileSystem.AllFiles.Any(p => Regex.IsMatch(p, "Answer1.*\\.html")));
@@ -90,13 +92,16 @@ namespace AoC.AoCTests
             using var console = new CaptureConsole();
             var mockFileSystem = GetFileSystem();
             
-            fakeClient.SetAnswerResponseFilename("GoodAnswer.html");
+            fakeClient.SetAnswerResponseFilename(1,"GoodAnswer.html");
+            fakeClient.SetAnswerResponseFilename(2,"WrongAnswer.html");
             var engine = new Engine(2015, fakeClient, mockFileSystem);
             var algo = new FakeSolver(10, 12, 13);
             engine.RunDay( ()=> algo);
 
             Check.That(algo.GetAnswer1Calls).IsEqualTo(1);
-            Check.That(console.Output.Contains("AoC site response"));
+            Check.That(console.Output).Contains("AoC site response");
+            Check.That(console.Output).Contains("Day 10-1:");
+            Check.That(console.Output).Contains("Day 10-2:");
             Check.That(algo.GetAnswer2Calls).IsEqualTo(1);
             Check.That(mockFileSystem.AllFiles.Count()).Is(3);
             Check.That(mockFileSystem.AllFiles.Any(p => Regex.IsMatch(p, "Answer1.*\\.html")));

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -6,7 +7,7 @@ namespace AoC.AoCTests
     public class AoCFakeClient : AoCClientBase
     {
         private string _inputData;
-        private string _responseFile;
+        private readonly Dictionary<int, string> _responseFile = new Dictionary<int, string>();
         
         public AoCFakeClient(int year) : base(year)
         {
@@ -17,14 +18,14 @@ namespace AoC.AoCTests
             _inputData = data;
         }
 
-        public void SetAnswerResponseFilename(string fileName)
+        public void SetAnswerResponseFilename(int id, string fileName)
         {
-            _responseFile = fileName;
+            _responseFile[id] = fileName;
         }
         
         public override Task<string> RequestPersonalInput() => Task.FromResult(_inputData);
 
-        public override Task<string> PostAnswer(int question, string value) => File.ReadAllTextAsync(_responseFile);
+        public override Task<string> PostAnswer(int id, string value) => File.ReadAllTextAsync(_responseFile[id]);
         
         public override void Dispose()
         {}
