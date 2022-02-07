@@ -20,7 +20,7 @@ namespace AoC
         private readonly IFileSystem _fileSystem;
         private readonly Dictionary<int, List<(string data, object result)>> _testData = new();
         private int _currentDay;
-        private string _dataPathNameFormat = "../../../Day{0,2}/";
+        private string _dataPathNameFormat = ".";
         private Task<string> _myData;
         private Task _pendingWrite;
 
@@ -46,7 +46,9 @@ namespace AoC
             }
         }
 
-        private string DataCacheFileName => _fileSystem.Path.Combine(DataPath, $"InputAoc-{Day,2}-{_client.Year,4}.txt");
+
+        private string DataCacheFileName => $"InputAoc-{Day,2}-{_client.Year,4}.txt";
+        private string DataCachePathName => string.IsNullOrEmpty(DataPath)  ? DataCacheFileName : _fileSystem.Path.Combine(DataPath, DataCacheFileName);
 
         /// <summary>
         /// Cleanup data. Mainly ensure that ongoing writes are persisted, if any, and closes the HTTP session.
@@ -67,7 +69,6 @@ namespace AoC
         /// <param name="dataPath">path (or format string) used to store data.</param>
         /// <returns>This instance.</returns>
         /// <remarks>Relative paths are relative to the engine current directory.</remarks>
-        /// 
         public Engine SetDataPath(string dataPath)
         {
             _dataPathNameFormat = dataPath;
@@ -225,12 +226,17 @@ namespace AoC
         private string RetrieveMyData()
         {
             var result = _myData.Result;
-            if (_fileSystem.File.Exists(DataCacheFileName))
+            if (_fileSystem.File.Exists(DataCachePathName))
             {
                 return result;
             }
-            _fileSystem.Directory.CreateDirectory(Path.GetDirectoryName(DataCacheFileName) ?? throw new InvalidOperationException());
-            _pendingWrite= _fileSystem.File.WriteAllTextAsync(DataCacheFileName, result);
+
+            var directoryName = Path.GetDirectoryName(DataCachePathName);
+            if (!string.IsNullOrEmpty(directoryName) && !_fileSystem.Directory.Exists(directoryName))
+            {
+                _fileSystem.Directory.CreateDirectory(directoryName ?? throw new InvalidOperationException());
+            }
+            _pendingWrite= _fileSystem.File.WriteAllTextAsync(DataCachePathName, result);
             return result;
         }
 
@@ -346,7 +352,7 @@ namespace AoC
                 return;
             }
             _client.SetCurrentDay(day);
-            var fileName = DataCacheFileName;
+            var fileName = DataCachePathName;
             _myData = _fileSystem.File.Exists(fileName) ? _fileSystem.File.ReadAllTextAsync(fileName) : _client.RequestPersonalInput();
         }
 

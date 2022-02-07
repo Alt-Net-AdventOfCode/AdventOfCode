@@ -1,5 +1,4 @@
 using System.IO;
-using System.IO.Abstractions;
 using System.IO.Abstractions.TestingHelpers;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -11,7 +10,6 @@ namespace AoC.AoCTests
 {
     public class EngineShould
     {
-
         private MockFileSystem GetFileSystem()
         {
             var mockFileSystem = new MockFileSystem();
@@ -42,6 +40,7 @@ namespace AoC.AoCTests
             // it should have received the provided input data
             Check.That(algo.InputData).IsEqualTo(testInputData);
             // it should have cached the input data
+            Check.That(mockFileSystem.AllFiles.Count()).Is(1);
             Check.That(mockFileSystem.AllFiles.Any(p => Regex.IsMatch(p, "Input.*\\.txt")));
         }
         
@@ -61,6 +60,8 @@ namespace AoC.AoCTests
             Check.That(algo.GetAnswer2Calls).IsEqualTo(0);
 
             Check.That(console.Output.Contains("AoC site response"));
+            Check.That(mockFileSystem.AllFiles.Count()).Is(2);
+            Check.That(mockFileSystem.AllFiles.Any(p => Regex.IsMatch(p, "Answer1.*\\.html")));
         }
         
         [Test]
@@ -76,9 +77,30 @@ namespace AoC.AoCTests
             engine.RunDay( ()=> algo);
 
             Check.That(algo.GetAnswer1Calls).IsEqualTo(1);
-            Check.That(algo.GetAnswer2Calls).IsEqualTo(1);
-
             Check.That(console.Output.Contains("AoC site response"));
+            Check.That(algo.GetAnswer2Calls).IsEqualTo(1);
+            Check.That(mockFileSystem.AllFiles.Count()).Is(2);
+            Check.That(mockFileSystem.AllFiles.Any(p => Regex.IsMatch(p, "Answer1.*\\.html")));
+        }
+        
+        [Test]
+        public void HandlerAnswerToQuestion2()
+        {
+            var fakeClient = new AoCFakeClient(2015);
+            using var console = new CaptureConsole();
+            var mockFileSystem = GetFileSystem();
+            
+            fakeClient.SetAnswerResponseFilename("GoodAnswer.html");
+            var engine = new Engine(2015, fakeClient, mockFileSystem);
+            var algo = new FakeSolver(10, 12, 13);
+            engine.RunDay( ()=> algo);
+
+            Check.That(algo.GetAnswer1Calls).IsEqualTo(1);
+            Check.That(console.Output.Contains("AoC site response"));
+            Check.That(algo.GetAnswer2Calls).IsEqualTo(1);
+            Check.That(mockFileSystem.AllFiles.Count()).Is(3);
+            Check.That(mockFileSystem.AllFiles.Any(p => Regex.IsMatch(p, "Answer1.*\\.html")));
+            Check.That(mockFileSystem.AllFiles.Any(p => Regex.IsMatch(p, "Answer2.*\\.html")));
         }
         
         class FakeSolver : ISolver
