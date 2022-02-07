@@ -4,4 +4,8 @@
         <TargetFramework>net5.0</TargetFramework>
     </PropertyGroup>
 
+    <ItemGroup>
+      <PackageReference Include="System.IO.Abstractions" Version="16.1.10" />
+    </ItemGroup>
+
 </Project>

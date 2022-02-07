@@ -25,9 +25,8 @@ namespace AoC.AoCTests
         public override Task<string> RequestPersonalInput() => Task.FromResult(_inputData);
 
         public override Task<string> PostAnswer(int question, string value) => File.ReadAllTextAsync(_responseFile);
+        
         public override void Dispose()
-        {
-            
-        }
+        {}
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Abstractions;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -11,18 +12,26 @@ namespace AoC
 {
     public class Engine : IDisposable
     {
-        // default path
-        private string DataPath => $"../../../Day{Day,2}/";
         // default input cache name
         // AoC answers RegEx
         private static readonly Regex GoodAnswer = new (".*That's the right answer!.*");
         private static readonly Regex TooSoon = new (".*You have (\\d*)m? (\\d*)s? left to wait\\..*");
+        private readonly AoCClientBase _client;
+        private readonly IFileSystem _fileSystem;
+        private readonly Dictionary<int, List<(string data, object result)>> _testData = new();
         private int _currentDay;
+        private string _dataPathNameFormat = "../../../Day{0,2}/";
         private Task<string> _myData;
         private Task _pendingWrite;
-        private readonly AoCClientBase _client;
 
-        private readonly Dictionary<int, List<(string data, object result)>> _testData = new();
+        public Engine(int year, AoCClientBase client = null, IFileSystem fileSystem = null)
+        {
+            _client = client ?? new AoCClient(year);
+            _fileSystem = fileSystem ?? new FileSystem();
+        }
+
+        // default path
+        private string DataPath => string.Format(_dataPathNameFormat, Day, _client.Year);
 
         /// <summary>
         /// Gets/sets the current day 
@@ -36,11 +45,33 @@ namespace AoC
                 InitiatePersonalInputFetching(_currentDay);
             }
         }
-        private string DataCacheFileName => Path.Combine(DataPath, $"InputAoc-{Day,2}-{_client.Year,4}.txt");
 
-        public Engine(int year, AoCClientBase client = null)
+        private string DataCacheFileName => _fileSystem.Path.Combine(DataPath, $"InputAoc-{Day,2}-{_client.Year,4}.txt");
+
+        /// <summary>
+        /// Cleanup data. Mainly ensure that ongoing writes are persisted, if any, and closes the HTTP session.
+        /// </summary>
+        public void Dispose()
         {
-            _client = client ?? new AoCClient(year);
+            _myData?.Dispose();
+            _pendingWrite?.Dispose();
+            _client?.Dispose();
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Sets the path used by the engine to cache data (input and response).
+        /// You can provide a format pattern string, knowing that {0} will be replaced by
+        /// the exercise's day and {1} by the year.
+        /// </summary>
+        /// <param name="dataPath">path (or format string) used to store data.</param>
+        /// <returns>This instance.</returns>
+        /// <remarks>Relative paths are relative to the engine current directory.</remarks>
+        /// 
+        public Engine SetDataPath(string dataPath)
+        {
+            _dataPathNameFormat = dataPath;
+            return this;
         }
 
         /// <summary>
@@ -68,7 +99,7 @@ namespace AoC
             dayAlgo.SetupRun(this);
             if (Day == 0)
             {
-                Console.Error.WriteLine("Pleas specify current day via the Day property");
+                Console.Error.WriteLine("Please specify current day via the Day property");
                 return;
             }
 
@@ -83,15 +114,15 @@ namespace AoC
             EnsureDataIsCached();
         }
 
-        private bool CheckResponse(int id, object answer2)
+        private bool CheckResponse(int id, object answer)
         {
-            if (answer2 == null)
+            if (answer == null)
             {
-                Console.Error.WriteLine($"No answer provided! Please overload GetAnswer{id}() with your code.");
-                return false;
+                Console.WriteLine($"No answer provided! Please overload GetAnswer{id}() with your code.");
+                return true;
             }
-            Console.WriteLine($"Day {Day}-{id}: {answer2} [{_client.Year}].");
-            return !PostAnswer(id, answer2.ToString());
+            Console.WriteLine($"Day {Day}-{id}: {answer} [{_client.Year}].");
+            return !PostAnswer(id, answer.ToString());
         }
 
         // ensure data are cached properly
@@ -106,13 +137,13 @@ namespace AoC
             {
                 if (!_pendingWrite.Wait(500))
                 {
-                    Console.Error.WriteLine("Local caching of input may have failed!");
+                    Console.WriteLine("Local caching of input may have failed!");
                 }
             }
 
             _pendingWrite = null;
         }
-        
+
         private static object GetAnswer(ISolver algorithm, int id, string data)
         {
             var clock = new Stopwatch();
@@ -124,7 +155,7 @@ namespace AoC
             Console.WriteLine($"Took {message}.");
             return answer;
         }
-        
+
         private bool RunTest(int id, Func<ISolver> builder, Dictionary<string, ISolver> algorithms)
         {
             if (!_testData.ContainsKey(id))
@@ -189,20 +220,20 @@ namespace AoC
             }
         }
 
-        private static bool IsAcceptableInAFileName(string name) => name.Length <= 20 && name.All(character => char.IsDigit(character) || char.IsLetter(character) || "-_#*".Contains(character));
+        private bool IsAcceptableInAFileName(string name) => name.Length <= 20 && name.All(character => char.IsDigit(character) || char.IsLetter(character) || "-_#*".Contains(character));
 
         private string RetrieveMyData()
         {
             var result = _myData.Result;
-            if (File.Exists(DataCacheFileName))
+            if (_fileSystem.File.Exists(DataCacheFileName))
             {
                 return result;
             }
-            Directory.CreateDirectory(Path.GetDirectoryName(DataCacheFileName) ?? throw new InvalidOperationException());
-            _pendingWrite= File.WriteAllTextAsync(DataCacheFileName, result);
+            _fileSystem.Directory.CreateDirectory(Path.GetDirectoryName(DataCacheFileName) ?? throw new InvalidOperationException());
+            _pendingWrite= _fileSystem.File.WriteAllTextAsync(DataCacheFileName, result);
             return result;
         }
-        
+
         /// <summary>
         /// Posts an answer to the AoC website.
         /// </summary>
@@ -220,7 +251,7 @@ namespace AoC
             {
                 answerId = answerId.GetHashCode().ToString();
             }
-            var responseFilename = Path.Combine(DataPath, $"Answer{question} for {answerId}.html");
+            var responseFilename = _fileSystem.Path.Combine(DataPath, $"Answer{question} for {answerId}.html");
             var responseText = PostAndRetrieve(question, value, responseFilename, out var responseTime);
             // extract the response as plain text
             var resultText = ExtractAnswerText(responseText);
@@ -238,7 +269,7 @@ namespace AoC
                     Thread.Sleep(1000);
                 } while (responseTime>= DateTime.Now);
                 // delete any cached response to ensure we post again
-                File.Delete(responseFilename);
+                _fileSystem.File.Delete(responseFilename);
                 // send our new answer
                 responseText = PostAndRetrieve(question, value, responseFilename, out responseTime);
                 OutputAoCMessage(resultText);
@@ -253,7 +284,7 @@ namespace AoC
                 _pendingWrite.Wait();
             }
 
-            _pendingWrite = File.WriteAllTextAsync(responseFilename, responseText);
+            _pendingWrite = _fileSystem.File.WriteAllTextAsync(responseFilename, responseText);
             return result;
         }
 
@@ -266,11 +297,11 @@ namespace AoC
         {
             string responseText;
             // if we already have the response file...
-            if (File.Exists(responseFilename))
+            if (_fileSystem.File.Exists(responseFilename))
             {
                 Console.WriteLine($"Response {value} as already been attempted.");
-                responseText = File.ReadAllText(responseFilename);
-                responseTime = File.GetLastWriteTime(responseFilename);
+                responseText = _fileSystem.File.ReadAllText(responseFilename);
+                responseTime = _fileSystem.File.GetLastWriteTime(responseFilename);
             }
             else
             {
@@ -287,7 +318,7 @@ namespace AoC
             var start = response.IndexOf("<article>", StringComparison.InvariantCulture);
             if (start == -1)
             {
-                Console.Error.WriteLine("Failed to parse response.");
+                Console.WriteLine("Failed to parse response.");
                 return response;
             }
 
@@ -295,7 +326,7 @@ namespace AoC
             var end = response.IndexOf("</article>", start, StringComparison.InvariantCulture);
             if (end == -1)
             {
-                Console.Error.WriteLine("Failed to parse response.");
+                Console.WriteLine("Failed to parse response.");
                 return response;
             }
             response = response.Substring(start, end - start);
@@ -316,7 +347,7 @@ namespace AoC
             }
             _client.SetCurrentDay(day);
             var fileName = DataCacheFileName;
-            _myData = File.Exists(fileName) ? File.ReadAllTextAsync(fileName) : _client.RequestPersonalInput();
+            _myData = _fileSystem.File.Exists(fileName) ? _fileSystem.File.ReadAllTextAsync(fileName) : _client.RequestPersonalInput();
         }
 
         /// <summary>
@@ -355,17 +386,6 @@ namespace AoC
 
             _testData[question][^1] = (_testData[question][^1].data, result);
             return this;
-        }
-
-        /// <summary>
-        /// Cleanup data. Mainly ensure that ongoing writes are persisted, if any, and closes the HTTP session.
-        /// </summary>
-        public void Dispose()
-        {
-            _myData?.Dispose();
-            _pendingWrite?.Dispose();
-            _client?.Dispose();
-            GC.SuppressFinalize(this);
         }
     }
 }
