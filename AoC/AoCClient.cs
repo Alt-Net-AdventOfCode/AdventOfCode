@@ -11,7 +11,7 @@ namespace AoC
         private readonly HttpClientHandler _handler;
         private readonly HttpClient _client;
         private readonly string _url;
-
+        
         public AoCClient(int year) : base(year)
         {
             var sessionId = Environment.GetEnvironmentVariable("AOC_SESSION");
@@ -28,13 +28,9 @@ namespace AoC
             _handler.CookieContainer.Add(new Cookie("session",
                 sessionId, "/", ".adventofcode.com"));
         }
-
-
-        public override Task<string> RequestPersonalInput()
-        {
-            return _client.GetStringAsync($"{_url}{Day}/input");
-        }
         
+        public override Task<string> RequestPersonalInput() => _client.GetStringAsync($"{_url}{Day}/input");
+
         public override Task<string> PostAnswer(int question, string value)
         {
             var url = $"{_url}{Day}/answer";

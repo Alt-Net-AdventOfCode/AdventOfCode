@@ -16,9 +16,11 @@ namespace AdventCalendar2016
             typeof(DupdobDay2), 
             typeof(DupdobDay1)
         };
-        static void Main(string[] args)
+
+        private static void Main(string[] args)
         {
             var engine = new Engine(2016);
+            engine.SetDataPath("../../../Day{0,2}");
             engine.RunDay<DupdobDay11>();
         }
 

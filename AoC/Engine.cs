@@ -46,7 +46,6 @@ namespace AoC
             }
         }
 
-
         private string DataCacheFileName => $"InputAoc-{Day,2}-{_client.Year,4}.txt";
         private string DataCachePathName => string.IsNullOrEmpty(DataPath)  ? DataCacheFileName : _fileSystem.Path.Combine(DataPath, DataCacheFileName);
 
@@ -109,9 +108,9 @@ namespace AoC
             if (_testData.Count > 0 && !RunTest(1, builder, algorithms)) return;
             // perform the actual run
             var data = RetrieveMyData();
-            if (CheckResponse(1, GetAnswer(dayAlgo, 1, data))) return;
+            if (!CheckResponse(1, GetAnswer(dayAlgo, 1, data))) return;
             if (_testData.Count > 0 && !RunTest(2, builder, algorithms)) return;
-            if (CheckResponse(2, GetAnswer(dayAlgo, 2, data))) return;
+            if (!CheckResponse(2, GetAnswer(dayAlgo, 2, data))) return;
             EnsureDataIsCached();
         }
 
@@ -120,10 +119,12 @@ namespace AoC
             if (answer == null)
             {
                 Console.WriteLine($"No answer provided! Please overload GetAnswer{id}() with your code.");
-                return true;
+                return false;
             }
             Console.WriteLine($"Day {Day}-{id}: {answer} [{_client.Year}].");
-            return !PostAnswer(id, answer.ToString());
+            var success = PostAnswer(id, answer.ToString());
+            Console.WriteLine("Question {0} {1}!", id, success ? "passed" : "failed");
+            return success;
         }
 
         // ensure data are cached properly

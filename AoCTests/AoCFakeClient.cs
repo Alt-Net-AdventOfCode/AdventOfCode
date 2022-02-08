@@ -4,14 +4,16 @@ using System.Threading.Tasks;
 
 namespace AoC.AoCTests
 {
-    public class AoCFakeClient : AoCClientBase
+    public sealed class AoCFakeClient : AoCClientBase
     {
         private string _inputData;
-        private readonly Dictionary<int, string> _responseFile = new Dictionary<int, string>();
+        private readonly Dictionary<int, string> _responseFile = new();
         
         public AoCFakeClient(int year) : base(year)
         {
         }
+
+        public int NbRequest { get; private set; }
 
         public void SetInputData(string data)
         {
@@ -23,7 +25,11 @@ namespace AoC.AoCTests
             _responseFile[id] = fileName;
         }
         
-        public override Task<string> RequestPersonalInput() => Task.FromResult(_inputData);
+        public override Task<string> RequestPersonalInput()
+        {
+            NbRequest++;
+            return Task.FromResult(_inputData);
+        }
 
         public override Task<string> PostAnswer(int id, string value) => File.ReadAllTextAsync(_responseFile[id]);
         
