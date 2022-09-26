@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.IO.Enumeration;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -289,14 +288,14 @@ namespace AdventCalendar2016
             }
         }
 
-        public override void SetupRun(Engine engine)
+        public override void SetupRun(Automaton automaton)
         {
-            engine.Day = 11;
-            engine.RegisterTestData(@"The first floor contains a hydrogen-compatible microchip and a lithium-compatible microchip.
+            automaton.Day = 11;
+            automaton.RegisterTestData(@"The first floor contains a hydrogen-compatible microchip and a lithium-compatible microchip.
 The second floor contains a hydrogen generator.
 The third floor contains a lithium generator.
 The fourth floor contains nothing relevant.");
-            engine.RegisterTestResult(11);
+            automaton.RegisterTestResult(11);
         }
 
         private readonly Regex _basic = new("The (\\w*) floor contains (.*).");
@@ -364,7 +363,7 @@ The fourth floor contains nothing relevant.");
             var previous = new Dictionary<State, State>();
             while (toVisit.Count>0)
             {
-                var likeliest = toVisit[0]; /*toVisit.PickMin(p => moveMetrics[p].heuristic)*/;
+                var likeliest = toVisit[0];
                 var cost = moveMetrics[likeliest];
                 toVisit.RemoveAt(0);
                 foreach (var neighbour in likeliest.PossibleMoves().ToList())

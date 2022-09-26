@@ -139,10 +139,10 @@ namespace AdventCalendar2016
             return Console.ReadLine();
         }
 
-        public override void SetupRun(Engine engine)
+        public override void SetupRun(Automaton automaton)
         {
-            engine.Day = 8;
-            engine.RegisterTestDataAndResult(@"rect 3x2
+            automaton.Day = 8;
+            automaton.RegisterTestDataAndResult(@"rect 3x2
 rotate column x=1 by 1
 rotate row y=0 by 4
 rotate column x=1 by 1", 6, 1);

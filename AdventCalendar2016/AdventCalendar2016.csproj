@@ -7,7 +7,10 @@
 
     <ItemGroup>
       <ProjectReference Include="..\AOCHelpers\AOCHelpers.csproj" />
-      <ProjectReference Include="..\AoC\AoC.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="AoC" Version="0.0.1" />
     </ItemGroup>
 
 </Project>

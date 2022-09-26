@@ -100,14 +100,14 @@ namespace AdventCalendar2016
             return score;
         }
 
-        public override void SetupRun(Engine engine)
+        public override void SetupRun(Automaton automaton)
         {
-            engine.Day = 7;
-            engine.RegisterTestDataAndResult(@"abba[mnop]qrst
+            automaton.Day = 7;
+            automaton.RegisterTestDataAndResult(@"abba[mnop]qrst
 abcd[bddb]xyyx
 aaaa[qwer]tyui
 ioxxoj[asdfgh]zxcvbn", 2, 1);
-            engine.RegisterTestDataAndResult(@"aba[bab]xyz
+            automaton.RegisterTestDataAndResult(@"aba[bab]xyz
 xyx[xyx]xyx
 aaa[kek]eke
 zazbz[bzb]cdb",3, 2);
