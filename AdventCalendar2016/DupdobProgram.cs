@@ -9,6 +9,7 @@ namespace AdventCalendar2016
     {
         private static readonly Type[] Solvers =
         {
+            typeof(DupdobDay15), 
             typeof(DupdobDay14), 
             typeof(DupdobDay13), 
             typeof(DupdobDay12), 
@@ -29,7 +30,7 @@ namespace AdventCalendar2016
         {
             var engine = new Automaton(2016);
             engine.SetDataPath("../../../Day{0,2}");
-            engine.RunDay<DupdobDay15>();
+            engine.RunDay<DupdobDay16>();
         }
 
         static void GiveAllDays()
