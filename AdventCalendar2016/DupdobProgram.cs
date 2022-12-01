@@ -9,6 +9,7 @@ namespace AdventCalendar2016
     {
         private static readonly Type[] Solvers =
         {
+            typeof(DupdobDay16), 
             typeof(DupdobDay15), 
             typeof(DupdobDay14), 
             typeof(DupdobDay13), 

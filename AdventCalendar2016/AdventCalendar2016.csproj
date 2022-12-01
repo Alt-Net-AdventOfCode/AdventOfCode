@@ -10,7 +10,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="AoC" Version="0.0.1" />
+      <PackageReference Include="AoC" Version="0.0.2" />
     </ItemGroup>
 
 </Project>
