@@ -44,7 +44,7 @@ public class DupdobDay1 : SolverWithLineParser
         }
         _totals.Sort();
         _totals.Reverse();
-        return _totals[0];
+        return _totals[0]+1;
     }
 
     public override object GetAnswer2() => _totals[0] + _totals[1] + _totals[2];
