@@ -11,4 +11,8 @@
       <PackageReference Include="AoC" Version="0.0.3" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Remove="AdventCalendar2022.csproj.DotSettings" />
+    </ItemGroup>
+
 </Project>
