@@ -71,19 +71,7 @@ public class DupdobDay4 : SolverWithLineParser
         var count = 0;
         for (var i = 0; i <_firstElves.Count; i++)
         {
-            if (_firstElves[i].begin >= _secondElves[i].begin && _firstElves[i].begin <= _secondElves[i].end)
-            {
-                count++;
-            }
-            else if (_firstElves[i].end >= _secondElves[i].begin && _firstElves[i].end <= _secondElves[i].end)
-            {
-                count++;
-            }
-            else if (_firstElves[i].begin <= _secondElves[i].begin && _firstElves[i].end >= _secondElves[i].begin)
-            {
-                count++;
-            }
-            else if (_firstElves[i].begin <= _secondElves[i].end && _firstElves[i].end >= _secondElves[i].end)
+            if (_firstElves[i].begin <= _secondElves[i].end && _secondElves[i].begin <= _firstElves[i].end)
             {
                 count++;
             }
