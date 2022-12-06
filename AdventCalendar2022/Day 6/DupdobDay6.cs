@@ -39,36 +39,35 @@ public class DupdobDay6 : SolverWithLineParser
 
     public override object GetAnswer1()
     {
-        for (var i = 3; i <_message.Length; i++)
+        return FindPacketSize(4);
+    }
+
+    private object FindPacketSize(int len)
+    {
+        var lastHits = new Dictionary<char, int>();
+        var begin = 0;
+        for (var i = 0; i < _message.Length; i++)
         {
-            if (ContainsDuplicates(_message.Substring(i-3, 4)))
+            if (i - begin > len)
             {
-                continue;
+                return i ;
             }
-            return i+1;
+
+            var seen = lastHits.TryGetValue(_message[i], out var lastHit);
+            lastHits[_message[i]] = i;
+            if (seen && i - lastHit < len && begin < lastHit)
+            {
+                // we have a duplicate, we can skip it
+                begin = lastHit ;
+            }
         }
 
         return -1;
     }
 
-    private static bool ContainsDuplicates(string block)
-    {
-        var hit = new HashSet<char>();
-        return block.Any(car => !hit.Add(car));
-    }
-    
     public override object GetAnswer2()
     {
-        for (var i = 14; i <_message.Length; i++)
-        {
-            if (ContainsDuplicates(_message.Substring(i-13, 14)))
-            {
-                continue;
-            }
-            return i+1;
-        }
-
-        return -1;
+        return FindPacketSize(14);
     }
 
     protected override void ParseLine(string? line, int index, int lineCount)
