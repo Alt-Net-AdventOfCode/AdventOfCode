@@ -61,9 +61,7 @@ U 20", 36, 2);
         }
 
         // diagonal move
-        dx = dx == 0 ? 0:  dx / Math.Abs(dx);
-        dy = dy == 0 ? 0: dy / Math.Abs(dy);
-        return (tail.x - dx, tail.y - dy);
+        return (tail.x - Math.Sign(dx), tail.y - Math.Sign(dy));
     }
     
     public override object GetAnswer1() => SolveForGivenLength(2);
