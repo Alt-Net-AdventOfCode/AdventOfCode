@@ -8,11 +8,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="AoC" Version="0.0.3" />
+      <None Remove="AdventCalendar2022.csproj.DotSettings" />
     </ItemGroup>
 
     <ItemGroup>
-      <None Remove="AdventCalendar2022.csproj.DotSettings" />
+      <ProjectReference Include="..\..\AocAutomaton\AoC\AoC.csproj" />
     </ItemGroup>
 
 </Project>
