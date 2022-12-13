@@ -60,7 +60,6 @@ public class DupdobDay13 : SolverWithLineParser
 
     public override object GetAnswer1()
     {
-        AddPackets();
         var score = 0;
         for (var index = 0; index < _packets.Count; index++)
         {
@@ -77,7 +76,7 @@ public class DupdobDay13 : SolverWithLineParser
     public override object GetAnswer2()
     {
         var packets = new List<Item>();
-        foreach ((Item left, Item right)  in _packets)
+        foreach (var (left, right)  in _packets)
         {
             packets.Add(left);
             packets.Add(right);
@@ -95,7 +94,7 @@ public class DupdobDay13 : SolverWithLineParser
 
     private class Item
     {
-        public List<Item>? SubItems;
+        public List<Item> SubItems = new();
         public int? Value;
 
         public int IsBefore(Item right)
@@ -104,46 +103,26 @@ public class DupdobDay13 : SolverWithLineParser
             {
                 return Value.Value.CompareTo(right.Value.Value);
             }
-            else if (right.Value.HasValue)
+
+            if (right.Value.HasValue)
             {
-                var tempItem = new Item
-                {
-                    SubItems = new List<Item> { right }
-                };
+                var tempItem = new Item();
+                tempItem.SubItems.Add(right);
                 return IsBefore(tempItem);
             }
-            else
+
+            if (Value.HasValue)
             {
-                if (Value.HasValue)
-                {
-                    var tempItem = new Item
-                    {
-                        SubItems = new List<Item> { this }
-                    };
-                    return tempItem.IsBefore(right);
-                }
+                var tempItem = new Item();
+                tempItem.SubItems.Add(this);
+                return tempItem.IsBefore(right);
             }
 
-            if (SubItems == null)
+            for (var i = 0; i < right.SubItems.Count; i++)
             {
-                if (right.SubItems == null)
+                if (i == SubItems.Count)
                 {
-                    return 0;
-                }
-                else
-                {
-                    return -1;
-                }
-            }
-
-            if (right.SubItems == null)
-            {
-                return 1;
-            }
-            for (var i = 0; i < right.SubItems!.Count; i++)
-            {
-                if (i == SubItems!.Count)
-                {
+                    // reached the end of our list of sub items
                     return -1;
                 }
 
@@ -163,30 +142,33 @@ public class DupdobDay13 : SolverWithLineParser
             {
                 return Value.ToString()!;
             }
-            else if (SubItems == null)
-            {
-                return "[]";
-            }
-
             return "[" + string.Join(',', SubItems) + "]";
         }
     }
 
     private readonly List<(Item left, Item right)> _packets = new();
-    private readonly List<Item> _store = new();
+    private Item? _store;
     
     protected override void ParseLine(string line, int index, int lineCount)
     {
 
         if (string.IsNullOrWhiteSpace(line))
         {
-            AddPackets();
             return;
         }
 
-        Item ?item = null;
-        var stack = new Stack<Item?>();
-        for (var i = 0; i < line.Length; i++)
+        var item = new Item();
+        var stack = new Stack<Item>();
+        if (_store == null)
+        {
+            _store = item;
+        }
+        else
+        {
+            _packets.Add((_store, item));
+            _store = null;
+        }
+        for (var i = 1; i < line.Length-1; i++)
         {
             switch (line[i])
             {
@@ -198,15 +180,7 @@ public class DupdobDay13 : SolverWithLineParser
                 {
                     var tempItem = item;
                     item = stack.Pop();
-                    if (item != null)
-                    {
-                        item.SubItems ??= new List<Item>();
-                        item.SubItems.Add(tempItem!);
-                    }
-                    else
-                    {
-                        _store.Add(tempItem!);
-                    }
+                    item.SubItems.Add(tempItem);
                     break;
                 }
                 case ',':
@@ -225,22 +199,10 @@ public class DupdobDay13 : SolverWithLineParser
                     {
                         Value = value
                     };
-                    item!.SubItems ??= new List<Item>();
                     item.SubItems.Add(subItem);
                     break;
                 }
             }
         }
-    }
-
-    private void AddPackets()
-    {
-        if (_store.Count != 2)
-        {
-            return;
-        }
-
-        _packets.Add((_store[0], _store[1]));
-        _store.Clear();
     }
 }
