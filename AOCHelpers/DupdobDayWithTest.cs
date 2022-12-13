@@ -29,6 +29,7 @@ namespace AOCHelpers
             }
             yield return (TestData, ExpectedResult1);
         }
+        
         protected virtual IEnumerable<(string intput, object result)> GetTestData2()
         {
             if (ExpectedResult2 == null)

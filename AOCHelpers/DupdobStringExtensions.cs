@@ -1,4 +1,3 @@
-using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace AOCHelpers
@@ -9,21 +8,6 @@ namespace AOCHelpers
         {
             var pos = text.IndexOf(separator);
             return (text[..pos], text[(pos+1)..]);
-        }
-
-        public static string ReplaceAll(this string text, string toReplace, string replacement, out int count)
-        {
-            var pos = 0;
-            count = 0;
-            do
-            {
-                pos = text.IndexOf(toReplace, pos, StringComparison.Ordinal);
-                if (pos < 0) continue;
-                count++;
-                pos += toReplace.Length;
-            } while (pos >=0);
-
-            return text.Replace(toReplace, replacement, StringComparison.Ordinal);
         }
     }
 }
