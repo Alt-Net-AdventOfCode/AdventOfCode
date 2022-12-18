@@ -24,43 +24,29 @@
 
 namespace AoCAlgorithms;
 
-/// <summary>
-/// Represents a 2D map with arbitrary storage type
-/// </summary>
-/// <typeparam name="T">Item type</typeparam>
-public class Map2D<T> : Map2DBase<T>
+public static class MathHelper
 {
-    private readonly T[,] _map;
-
-    public Map2D(IList<IEnumerable<T>> map, OutBoundHandling mode = OutBoundHandling.Throw, T defaultValue = default) : base(mode, defaultValue)
+    public static long GCD(long x, long y)
     {
-        _map = new T[map[0].Count(), map.Count];
-        for (var y = 0; y < map.Count; y++)
+        while (true)
         {
-            var x = 0;
-            foreach (var entry in map[y])
+            if (x < y)
             {
-                _map[x++, y] = entry;
+                (x, y) = (y, x);
             }
+
+            var remainder = x % y;
+            if (remainder == 0)
+            {
+                return y;
+            }
+            x = y;
+            y = remainder;
         }
     }
-    
-    protected override bool IsInMap((int x, int y) coordinates) =>
-        coordinates.x >= GetLowerBound(0)
-        && coordinates.x <= GetUpperBound(0)
-        && coordinates.y >= GetLowerBound(1)
-        && coordinates.y <= GetUpperBound(1);
 
-    protected override T GetValue((int x, int y) coords) => _map[coords.x, coords.y];
-
-    protected override void SetValue((int x, int y) coords, T value)
+    public static long LCM(long x, long y)
     {
-        _map[coords.x, coords.y] = value;
+        return x * y / GCD(x, y);
     }
-
-    public override int GetSize(int dimension) => _map.GetLength(dimension);
-
-    public override int GetLowerBound(int dimension) => _map.GetLowerBound(dimension);
-
-    public override int GetUpperBound(int dimension) => _map.GetUpperBound(dimension);
 }

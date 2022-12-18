@@ -24,43 +24,42 @@
 
 namespace AoCAlgorithms;
 
-/// <summary>
-/// Represents a 2D map with arbitrary storage type
-/// </summary>
-/// <typeparam name="T">Item type</typeparam>
-public class Map2D<T> : Map2DBase<T>
+public class SparseMap2D<T>: Map2DBase<T>
 {
-    private readonly T[,] _map;
+    private readonly Dictionary<(int x, int y), T> _map = new();
+    private readonly int _width;
+    private readonly int _height;
 
-    public Map2D(IList<IEnumerable<T>> map, OutBoundHandling mode = OutBoundHandling.Throw, T defaultValue = default) : base(mode, defaultValue)
-    {
-        _map = new T[map[0].Count(), map.Count];
-        for (var y = 0; y < map.Count; y++)
-        {
-            var x = 0;
-            foreach (var entry in map[y])
-            {
-                _map[x++, y] = entry;
-            }
-        }
+    private int _minX = int.MaxValue;
+    private int _maxX = int.MinValue;
+    private int _minY = int.MaxValue;
+    private int _maxY = int.MinValue;
+
+    public SparseMap2D(T defaultValue, OutBoundHandling mode = OutBoundHandling.DefaultValue,  int width = int.MaxValue, int height = int.MaxValue): base(mode, defaultValue)
+    {   
+        _width = width;
+        _height = height;
     }
     
-    protected override bool IsInMap((int x, int y) coordinates) =>
-        coordinates.x >= GetLowerBound(0)
-        && coordinates.x <= GetUpperBound(0)
-        && coordinates.y >= GetLowerBound(1)
-        && coordinates.y <= GetUpperBound(1);
+    protected override bool IsInMap((int x, int y) coordinates) => _map.ContainsKey(coordinates);
 
-    protected override T GetValue((int x, int y) coords) => _map[coords.x, coords.y];
+    protected override T GetValue((int x, int y) coords) => !_map.ContainsKey(coords) ? Default : _map[coords];
 
     protected override void SetValue((int x, int y) coords, T value)
     {
-        _map[coords.x, coords.y] = value;
+        _minX = Math.Min(_minX, coords.x);
+        _maxX = Math.Max(_maxX, coords.x);
+        _minY = Math.Min(_minY, coords.y);
+        _maxY = Math.Min(_maxY, coords.y);
+        _map[coords] = value;
     }
 
-    public override int GetSize(int dimension) => _map.GetLength(dimension);
+    public override int GetSize(int dimension)
+    {
+        return dimension == 0 ? _width : _height;
+    }
 
-    public override int GetLowerBound(int dimension) => _map.GetLowerBound(dimension);
+    public override int GetLowerBound(int dimension) => dimension == 0 ? _minX : _minY;
 
-    public override int GetUpperBound(int dimension) => _map.GetUpperBound(dimension);
+    public override int GetUpperBound(int dimension) => dimension == 0 ? _maxX : _maxY;
 }
