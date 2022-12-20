@@ -26,6 +26,10 @@ namespace AoCAlgorithms;
 
 public static class MathHelper
 {
+    public static int RoundedUpDivision(int x, int y)
+    {
+        return x/y + (x%y>=0 ? 1 : 0);
+    }
     public static long GCD(long x, long y)
     {
         while (true)
