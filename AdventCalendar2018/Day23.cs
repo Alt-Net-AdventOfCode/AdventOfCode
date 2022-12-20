@@ -219,7 +219,6 @@ namespace AdventCalendar2018
 
             public void FindLargestIntersection()
             {
-                IList<Nanobot> largestBlock = null;
  
                 foreach (var next in neighbours.OrderBy(x=>-x.neighbours.Count))
                 {    

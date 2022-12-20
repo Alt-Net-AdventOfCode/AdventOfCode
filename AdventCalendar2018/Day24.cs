@@ -24,10 +24,7 @@ namespace AdventCalendar2018
             var totalImmune = immuneGroup.TotalPower;
             Console.WriteLine($"End Game, Immune: {totalImmune}, Infection {totalInfection}");
 
-            var minBoost = 0;
             var maxBoost = 100;
-//            var boost = maxBoost;
-            var foundMax = false;
             for (var boost = 0; boost<2000; boost++)
             {
                 Console.WriteLine($"Trying with boost {boost}");
@@ -392,8 +389,6 @@ Infection:
 
         public Unit SelectTarget(IEnumerable<Unit> targets)
         {
-            Unit target = null;
-            var maxDamage = 0;
 
             var orderedTargets = targets.Where(unit => unit.DamageFactor(attackType)!=0).ToList();
             if (orderedTargets.Count == 0)

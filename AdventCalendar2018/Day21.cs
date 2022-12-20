@@ -215,7 +215,6 @@ namespace AdventCalendar2018
             var R4 = 0; // Reg 4
             var R5 = 0; // Reg 5
             var R2 = 0; // 2
-            var R3 = 0; // 3
             var list = new HashSet<int>();
             var previous = 0;
             R4 = 0;

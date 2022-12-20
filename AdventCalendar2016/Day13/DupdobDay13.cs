@@ -169,7 +169,7 @@ namespace AdventCalendar2016
             var count = 0;
             while (val!=0)
             {
-                count += (val % 4) switch { 0 => 0, 1=>1, 2=>1, 3=>2};
+                count += (val % 4) switch { 0 => 0, 1=>1, 2=>1, 3=>2, _=> throw new InvalidOperationException()};
                 val >>= 2;
             }
             return count;

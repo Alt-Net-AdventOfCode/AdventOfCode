@@ -15,7 +15,6 @@ namespace AdventCalendar2018
             var targetLength = 0;
             Console.WriteLine("Limit for room scan");
             var limit = int.Parse(Console.ReadLine());
-            var numberRoomsBeyondLimit = 0;
             var distances = new Dictionary<Coord, int>();
             var cursor = new Coord(0, 0);
             var history  = new Stack<Coord>();

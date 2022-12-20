@@ -181,7 +181,7 @@ Monkey 3:
             _monkeyIfTrue = monkeyIfTrue;
             _monkeyIfFalse = monkeyIfFalse;
             _initialItems = items.ToList();
-            Reset();
+            _items = _initialItems.ToList();
         }
 
         public void Reset()

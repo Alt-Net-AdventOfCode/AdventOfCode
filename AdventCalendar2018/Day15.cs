@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 
 namespace AdventCalendar2018
 {
@@ -9,55 +8,13 @@ namespace AdventCalendar2018
     {
         private static void MainDay15()
         {
-            var elvesPower = 13;
-            var oldElvesPower = 3;
-            var oldPowerFailed = true;
-            int round ;
-            List<Unit> units;
-            do
-            {
-                units = new List<Unit>();
-                round = TestGame(units, elvesPower);
- /*               if (round == 0 && oldPowerFailed)
-                {
-                    // elves have a loss
-                    // => increase power
-                    oldElvesPower = elvesPower;
-                    elvesPower += 10;
-                }
-                else if (round > 0 && oldPowerFailed && elvesPower - oldElvesPower == 1)
-                {
-                    // found it
-                    break;
-                }
-                else if (round > 0 && !oldPowerFailed)
-                {
-                    var t = elvesPower;
-                    elvesPower = Math.Min(elvesPower, oldElvesPower)-1;
-                    oldElvesPower = t;
-                    oldPowerFailed = true;
-                }
-                else
-                {
-                    var t = elvesPower;
-                    elvesPower = (oldElvesPower + elvesPower) / 2;
-                    oldElvesPower = t;
-                    oldPowerFailed = round==0;
-                }
-                */
-            } while (false);
+            const int elvesPower = 13;
+            var units = new List<Unit>();
+            var round = TestGame(units, elvesPower);
+
 
             // compute score
-            var nbUnit = 0;
-            var totalHealth = 0;
-            foreach (var unit in units)
-            {
-                if (!unit.Dead)
-                {
-                    nbUnit++;
-                    totalHealth += unit.Health;
-                }
-            }
+            var totalHealth = units.Where(unit => !unit.Dead).Sum(unit => unit.Health);
             Console.WriteLine($"Result: {round * totalHealth}");
         }
 
@@ -120,97 +77,84 @@ namespace AdventCalendar2018
 
         private class Unit : IComparable<Unit>
         {
-            private int Id;
-            private static int autoId;
-            private int power = 3;
+            public int Power { get; set; } = 3;
 
-            public int Power
-            {
-                get => power;
-                set => power = value;
-            }
+            public int Health { get; private set; } = 200;
 
-            private int health = 200;
+            private int _x;
+            private int _y;
 
-            public int Health => health;
+            public char Type { get; }
 
-            private int x;
-            private int y;
-            private char type;
-
-            public char Type => type;
-
-            public bool Dead => health == 0;
+            public bool Dead => Health == 0;
             public Unit(int x, int y, char type)
             {
-                this.x = x;
-                this.y = y;
-                this.type = type;
-                Id = autoId++;
+                _x = x;
+                _y = y;
+                Type = type;
             }
 
             public bool MoveToClosest(string[] map)
             {
-                var result = false;
                 if (Dead)
-                    return result;
-                var start = new Cell(x ,y , 0);
-                if (!InRange(start, map))
+                    return false;
+                var start = new Cell(_x ,_y , 0);
+                if (InRange(start, map))
                 {
-                    // move
-                    var cells = new List<Cell>();
-                    var altMap = ParseMap(map, cells);
-                    altMap[y, x] = start;
-                    cells.Add(start);
-                    var inRangeCells = new List<Cell>();
-                    var closest = FindNearestInRange(map, cells, altMap, inRangeCells);
-                    if (closest != null)
+                    return false;
+                }
+                // move
+                var cells = new List<Cell>();
+                var altMap = ParseMap(map, cells);
+                altMap[_y, _x] = start;
+                cells.Add(start);
+                var inRangeCells = new List<Cell>();
+                var closest = FindNearestInRange(map, cells, altMap, inRangeCells);
+                if (closest != null)
+                {
+                    // find next move
+                    while (closest.Predecessor != start)
                     {
-                        // find next move
-                        while (closest.predecessor != start)
-                        {
-                            closest = closest.predecessor;
-                        }
+                        closest = closest.Predecessor;
+                    }
 
-                        RemoveFromMap(map);
-                        x = closest.x;
-                        y = closest.y;
-                        UpdateMap(closest.x, closest.y, type, map);
-                        result = true;                        
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                    RemoveFromMap(map);
+                    _x = closest.X;
+                    _y = closest.Y;
+                    UpdateMap(closest.X, closest.Y, Type, map);
+                }
+                else
+                {
+                    return false;
                 }
                 // find weaker enemy
-                return result;
+                return true;
             }
 
             private void RemoveFromMap(IList<string> map)
             {
-                UpdateMap(x, y, '.', map);
+                UpdateMap(_x, _y, '.', map);
             }
 
             private Cell FindNearestInRange(IReadOnlyList<string> map, ICollection<Cell> cells, Cell[,] altMap, ICollection<Cell> inRangeCells)
             {
                 while (cells.Count > 0)
                 {
-                    var min = cells.Aggregate((current, next) => next.dist < current.dist ? next : current);
-                    if (min.dist == int.MaxValue)
+                    var min = cells.Aggregate((current, next) => next.Dist < current.Dist ? next : current);
+                    if (min.Dist == int.MaxValue)
                     {
                         // cell is unreachable!
                         break;
                     }
 
                     // there is a border around the playing field, no need to have boundary check, 
-                    Check(altMap, min, min.x, min.y - 1);
-                    Check(altMap, min, min.x - 1, min.y);
-                    Check(altMap, min, min.x + 1, min.y);
-                    Check(altMap, min, min.x, min.y + 1);
+                    Check(altMap, min, min.X, min.Y - 1);
+                    Check(altMap, min, min.X - 1, min.Y);
+                    Check(altMap, min, min.X + 1, min.Y);
+                    Check(altMap, min, min.X, min.Y + 1);
 
                     cells.Remove(min);
-                    altMap[min.y, min.x] = null;
+                    altMap[min.Y, min.X] = null;
                     // keep only cells in range
                     if (InRange(min, map))
                     {
@@ -224,31 +168,31 @@ namespace AdventCalendar2018
                     return null;
                 }
 
-                Cell closest = null;
+                Cell closest;
                 if (inRangeCells.Count > 1)
                 {
-                    var closests = new List<Cell>();
+                    var closestCells = new List<Cell>();
                     inRangeCells.Aggregate((current, next) =>
                     {
-                        if (closests.Count == 0)
+                        if (closestCells.Count == 0)
                         {
-                            closests.Add(current);
+                            closestCells.Add(current);
                         }
 
-                        if (next.dist > current.dist)
+                        if (next.Dist > current.Dist)
                         {
                             return current;
                         }
 
-                        if (next.dist < current.dist)
+                        if (next.Dist < current.Dist)
                         {
-                            closests.Clear();
+                            closestCells.Clear();
                         }
 
-                        closests.Add(next);
+                        closestCells.Add(next);
                         return next;
                     });
-                    closest = closests.Min();
+                    closest = closestCells.Min();
                 }
                 else
                 {
@@ -260,11 +204,11 @@ namespace AdventCalendar2018
 
             private bool InRange(Cell min, IReadOnlyList<string> map)
             {
-                var enemy = type == 'G' ? 'E' : 'G';
-                return map[min.y - 1][min.x] == enemy ||
-                       map[min.y][min.x - 1] == enemy ||
-                       map[min.y][min.x + 1] == enemy ||
-                       map[min.y + 1][min.x] == enemy;
+                var enemy = Type == 'G' ? 'E' : 'G';
+                return map[min.Y - 1][min.X] == enemy ||
+                       map[min.Y][min.X - 1] == enemy ||
+                       map[min.Y][min.X + 1] == enemy ||
+                       map[min.Y + 1][min.X] == enemy;
             }
 
             private static Cell[,] ParseMap(IReadOnlyList<string> map, ICollection<Cell> cells)
@@ -287,25 +231,6 @@ namespace AdventCalendar2018
                 return altMap;
             }
 
-            private static void DumpPath(string[] map, Cell start, Cell destination)
-            {
-                if (destination.dist == int.MaxValue)
-                {
-                    Console.WriteLine("No accessible range");
-                    return;
-                }
-                var mapCopy = (string[])map.Clone();
-                Console.WriteLine($"Path from {start.x}:{start.y} to {destination.x}:{destination.y}.");
-                // trace path for debug purpose
-                const char c = '*';
-                while (destination!=null && destination!=start)
-                {
-                    UpdateMap(destination.x, destination.y, c, mapCopy);
-                    destination = destination.predecessor;
-                }
-                DumpMap(mapCopy);
-            }
-
             private static void UpdateMap(int x,int y, char c, IList<string> mapCopy)
             {
                 var line = mapCopy[y];
@@ -315,42 +240,42 @@ namespace AdventCalendar2018
             private static void Check(Cell[,] map, Cell current, int x, int y)
             {
                 var neighbour = map[y, x];
-                if (neighbour == null || neighbour.dist < current.dist + 1)
+                if (neighbour == null || neighbour.Dist < current.Dist + 1)
                 {
                     // no neighbour
                     return;
                 }
 
-                if (neighbour.dist == current.dist + 1 && neighbour.predecessor != null &&
-                    neighbour.predecessor.CompareTo(current) < 0)
+                if (neighbour.Dist == current.Dist + 1 && neighbour.Predecessor != null &&
+                    neighbour.Predecessor.CompareTo(current) < 0)
                 {
                     return;
                 }
-                neighbour.dist = current.dist + 1;
-                neighbour.predecessor = current;
+                neighbour.Dist = current.Dist + 1;
+                neighbour.Predecessor = current;
             }
             
             public int CompareTo(Unit other)
             {
                 if (ReferenceEquals(this, other)) return 0;
                 if (ReferenceEquals(null, other)) return 1;
-                var yComparison = y.CompareTo(other.y);
-                return yComparison != 0 ? yComparison : x.CompareTo(other.x);
+                var yComparison = _y.CompareTo(other._y);
+                return yComparison != 0 ? yComparison : _x.CompareTo(other._x);
             }
 
             public bool Fight(IEnumerable<Unit> units, IList<string> map)
             {
                 if (Dead)
                     return false;
-                var enemyType = type == 'E' ? 'G' : 'E';
+                var enemyType = Type == 'E' ? 'G' : 'E';
                 Unit enemyUnit = null;
                 foreach (var unit in units)
                 {
-                    if (unit.type == enemyType && !unit.Dead)
+                    if (unit.Type == enemyType && !unit.Dead)
                     {
-                        if (Math.Abs(unit.x - x) + Math.Abs(unit.y - y) == 1)
+                        if (Math.Abs(unit._x - _x) + Math.Abs(unit._y - _y) == 1)
                         {
-                            if ( enemyUnit == null || (unit.health < enemyUnit.health))
+                            if ( enemyUnit == null || (unit.Health < enemyUnit.Health))
                             {
                                 enemyUnit = unit;
                             }
@@ -360,7 +285,7 @@ namespace AdventCalendar2018
 
                 if (enemyUnit != null)
                 {
-                    enemyUnit.TakeHit(power, map);
+                    enemyUnit.TakeHit(Power, map);
                     return true;
                 }
 
@@ -369,10 +294,10 @@ namespace AdventCalendar2018
 
             private void TakeHit(int hit, IList<string> map)
             {
-                health -= hit;
-                if (health < 0)
+                Health -= hit;
+                if (Health < 0)
                 {
-                    health = 0;
+                    Health = 0;
                     RemoveFromMap(map);
                 }
             }
@@ -384,50 +309,22 @@ namespace AdventCalendar2018
             {
                 if (ReferenceEquals(this, other)) return 0;
                 if (ReferenceEquals(null, other)) return 1;
-                var yComparison = y.CompareTo(other.y);
-                if (yComparison != 0) return yComparison;
-                return x.CompareTo(other.x);
+                var yComparison = Y.CompareTo(other.Y);
+                return yComparison != 0 ? yComparison : X.CompareTo(other.X);
             }
 
-            public readonly int x;
-            public readonly int y;
-            public int dist;
-            public Cell predecessor;
+            public readonly int X;
+            public readonly int Y;
+            public int Dist;
+            public Cell Predecessor;
 
             public Cell(int x, int y, int dist)
             {
-                this.x = x;
-                this.y = y;
-                this.dist = dist;
+                this.X = x;
+                this.Y = y;
+                this.Dist = dist;
             }
         }
-
-        private const string Demo =
-@"#######
-#G..#E#
-#E#E.E#
-#G.##.#
-#...#E#
-#...E.#
-#######";
-
-        private const string Demo2 =
-@"#######
-#E..EG#
-#.#G.E#
-#E.##E#
-#G..#.#
-#..E#.#
-#######";
-
-        private const string Demo3 =
-@"#######
-#E.G#.#
-#.#G..#
-#G.#.G#
-#G..#.#
-#...E.#
-#######";
 
         private const string Input = 
 @"################################
