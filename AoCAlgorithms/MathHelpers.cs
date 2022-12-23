@@ -26,12 +26,32 @@ namespace AoCAlgorithms;
 
 public static class MathHelper
 {
-    public static int RoundedUpDivision(int x, int y)
+    
+    /// <summary>
+    /// Returns the result of the integer division, rounded up
+    /// </summary>
+    /// <param name="x">number</param>
+    /// <param name="y">divisor</param>
+    /// <returns>Returns the result of the integer division, rounded up</returns>
+    public static int RoundedUpDivision(int x, int y) => x/y + (x%y!=0 ? 1 : 0);
+    /// <summary>
+    /// Returns the result of the integer division, rounded up
+    /// </summary>
+    /// <param name="x">number</param>
+    /// <param name="y">divisor</param>
+    /// <returns>Returns the result of the integer division, rounded up</returns>
+    public static long RoundedUpDivision(long x, long y) => x/y + (x%y!=0 ? 1 : 0);
+
+    /// <summary>
+    /// Compute the greatest common divisor of two numbers
+    /// </summary>
+    /// <param name="x">number</param>
+    /// <param name="y">number</param>
+    /// <returns>Returns the GCD</returns>
+    public static long Gcd(long x, long y)
     {
-        return x/y + (x%y!=0 ? 1 : 0);
-    }
-    public static long GCD(long x, long y)
-    {
+        if (x * y == 0)
+            return 1;
         while (true)
         {
             if (x < y)
@@ -49,8 +69,11 @@ public static class MathHelper
         }
     }
 
-    public static long LCM(long x, long y)
-    {
-        return x * y / GCD(x, y);
-    }
+    /// <summary>
+    /// Compute the lowest common multiple of two numbers
+    /// </summary>
+    /// <param name="x">number</param>
+    /// <param name="y">number</param>
+    /// <returns>Returns the LCM</returns>
+    public static long Lcm(long x, long y) => x * y / Gcd(x, y);
 }

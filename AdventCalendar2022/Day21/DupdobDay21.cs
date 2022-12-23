@@ -24,6 +24,7 @@
 
 using System.Text.RegularExpressions;
 using AoC;
+using AoCAlgorithms;
 
 namespace AdventCalendar2022;
 
@@ -48,21 +49,6 @@ pppw: cczh / lfqf
 lgvd: ljgn * ptdq
 drzm: hmdt - zczc
 hmdt: 32");
-        automaton.RegisterTestData(@"root: pppw + sjmn
-dbpl: 5
-cczh: sllz + lgvd
-zczc: 2
-ptdq: humn - dvpt
-dvpt: 3
-lfqf: 4
-humn: 5
-ljgn: 2
-sjmn: drzm * dbpl
-sllz: 4
-pppw: cczh / lfqf
-lgvd: ljgn * ptdq
-drzm: hmdt - zczc
-hmdt: 32",2);
         automaton.RegisterTestResult(152L);
         automaton.RegisterTestResult(301L,2);
     }
@@ -95,7 +81,6 @@ hmdt: 32",2);
     private abstract class Monkey
     {
         public abstract long Solve(Dictionary<string, Monkey> monkeys);
-
         public abstract bool DependsOn(string name, Dictionary<string, Monkey> monkeys);
         public abstract long InverseTo(string monkeyToSolve, long expected, Dictionary<string, Monkey> monkeys);
     }
@@ -194,14 +179,14 @@ hmdt: 32",2);
         var match = _numberParser.Match(line);
         if (match.Success)
         {
-            _monkeys[match.Groups[1].Value] = new NumberMonkey(match.Groups[1].Value, int.Parse(match.Groups[2].Value));
+            _monkeys[match.GetString(1)] = new NumberMonkey(match.GetString(1), match.GetInt(2));
             return;
         }
 
         match = _operationParser.Match(line);
         if (match.Success)
         {
-            _monkeys[match.Groups[1].Value] = new OperationMonkey(match.Groups[2].Value, match.Groups[3].Value, match.Groups[4].Value);
+            _monkeys[match.GetString(1)] = new OperationMonkey(match.GetString(2), match.GetString(3), match.GetString(4));
         }
     }
 

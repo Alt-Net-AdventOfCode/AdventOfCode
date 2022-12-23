@@ -22,25 +22,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using AoCAlgorithms;
-using NFluent;
+using System.Text.RegularExpressions;
 
-namespace AocAlgorithmsTests;
+namespace AoCAlgorithms;
 
-[TestFixture]
-public class MathHelperShould
+public static class RegexHelper
 {
-    [Test]
-    public void ComputeGCD()
-    {
-        Check.That(MathHelper.Gcd(10, 12)).IsEqualTo(2);
-        Check.That(MathHelper.Gcd(57, 64)).IsEqualTo(1);
-    }
-
-    [Test]
-    public void ComputeLCM()
-    {
-        Check.That(MathHelper.Lcm(10, 12)).IsEqualTo(60);
-        Check.That(MathHelper.Lcm(57, 64)).IsEqualTo(3648);
-    }
+    public static string GetString(this Match match, int groupId) => match.Groups[groupId].Value;
+    public static int GetInt(this Match match, int groupId) => int.Parse(match.Groups[groupId].Value);
+    public static long GetLong(this Match match, int groupId) => long.Parse(match.Groups[groupId].Value);
 }

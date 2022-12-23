@@ -90,6 +90,59 @@ public abstract class Map2DBase<T>
             yield return next;
         }
     }
+    
+    /// <summary>
+    /// Enumerate direct neighbors (8 directions)
+    /// </summary>
+    /// <param name="coordinates"></param>
+    /// <returns>an enumeration of the coordinates around the given cell (if they exists)</returns>
+    /// <remarks>Order is : left, top left, top, top right, right, bottom right, bottom, bottom left</remarks>
+    public IEnumerable<(int x, int y)> Around((int x, int y) coordinates)
+    {
+        var result = new List<(int x, int y)>(8);
+        var next = (coordinates.x - 1, coordinates.y);
+        if (WrapIfNeeded(ref next))
+        {
+            result.Add(next);
+        }
+        next = (coordinates.x - 1, coordinates.y-1);
+        if (WrapIfNeeded(ref next))
+        {
+            result.Add(next);
+        }
+        next = (coordinates.x, coordinates.y-1);
+        if (WrapIfNeeded(ref next))
+        {
+            result.Add(next);
+        }
+        next = (coordinates.x+1, coordinates.y-1);
+        if (WrapIfNeeded(ref next))
+        {
+            result.Add(next);
+        }
+        next = (coordinates.x+1, coordinates.y);
+        if (WrapIfNeeded(ref next))
+        {
+            result.Add(next);
+        }
+        next = (coordinates.x+1, coordinates.y+1);
+        if (WrapIfNeeded(ref next))
+        {
+            result.Add(next);
+        }
+        next = (coordinates.x, coordinates.y+1);
+        if (WrapIfNeeded(ref next))
+        {
+            result.Add(next);
+        }
+        next = (coordinates.x-1, coordinates.y+1);
+        if (WrapIfNeeded(ref next))
+        {
+            result.Add(next);
+        }
+
+        return result;
+    }
 
     private bool WrapIfNeeded(ref (int x, int y) coordinates)
     {
@@ -119,7 +172,7 @@ public abstract class Map2DBase<T>
     /// </summary>
     /// <param name="coordinates">coordinates to check and adjust</param>
     /// <returns>true if the returned coordinates fall into the map.</returns>
-    private bool ConvertToInternalCoordinates(ref (int x, int y) coordinates)
+    protected virtual bool ConvertToInternalCoordinates(ref (int x, int y) coordinates)
     {
         if (IsInMap(coordinates))
         {
@@ -174,14 +227,7 @@ public abstract class Map2DBase<T>
     
     public abstract int GetSize(int dimension);
 
-    public virtual int GetLowerBound(int dimension)
-    {
-        return 0;
-    }
-    
-    public virtual int GetUpperBound(int dimension)
-    {
-        return GetSize(dimension)-1;
-    }
+    public virtual int GetLowerBound(int dimension) => 0;
 
+    public virtual int GetUpperBound(int dimension) => GetSize(dimension)-1;
 }

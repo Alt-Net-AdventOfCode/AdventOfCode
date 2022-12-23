@@ -37,13 +37,7 @@ public class DupdobDay20: SolverWithLineParser
 3
 -2
 0
-4");        automaton.RegisterTestData(@"1
-2
--3
-3
--2
-0
-4",2);
+4");
         automaton.RegisterTestResult(3L);
         automaton.RegisterTestResult(1623178306L,2);
     }
