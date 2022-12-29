@@ -8,7 +8,7 @@ namespace AdventCalendar2022
         {
             var engine = new Automaton(2022);
             engine.SetDataPath("../../../Day{0,2}");
-            engine.RunDay<DupdobDay23>();
+            engine.RunDay<DupdobDay22>();
         }
     }
 }
