@@ -39,57 +39,67 @@ public class DupdobDay24 : SolverWithLineParser
 #<^v^^>#
 ######.#");
         automaton.RegisterTestResult(18);
+        automaton.RegisterTestResult(54,2);
     }
 
     private readonly (int dx, int dy)[] _vectors = {(1, 0), (0, 1), (-1, 0), (0, -1), (0, 0) };
     private readonly int[] _strategy = { 1,2,0,3,4};
-    
+
     public override object GetAnswer1()
     {
+        _cycle = (int)MathHelper.Lcm(_width, _height);
         InitBlizzardsState();
-        var cycle = (int)MathHelper.Lcm(_width, _height);
+        return ShortestPathFromTo(_start, _exit, 0);
+    }
+    
+    public override object GetAnswer2()
+    {
+        var firstTrip = ShortestPathFromTo(_start, _exit, 0);
+        var secondtrip = ShortestPathFromTo(_exit, _start, firstTrip);
+        return ShortestPathFromTo(_start, _exit, secondtrip);
+    }
+
+    private int ShortestPathFromTo((int x, int y) pos, (int x, int y) exit, int round)
+    {
+        var start = pos;
         var pending = new PriorityQueue<((int x, int y), int round), int>();
-        var pos = _start;
-        var round = 0;
-        var phase = 0;
-        pending.Enqueue((pos, 0), Priority(pos, round));
+        pending.Enqueue((pos, round), Priority(pos, round));
         var distances = new Dictionary<((int x, int y), int phase), int>
         {
-            [(pos, phase)] = 0
+            [(pos, round % _cycle)] = 0
         };
-        
+
         while (true)
         {
             (pos, round) = pending.Dequeue();
-            if (pos == _exit)
+            if (pos == exit)
             {
                 break;
             }
 
             round++;
-            phase = round % cycle;
+            var phase = round % _cycle;
             foreach (var moveIndex in _strategy)
             {
                 (int x, int y) cell = (pos.x + _vectors[moveIndex].dx, pos.y + _vectors[moveIndex].dy);
-                if ((cell.x < 0  || cell.y < 0 || cell.x >= _width || cell.y >= _height) && (cell!= _start && cell != _exit))
+                if ((cell.x < 0 || cell.y < 0 || cell.x >= _width || cell.y >= _height) && (cell != start && cell != exit))
                 {
                     continue;
                 }
-                if (_blizzardsState[phase].Contains(cell))
+
+                if (!_emptyCells[phase].Contains(cell))
                 {
                     continue;
                 }
-                if (distances.TryGetValue((cell, phase), out var value) && value < round)
+
+                if (distances.TryGetValue((cell, phase), out var value) && value <= round)
                 {
                     // we know a shorter path to this state
                     continue;
                 }
 
                 distances[(cell, phase)] = round;
-                if (!_blizzardsState[phase].Contains(cell))
-                {
-                    pending.Enqueue((cell, round), Priority((cell), round));
-                }
+                pending.Enqueue((cell, round), Priority((cell), round));
             }
         }
 
@@ -98,10 +108,10 @@ public class DupdobDay24 : SolverWithLineParser
 
     private void InitBlizzardsState()
     {
-        var cycle = (int)MathHelper.Lcm(_width, _height);
         var blizzardsPositions = _blizzards.Select(entry => (entry.x, entry.y)).ToList();
-        _blizzardsState.Add(blizzardsPositions.ToHashSet());
-        for (var i = 1; i < cycle; i++)
+        var blizzards = blizzardsPositions.ToHashSet();
+        _emptyCells.Add(ExtractEmptyCells(blizzards));
+        for (var i = 1; i < _cycle; i++)
         {
             for (var j = 0; j < _blizzards.Count; j++)
             {
@@ -109,28 +119,47 @@ public class DupdobDay24 : SolverWithLineParser
                 blizzardsPositions[j] = ((blizzardsPositions[j].x + _vectors[direction].dx + _width) % _width,
                     ((blizzardsPositions[j].y + _vectors[direction].dy + _height) % _height));
             }
-            _blizzardsState.Add(blizzardsPositions.ToHashSet());
+
+            var phaseBlizzards = blizzardsPositions.ToHashSet();
+            _emptyCells.Add(ExtractEmptyCells(phaseBlizzards));
         }
+    }
+
+    private HashSet<(int x, int y)> ExtractEmptyCells(IReadOnlySet<(int x, int y)> blizzards)
+    {
+        var emptyCells = new HashSet<(int x, int y)>
+        {
+            _start,
+            _exit
+        };
+        for (var y = 0; y < _height; y++)
+        {
+            for (var x = 0; x < _width; x++)
+            {
+                if (blizzards.Contains((x, y)))
+                {
+                    continue;
+                }
+
+                emptyCells.Add((x, y));
+            }
+        }
+
+        return emptyCells;
     }
 
     private static int ManhattanDistance((int x, int y) a, (int x, int y) b) => Math.Abs(a.x - b.x) + Math.Abs(a.y - b.y);
     
     private int Priority((int x, int y) coord, int round) => round + ManhattanDistance(coord, _exit);
 
-    private List<(int x, int y, int direction)> MoveBlizzards(IEnumerable<(int x, int y, int direction)> blizzards) 
-        => blizzards.Select(t => ((t.x + _vectors[t.direction].dx +_width) % _width, (t.y+_vectors[t.direction].dy+_height)%_height, t.direction)).ToList();
-
-    public override object GetAnswer2()
-    {
-        return null;
-    }
-
     private readonly List<(int x, int y, int direction)> _blizzards = new();
-    private readonly List<HashSet<(int x, int y)>> _blizzardsState = new();
+    private readonly List<HashSet<(int x, int y)>> _emptyCells = new();
     private int _width;
     private int _height;
     private (int x, int y) _start;
     private (int x, int y) _exit;
+    private int _cycle;
+
     protected override void ParseLine(string line, int index, int lineCount)
     {
         if (string.IsNullOrWhiteSpace(line))
