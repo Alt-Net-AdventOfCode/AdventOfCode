@@ -22,11 +22,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Runtime.Intrinsics.X86;
-using System.Security;
-using System.Security.AccessControl;
 using AoC;
-using AoCAlgorithms;
 
 namespace AdventCalendar2022;
 
@@ -55,312 +51,242 @@ public class DupdobDay22 : SolverWithLineParser
 
     public override object GetAnswer1()
     {
-        _height = _map.Max(c => c.y);
-        for (var line = 0; line <= _height; line++)
-        {
-            var cells = _map.Where(c => c.y == line).ToList();
-            _xBorders.Add((cells.Min(c => c.x), cells.Max(c => c.x)));
-        }
-
-        _width = _map.Max(c => c.x);
-        for (var col = 0; col <= _width; col++)
-        {
-            var cells = _map.Where(c => c.x == col).ToList();
-            _yBorders.Add((cells.Min(c => c.y), cells.Max(c => c.y)));
-        }
+        _height = _map.Max(c => c.y)+1;
+        _width = _map.Max(c => c.x)+1;
+        // ReSharper disable once PossibleLossOfFraction
         _sideSize = (int) Math.Sqrt(_map.Count / 6);
 
-        var y = 0;
-        var x = _xBorders[y].left;
-        var dir = 0;
-        // lets move
-        foreach (var (steps, direction) in _path)
+        var (dir, pos) = TraversePath(BuildFlatSideDescription(LocateSides()));
+        // score
+        return (pos.y+1) * 1000 + (pos.x+1) * 4 + dir;
+    }
+    
+    private class Side
+    {
+        public int Id { get; }
+        public (int x, int y) TopLeft { get; }
+        public (int side, int edge)[] Connections { get; } = new (int side, int edge)[4];
+
+        public Side(int id, (int x, int y) topLeft, (int x, int y) bottomRight)
         {
-            if (dir % 2 == 0)
-            {
-                // horizontal move
-                var step = dir == 0 ? 1 : -1;
-                for (var i = 0; i < steps; i++)
-                {
-                    var newX = x + step;
-                    if (!_map.Contains((newX, y)))
-                    {
-                        // wraparound
-                        newX = (dir == 0) ? _xBorders[y].left : _xBorders[y].right;
-                    }
-
-                    if (_walls.Contains((newX, y)))
-                    {
-                        // wall
-                        break;
-                    }
-
-                    x = newX;
-                }
-            }
-            else
-            {
-                var step = dir == 1 ? 1 : -1;
-                for (var i = 0; i < steps; i++)
-                {
-                    var newY = y + step;
-                    if (!_map.Contains((x, newY)))
-                    {
-                        // wraparound
-                        newY = (dir == 1) ? _yBorders[x].top : _yBorders[x].bottom;
-                    }
-
-                    if (_walls.Contains((x, newY)))
-                    {
-                        // wall
-                        break;
-                    }
-
-                    y = newY;
-                }
-            }
-
-            dir += direction;
-            if (dir == -1)
-            {
-                dir = 3;
-            }
-            else if (dir == 4)
-            {
-                dir = 0;
-            }
+            Id = id;
+            TopLeft = topLeft;
+            BottomRight = bottomRight;
         }
 
-        return (y+1) * 1000 + (x+1) * 4 + dir;
+        private (int x, int y) BottomRight { get; }
+
+        public bool IsWithinSide((int x, int y) coordinates) => (coordinates.x>= TopLeft.x && coordinates.y>= TopLeft.y) && coordinates.x<=BottomRight.x && coordinates.y<=BottomRight.y;
     }
-
-    private readonly List<(int left, int right)> _xBorders = new ();
-    private readonly List<(int top, int bottom)> _yBorders = new ();
-
+    
     public override object GetAnswer2()
     {
-        (int x, int y) pos = (_xBorders[0].left,0);
+        var (dir, pos) = TraversePath(BuildCubeSideDescription(LocateSides()));
+        // score
+        return (pos.y+1) * 1000 + (pos.x+1) * 4 + dir;
+    }
+
+    private (int dir, (int x, int y) pos) TraversePath(IReadOnlyDictionary<int, Side> sideDescription)
+    {
+        var upperBound = _sideSize - 1;
+        // starting point
         var dir = 0;
-        var originalDirection = 0;
-        (int dx, int dy)[] vectors = {(1,0),(0,1),(-1,0),(0,-1) };
-        var path = new Dictionary<(int x, int y), char> { { (pos.x, pos.y), ">v<^"[dir] } };
-        // dump the unfolded cube
-        for(var y=0; y<4; y++)
-        {
-            for (var x = 0; x < 4; x++)
-            {
-                if (_map.Contains((x * _sideSize, y * _sideSize)))
-                {
-                    Console.Write('#');
-                }
-                else
-                {
-                    Console.Write('.');
-                }
-            }
-            Console.WriteLine();
-        }
-        Console.WriteLine();
+        var side = 1;
+        var pos = (sideDescription[side].TopLeft.x, sideDescription[side].TopLeft.y);
+
         // lets move
         foreach (var (steps, direction) in _path)
         {
             for (var i = 0; i < steps; i++)
             {
-                var vector = vectors[dir];
+                var vector = _vectors[dir];
+                var nextSide = side;
+                var newDir = dir;
                 (int x, int y) next = (pos.x + vector.dx, pos.y + vector.dy);
-                (int X, int Y) block = (next.x / _sideSize - (next.x<0 ? 1 : 0), next.y / _sideSize - (next.y<0 ? 1 : 0));
-                (int dx, int dy) offset = (next.x % _sideSize, next.y % _sideSize);
-                if (!_map.Contains(next))
+                if (!sideDescription[side].IsWithinSide(next))
                 {
-                    var nextBlock = block;
-                    var oldDir = dir;
-                    // non trivial wrap around, we change face
-                    switch (dir)
+                    // we have to change sides
+                    // get which side and with move to and on which edge we land
+                    (nextSide, var newEdge) = sideDescription[side].Connections[dir];
+                    // moving direction is opposite to edge
+                    newDir = newEdge ^ 2;
+                    // get the current coordinate (within the side) of interest
+                    var offsetToKeep = dir switch
                     {
-                        case 0:
-                        {
-                            // try line below
-                            if (TryGetBlock(block, (0, 1), ref nextBlock))
-                            { 
-                                // below right
-                                next = BlockAndOffsetToPos(nextBlock, (-offset.dy-1, 0));
-                                dir++;
-                            }
-                            // try two lines below
-                            else if (TryGetBlock(block, (0, 2), ref nextBlock) || TryGetBlock(block, (-2, 2), ref nextBlock))
-                            {
-                                next = BlockAndOffsetToPos(nextBlock, (-1, -offset.dy-1));
-                                dir+=2;
-                            }
-                            // try three lines below
-                            else if (TryGetBlock(block, (0, 3), ref nextBlock))
-                            {   
-                                next = BlockAndOffsetToPos(nextBlock, (offset.dy, -1));
-                                dir += 3;
-                            }
-                            else
-                            {
-                                Console.WriteLine("failed to move right");
-                            }
-                            break;
-                        }
-                        case 1:
-                        {
-                            if (TryGetBlock(block, (3, 0), ref nextBlock))
-                            {
-                                next = BlockAndOffsetToPos(nextBlock, (-1, offset.dx));
-                                dir++;
-                            }
-                            else if (TryGetBlock(block, (1, 0), ref nextBlock))
-                            {
-                                next = BlockAndOffsetToPos(nextBlock, (0, offset.dx));
-                                dir--;
-                            }
-                            else if (TryGetBlock(block, (2, -2), ref nextBlock) )
-                            {
-                                next = BlockAndOffsetToPos(nextBlock, (-offset.dx-1, -1));
-                                dir+=2;
-                            }
-                            else
-                            {
-                                Console.WriteLine("failed to move down");
-                            }
-                            break;
-                        }
-                        case 2:
-                        {
-                            // try line below
-                            if (TryGetBlock(block, (0, 1), ref nextBlock))
-                            { 
-                                // below right
-                                next = BlockAndOffsetToPos(nextBlock, (offset.dy, 0));
-                                dir--;
-                            }
-                            else
-                                // try two lines below
-                            if (TryGetBlock(block, (0, 2), ref nextBlock) || TryGetBlock(block, (-2, -2), ref nextBlock))
-                            {
-                                next = BlockAndOffsetToPos(nextBlock, (0, -offset.dy-1));
-                                dir-=2;
-                            }
-                            // try three lines below
-                            else if (TryGetBlock(block, (0, 3), ref nextBlock))
-                            {   
-                                next = BlockAndOffsetToPos(nextBlock, (-offset.dy-1, -1));
-                                dir ++;
-                            }
-                            else
-                            {
-                                Console.WriteLine($"failed to move left {nextBlock}.");
-                            }
-                            break;
-                        }
-                        case 3:
-                        {
-                            if (TryGetBlock(block, (1, 0), ref nextBlock))
-                            {
-                                next = BlockAndOffsetToPos(nextBlock, (0, offset.dx));
-                                dir++;
-                            }
-                            else if (TryGetBlock(block, (2, 0), ref nextBlock))
-                            {
-                                next = BlockAndOffsetToPos(nextBlock, (-offset.dx-1,0));
-                                dir-=2;
-                            }
-                            else if (TryGetBlock(block, (3, 0), ref nextBlock))
-                            {
-                                next = BlockAndOffsetToPos(nextBlock, (0, -offset.dx-1));
-                                dir--;
-                            }
-                            else
-                            {
-                                Console.WriteLine("failed to move up");
-                            }
-                            break;
-                        }
-                    }
-                    
-                    Console.WriteLine($"Move from {block}({oldDir}) to {nextBlock}({dir}), {pos}==>{next}.");
-                } 
-                
+                        0 => upperBound - (next.y - sideDescription[side].TopLeft.y),
+                        1 => (next.x - sideDescription[side].TopLeft.x),
+                        2 => next.y - sideDescription[side].TopLeft.y,
+                        3 => upperBound - (next.x - sideDescription[side].TopLeft.x),
+                        _ => throw new ArgumentException()
+                    };
+                    // perform coordinates translation
+                    (int dx, int dy) offset = newEdge switch
+                    {
+                        0 => (upperBound, offsetToKeep),
+                        1 => (upperBound - offsetToKeep, upperBound),
+                        2 => (0, upperBound - offsetToKeep),
+                        3 => (offsetToKeep, 0),
+                        _ => throw new ArgumentException()
+                    };
+                    // establish new absolute coordinates
+                    next = (sideDescription[nextSide].TopLeft.x + offset.dx,
+                        sideDescription[nextSide].TopLeft.y + offset.dy);
+                }
+
+                // if we hit a wall there,  we stop (and we do not change side)
                 if (_walls.Contains(next))
                 {
                     // wall
                     break;
                 }
 
-                pos = next;
-                if (dir < 0)
-                {
-                    dir += 4;
-                }
-                else if (dir >3)
-                {
-                    dir -= 4;
-                }
-                path[(pos.x, pos.y)]= ">v<^"[dir];
+                (pos, side, dir) = (next, nextSide, newDir);
             }
 
-            originalDirection = (originalDirection+dir) % 4;
             dir += direction;
-            if (dir < 0)
-            {
-                dir += 4;
-            }
-            else if (dir >3)
-            {
-                dir -= 4;
-            }
-            path[(pos.x, pos.y)]= ">v<^"[dir];
+            dir = (dir + 4) % 4;
         }
 
-        for (var y = 0; y <= _height; y++)
-        {
-            for (var x = 0; x <= _width; x++)
-            {
-                if (path.ContainsKey((x, y)))
-                {
-                    Console.Write(path[(x,y)]);
-                }
-                else if (_walls.Contains((x, y)))
-                {
-                    Console.Write('#');
-                }
-                else if (_map.Contains((x, y)))
-                {
-                    Console.Write('.');
-                }
-                else
-                {
-                    Console.Write(' ');
-                }
-            }
-            Console.WriteLine();
-        }
-        
-        return (pos.y+1) * 1000 + (pos.x+1) * 4 + originalDirection;
+        return (dir, pos);
     }
 
-    private (int x, int y) BlockAndOffsetToPos((int x, int y) block, (int dx, int dy) offset)
+    private Dictionary<int, Side> BuildFlatSideDescription(Dictionary<int, Side> sideDescription)
     {
-        return (block.x * _sideSize + offset.dx + (offset.dx<0 ? _sideSize : 0), block.y * _sideSize + offset.dy+ (offset.dy<0 ? _sideSize : 0));
+        foreach (var (_, description) in sideDescription)
+        {
+            // look if there is a neighbor on right
+            var x = description.TopLeft.x;
+            var y = description.TopLeft.y;
+            x = (description.TopLeft.x + _sideSize) % _width;
+            while(true)
+            {
+                var side = FindSide(sideDescription, (x, y));
+                if (side>0)
+                {
+                    description.Connections[0] = (side, 2);
+                    break;
+                }
+
+                x = (x + _sideSize) % _width;
+            } 
+
+            x = (description.TopLeft.x - _sideSize+_width) % _width;
+            while(true)
+            {
+                var side = FindSide(sideDescription, (x, y));
+                if (side>0)
+                {
+                    description.Connections[2] = (side, 0);
+                    break;
+                }
+                x = (x - _sideSize+_width) % _width;
+            }
+
+            x = description.TopLeft.x;
+            y = (description.TopLeft.y + _sideSize) % _height;
+            while(true)
+            {
+                var side = FindSide(sideDescription, (x, y));
+                if (side>0)
+                {
+                    description.Connections[1] = (side, 3);
+                    break;
+                }
+
+                y = (y + _sideSize) % _height;
+            }
+
+            y = (description.TopLeft.y - _sideSize+_width) % _height;
+            while(true)
+            {
+                var side = FindSide(sideDescription, (x, y));
+                if (side>0)
+                {
+                    description.Connections[3] = (side, 1);
+                    break;
+                }
+                y = (y - _sideSize+_height) % _height;
+            }
+        }
+
+        return sideDescription;
     }
 
-    private bool TryGetBlock((int X, int Y) block, (int dx, int dy) offset, ref (int X, int Y) resultBlock)
+    private static int FindSide(Dictionary<int, Side> sideDescription, (int x, int y) coordinates) => (from value in sideDescription.Values where value.IsWithinSide(coordinates) select value.Id).FirstOrDefault();
+
+    private Dictionary<int, Side> BuildCubeSideDescription(Dictionary<int, Side> sideDescription)
     {
-        for (var i = -1; i <= 1; i++)
+        // identify side connections
+        var connectionMade = true;
+        while (connectionMade)
         {
-            for (var j = -1; j <=1; j++)
+            connectionMade = false;
+            foreach (var (_, description) in sideDescription)
             {
-                var tryBlock = (block.X + i * 4 + offset.dx, block.Y + j*4 + offset.dy);
-                if (_map.Contains((tryBlock.Item1 * _sideSize, tryBlock.Item2 * _sideSize)))
+                for (var i = 0; i < description.Connections.Length; i++)
                 {
-                    resultBlock = tryBlock;
-                    return true;
+                    if (description.Connections[i].side>0) continue;
+                    var topLeft = description.TopLeft;
+                    var next = sideDescription.Values.FirstOrDefault(d =>
+                        d.TopLeft.y == topLeft.y + _vectors[i].dy * _sideSize &&
+                        d.TopLeft.x == topLeft.x + _vectors[i].dx * _sideSize);
+                    // we have a neighbor side
+                    if (next != null)
+                    {
+                        description.Connections[i] = (next.Id, i ^ 2);
+                        connectionMade = true;
+                    }
+                    else if (ScanNeighbor(description, sideDescription, i, 1) || ScanNeighbor(description, sideDescription, i, 3))
+                    {
+                        connectionMade = true;
+                    }
                 }
             }
         }
-        return false;
+        return sideDescription;
+    }
+
+    private Dictionary<int, Side> LocateSides()
+    {
+        // identify sides and their relationships
+        Dictionary<int, Side> sideDescription = new();
+        var sideId = 1;
+        // identify sides position within the map
+        for (var y = 0; y < _height; y += _sideSize)
+        {
+            for (var x = 0; x < _width; x += _sideSize)
+            {
+                if (!_map.Contains((x, y)))
+                {
+                    continue;
+                }
+
+                sideDescription[sideId] = new Side(sideId, (x, y), (x + _sideSize - 1, y + _sideSize - 1));
+                sideId++;
+            }
+        }
+
+        return sideDescription;
+    }
+
+    private static bool ScanNeighbor(Side description, IReadOnlyDictionary<int, Side> sideDescription, int i, int offset)
+    {
+        var (nextSide, angle) = description.Connections[(i + offset) % 4];
+        if (nextSide <= 0)
+        {
+            return false;
+        }
+        var sideOffset = angle - (i + offset) % 4^2;
+        var (foundSide, nextAngle) = sideDescription[nextSide].Connections[(i + sideOffset + 4) % 4];
+        if (foundSide == 0)
+        {
+            return false;
+        }
+        var connectedSide = (nextAngle + offset) % 4;
+        description.Connections[i] = (foundSide, connectedSide);
+        sideDescription[foundSide].Connections[connectedSide] = (description.Id, i);
+        return true;
+
     }
 
     private readonly HashSet<(int x, int y)> _map = new();
@@ -369,6 +295,12 @@ public class DupdobDay22 : SolverWithLineParser
     private int _sideSize;
     private int _height;
     private int _width;
+    private readonly (int dx, int dy)[] _vectors;
+
+    public DupdobDay22()
+    {
+        _vectors = new[] {(1,0),(0,1),(-1,0),(0,-1) };
+    }
 
     protected override void ParseLine(string line, int index, int lineCount)
     {
