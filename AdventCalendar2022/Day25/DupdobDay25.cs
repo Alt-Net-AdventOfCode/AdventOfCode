@@ -49,29 +49,9 @@ public class DupdobDay25 : SolverWithLineParser
 
     private const string Digits = "=-012";
     
-    public override object GetAnswer1()
-    {
-        long score = 0;
-        foreach (var l in _list)
-        {
+    public override object GetAnswer1() => IntToSnafu(_list.Sum(SnafuToInt));
 
-            var toDecimal = SnafuToDecimal(l);
-            if (toDecimal < 0)
-            {
-                
-            }
-            score += toDecimal;
-        }
-        var decimalToSnafu = DecimalToSnafu(score);
-        var snafuToDecimal = SnafuToDecimal(decimalToSnafu);
-        if (snafuToDecimal != score)
-        {
-            return null;
-        }
-        return decimalToSnafu;
-    }
-
-    private static string DecimalToSnafu(long score)
+    private static string IntToSnafu(long score)
     {
         var digitCount = 0L;
         var rank = 1L;
@@ -121,7 +101,7 @@ public class DupdobDay25 : SolverWithLineParser
         return result;
     }
 
-    private static long SnafuToDecimal(string number)
+    private static long SnafuToInt(string number)
     {
         var total = 0L;
         var rank = 1L;
@@ -136,7 +116,7 @@ public class DupdobDay25 : SolverWithLineParser
 
     public override object GetAnswer2()
     {
-        throw new NotImplementedException();
+        return "ok";
     }
 
     private readonly List<string> _list = new();

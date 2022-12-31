@@ -1,4 +1,4 @@
-﻿    using AoC;
+﻿using AoC;
 
 namespace AdventCalendar2022
 {
@@ -8,7 +8,7 @@ namespace AdventCalendar2022
         {
             var engine = new Automaton(2022);
             engine.SetDataPath("../../../Day{0,2}");
-            engine.RunDay<DupdobDay24>();
+            engine.RunDay<DupdobDay25>();
         }
     }
 }

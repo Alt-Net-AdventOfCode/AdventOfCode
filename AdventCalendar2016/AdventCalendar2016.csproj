@@ -6,11 +6,8 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\AocAutomaton\AoC\AoC.csproj" />
       <ProjectReference Include="..\AOCHelpers\AOCHelpers.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <PackageReference Include="AoC" Version="0.0.3.1" />
     </ItemGroup>
 
 </Project>
