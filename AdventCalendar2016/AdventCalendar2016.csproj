@@ -10,8 +10,4 @@
       <ProjectReference Include="..\AOCHelpers\AOCHelpers.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Day19" />
-    </ItemGroup>
-
 </Project>

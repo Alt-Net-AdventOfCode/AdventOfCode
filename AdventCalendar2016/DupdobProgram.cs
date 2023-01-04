@@ -33,7 +33,7 @@ namespace AdventCalendar2016
         {
             var engine = new Automaton(2016);
             engine.SetDataPath("../../../Day{0,2}");
-            engine.RunDay<DupdobDay18>();
+            engine.RunDay<DupdobDay19>();
         }
 
         static void GiveAllDays()
