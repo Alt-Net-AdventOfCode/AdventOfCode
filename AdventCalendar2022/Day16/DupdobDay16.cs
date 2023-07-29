@@ -46,14 +46,16 @@ Valve JJ has flow rate=21; tunnel leads to valve II");
         automaton.RegisterTestResult(1707,2);
     }
 
-    private void CreateNetwork(string valveId, List<string> wanted)
+    private void CreateNetwork(string valveId, IEnumerable<string> wanted)
     {
         var valve = _valves[valveId];
         var toFind = new List<string>(wanted);
         toFind.Remove(valveId);
         var pending = new List<Valve>();
-        var shortestDist = new Dictionary<string, int>();
-        shortestDist[valve.Name] = 0;
+        var shortestDist = new Dictionary<string, int>
+        {
+            [valve.Name] = 0
+        };
         pending.Add(valve);
         while (pending.Count>0)
         {
@@ -189,10 +191,8 @@ Valve JJ has flow rate=21; tunnel leads to valve II");
         public List<string> Next = new();
         public readonly List<(Valve next, int cost)> Network = new();
     }
-    
-    private readonly Dictionary<string, Valve> _valves = new();
-    
 
+    private readonly Dictionary<string, Valve> _valves = new();
     private readonly Regex _parser = MyRegex();
     protected override void ParseLine(string line, int index, int lineCount)
     {

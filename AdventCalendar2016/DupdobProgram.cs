@@ -9,23 +9,24 @@ namespace AdventCalendar2016
     {
         private static readonly Type[] Solvers =
         {
-            typeof(DupdobDay18), 
-            typeof(DupdobDay17), 
-            typeof(DupdobDay16), 
-            typeof(DupdobDay15), 
-            typeof(DupdobDay14), 
-            typeof(DupdobDay13), 
-            typeof(DupdobDay12), 
-            typeof(DupdobDay11), 
-            typeof(DupdobDay10), 
-            typeof(DupdobDay9), 
-            typeof(DupdobDay8), 
-            typeof(DupdobDay7), 
-            typeof(DupdobDay6), 
-            typeof(DupdobDay5), 
-            typeof(DupdobDay4), 
-            typeof(DupdobDay3), 
-            typeof(DupdobDay2), 
+            typeof(DupdobDay19),
+            typeof(DupdobDay18),
+            typeof(DupdobDay17),
+            typeof(DupdobDay16),
+            typeof(DupdobDay15),
+            typeof(DupdobDay14),
+            typeof(DupdobDay13),
+            typeof(DupdobDay12),
+            typeof(DupdobDay11),
+            typeof(DupdobDay10),
+            typeof(DupdobDay9),
+            typeof(DupdobDay8),
+            typeof(DupdobDay7),
+            typeof(DupdobDay6),
+            typeof(DupdobDay5),
+            typeof(DupdobDay4),
+            typeof(DupdobDay3),
+            typeof(DupdobDay2),
             typeof(DupdobDay1)
         };
 
@@ -33,7 +34,7 @@ namespace AdventCalendar2016
         {
             var engine = new Automaton(2016);
             engine.SetDataPath("../../../Day{0,2}");
-            engine.RunDay<DupdobDay19>();
+            engine.RunDay<DupdobDay21>();
         }
 
         static void GiveAllDays()

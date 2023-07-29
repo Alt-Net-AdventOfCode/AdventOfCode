@@ -7,6 +7,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\AocAutomaton\AoC\AoC.csproj" />
+      <ProjectReference Include="..\AoCAlgorithms\AoCAlgorithms.csproj" />
       <ProjectReference Include="..\AOCHelpers\AOCHelpers.csproj" />
     </ItemGroup>
 
