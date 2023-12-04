@@ -29,7 +29,7 @@ namespace AdventCalendar2023;
 public class DupdobDay3 : SolverWithLineParser
 {
     private readonly List<string> _lines = new();
-    private Dictionary<(int x, int y), int> _numbers = new();
+    private List<(int number, List<(int y, int x)> stars)> _singleGear = new();
 
     public override void SetupRun(Automaton automatonBase)
     {
@@ -72,8 +72,9 @@ public class DupdobDay3 : SolverWithLineParser
                 }
 
                 var foundSymbol = false;
+                var stars = new List<(int y, int x)>();
                 // check around
-                for (var y = Math.Max(0, i - 1); y <= Math.Min(_lines.Count - 1, i + 1) && !foundSymbol; y++)
+                for (var y = Math.Max(0, i - 1); y <= Math.Min(_lines.Count - 1, i + 1); y++)
                 {
                     for (var x = Math.Max(0, begin - 1); x <= Math.Min(cursor, line.Length - 1); x++)
                     {
@@ -81,15 +82,21 @@ public class DupdobDay3 : SolverWithLineParser
                         if (car is '.' or >= '0' and <= '9')
                             continue;
                         foundSymbol = true;
-                        break;
+                        if (car == '*')
+                        {
+                            stars.Add((y,x));
+                        }
                     }
                 }
 
                 if (foundSymbol)
                 {
-                    result += int.Parse(line[begin .. cursor]);
-                    // we store the length for question 2
-                    _numbers[(i, begin)] = cursor - begin;
+                    var number = int.Parse(line[begin .. cursor]);
+                    result += number;
+                    if (stars.Count > 0)
+                    {
+                        _singleGear.Add((number, stars));
+                    }
                 }
             }
         }
@@ -99,7 +106,20 @@ public class DupdobDay3 : SolverWithLineParser
     
     public override object GetAnswer2()
     {
-        throw new NotImplementedException();
+        var result = 0;
+        for (var i = 0; i < _singleGear.Count; i++)
+        {
+            for (var j = i + 1; j < _singleGear.Count(); j++)
+            {
+                if (_singleGear[j].stars.Any(x => _singleGear[i].stars.Contains(x)))
+                {
+                    result += _singleGear[i].number * _singleGear[j].number;
+                    // we assume no chain of gearts
+                    break;
+                }
+            }
+        }
+        return result;
     }
 
     protected override void ParseLine(string line, int index, int lineCount)
