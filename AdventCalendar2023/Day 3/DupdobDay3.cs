@@ -114,7 +114,7 @@ public class DupdobDay3 : SolverWithLineParser
                 if (_singleGear[j].stars.Any(x => _singleGear[i].stars.Contains(x)))
                 {
                     result += _singleGear[i].number * _singleGear[j].number;
-                    // we assume no chain of gearts
+                    // we assume no chain of gears
                     break;
                 }
             }
