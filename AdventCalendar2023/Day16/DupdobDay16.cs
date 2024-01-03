@@ -50,8 +50,15 @@ public class DupdobDay16 : SolverWithLineParser
     {
         var width = _map[0].Length;
         var height = _map.Count;
+        var dir = 0;
+        var initialPosition = (0,0);
+        return Energize(dir, initialPosition, height, width);
+    }
+
+    private int Energize(int dir, (int, int) initialPosition, int height, int width)
+    {
         var energized= new int[height, width];
-        LightTravel((0,0), energized, 0);
+        LightTravel(initialPosition, energized, dir);
 
         var score = 0;
         for (var y = 0; y < height; y++)
@@ -111,7 +118,20 @@ public class DupdobDay16 : SolverWithLineParser
 
     public override object GetAnswer2()
     {
-        throw new NotImplementedException();
+        var width = _map[0].Length;
+        var height = _map.Count;
+        var score = 0;
+        for (var y = 0; y < height; y++)
+        {
+            score = Math.Max(score, Energize(0, (y, 0), height, width));
+            score = Math.Max(score, Energize(2, (y, width-1), height, width));
+        }
+        for (var x = 0; x < width; x++)
+        {
+            score = Math.Max(score, Energize(1, (0, x), height, width));
+            score = Math.Max(score, Energize(3, (height-1, x), height, width));
+        }
+        return score;
     }
 
     protected override void ParseLine(string line, int index, int lineCount)
