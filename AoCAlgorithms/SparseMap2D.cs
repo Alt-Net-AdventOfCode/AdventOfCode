@@ -56,6 +56,7 @@ public class SparseMap2D<T>: Map2DBase<T>, IEnumerable<(int x, int y)>
     }
 
     protected override bool IsInMap((int x, int y) coordinates) => _map.ContainsKey(coordinates);
+    
     protected override bool ConvertToInternalCoordinates(ref (int x, int y) coordinates)
     {
         return true;
@@ -95,7 +96,7 @@ public class SparseMap2D<T>: Map2DBase<T>, IEnumerable<(int x, int y)>
     public long GetBoundedSurface()
     {
         CheckLimits();
-        return ((long)(_maxX - _minX+1) * (_maxY - _minY + 1));
+        return (long)(_maxX - _minX+1) * (_maxY - _minY + 1);
     }
 
     public long GetEntryCount() => _map.Count;
@@ -127,16 +128,16 @@ public class SparseMap2D<T>: Map2DBase<T>, IEnumerable<(int x, int y)>
 
     public bool RemoveAt((int x, int y) from)
     {
-        if (_map.Remove(from))
+        if (!_map.Remove(from))
         {
-            if (from.x == _minX || from.x == _maxX || from.y == _minY || from.y == _maxY)
-            {
-                _limitsAreDirty = true;
-            }
-
-            return true;
+            return false;
+        }
+        if (from.x == _minX || from.x == _maxX || from.y == _minY || from.y == _maxY)
+        {
+            _limitsAreDirty = true;
         }
 
-        return false;
+        return true;
+
     }
 }

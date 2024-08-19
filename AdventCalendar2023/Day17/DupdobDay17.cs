@@ -192,16 +192,6 @@ public class DupdobDay17 : SolverWithLineParser
         return route;
     }
 
-    private static void PrintRoute(List<((int, int) pos, int dir)> route)
-    {
-        Console.Write("(0,0)");
-        foreach (((int y, int x) pos, int dir) tuple in route)
-        {
-            Console.Write($",({tuple.pos.y}, {tuple.pos.x})");
-        }
-        Console.WriteLine();
-    }
-
     private static (int y, int x)? FindNeighbours((int y, int x) pos, int dir, int width, int height)
     {
         pos = (pos.y+Vectors[dir].dy , pos.x + Vectors[dir].dx);
