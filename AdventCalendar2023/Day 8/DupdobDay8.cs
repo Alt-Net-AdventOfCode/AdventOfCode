@@ -23,6 +23,7 @@
 // SOFTWARE.
 
 using AoC;
+using AoCAlgorithms;
 
 namespace AdventCalendar2023;
 
@@ -30,7 +31,7 @@ public class DupdobDay8 : SolverWithLineParser
 {
 
     private readonly Dictionary<string, (string left, string right)> _graph = new();
-    private string _instructions;
+    private string _instructions = "";
     
     public override void SetupRun(Automaton automatonBase)
     {
@@ -80,21 +81,28 @@ XXX = (XXX, XXX)", 0, 1);
 
     public override object GetAnswer2()
     {
-        var currents = _graph.Keys.Where(s => s.EndsWith('A')).ToHashSet();
+        var currents = _graph.Keys.Where(s => s.EndsWith('A')).ToArray();
+        var loopLengths = new int[currents.Length];
         var steps = 0;
-        while (!currents.All(s => s.EndsWith('Z')))
+        var keepOn = true;
+        while (keepOn)
         {
             var goRight = _instructions[steps++ % _instructions.Length] == 'R';
-            var next = new HashSet<string>();
-            foreach (var current in currents)
+            for (var index = 0; index < currents.Length; index++)
             {
-                next.Add(goRight ? _graph[current].right : _graph[current].left);
+                if (loopLengths[index]>0) continue;
+                var current = currents[index];
+                var nextNode = goRight ? _graph[current].right : _graph[current].left;
+                if (nextNode.EndsWith('Z'))
+                {
+                    loopLengths[index] = steps;
+                    keepOn = loopLengths.Any(l => l == 0);
+                }
+                currents[index] = nextNode;
             }
-
-            currents = next;
         }
 
-        return steps;
+        return loopLengths.Aggregate(1L, (acc, next) => MathHelper.Lcm(acc, next));
     }
 
     protected override void ParseLine(string line, int index, int lineCount)
