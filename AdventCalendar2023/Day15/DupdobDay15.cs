@@ -37,15 +37,7 @@ public class DupdobDay15 : SolverWithLineParser
         automatonBase.RegisterTestResult(145, 2);
     }
 
-    public override object GetAnswer1()
-    {
-        var result = 0;
-        foreach (var part in _line.Split(',', StringSplitOptions.RemoveEmptyEntries))
-        {
-            result += ComputeHash(part);
-        }
-        return result;
-    }
+    public override object GetAnswer1() => string.IsNullOrEmpty(_line) ? 0 : _line.Split(',', StringSplitOptions.RemoveEmptyEntries).Sum(part => ComputeHash(part));
 
     private static int ComputeHash(string part)
     {

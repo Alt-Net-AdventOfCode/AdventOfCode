@@ -28,10 +28,11 @@ namespace AdventCalendar2023;
 
 public class DupdobDay6 : SolverWithLineParser
 {
-    private List<long> _times;
-    private List<long> _distances;
+    private List<long> _times = new();
+    private List<long> _distances = new();
     private long _time;
     private long _distance;
+    
     public override void SetupRun(Automaton automatonBase)
     {
         automatonBase.Day = 6;
