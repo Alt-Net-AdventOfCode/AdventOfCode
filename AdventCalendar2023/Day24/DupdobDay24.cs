@@ -22,8 +22,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections;
-using System.Runtime.InteropServices;
 using AoC;
 
 namespace AdventCalendar2023;
@@ -43,56 +41,18 @@ public class DupdobDay24 : SolverWithLineParser
 20, 25, 34 @ -2, -2, -4
 12, 31, 28 @ -1, -2, -1
 20, 19, 15 @  1, -5, -3", 2, 1);
+        automatonBase.RegisterTestResult(47, 2);
     }
 
     public override object GetAnswer1()
     {
-        var trajectories = new List<(double[] begin, double[]end)>(_hailStones.Count);
-        // we need to compute hailstone trajectory in the window
-        foreach (var hailStone in _hailStones)
-        {
-            var x = hailStone[0];
-            var y = hailStone[1];
-            var dx = hailStone[3];
-            var dy = hailStone[4];
-            if (x < _minDim && dx < 0
-                || x > _maxDim && dx > 0
-                || y < _minDim && dy < 0
-                || y > _maxDim && dy > 0)
-            {
-                // if will never cross the window of interest
-                continue;
-            }
-            
-            // compute need time to cross the window's border (if time is negative we never cross it)
-            var minXTime = Math.Max(0, (_minDim - x + (dx>0 ? dx-1 : 0)) / dx);
-            var maxXTime = Math.Max(0, (_maxDim - x - (dx<0 ? dx-1 : 0)) / dx);
-            var minYTime = Math.Max(0, (_minDim - y+ (dy>0 ? dy-1 : 0)) / dy);
-            var maxYTime = Math.Max(0, (_maxDim - y- (dy<0 ? dy-1 : 0)) / dy);
-            if (minXTime > maxXTime)
-            {
-                (minXTime, maxXTime) = (maxXTime, minXTime);
-            }
-
-            if (minYTime > maxYTime)
-            {
-                (minYTime, maxYTime) = (maxYTime, minYTime);
-            }
-            var (minTime, maxTime) = (Math.Max(minXTime, minYTime)+1, Math.Min(maxXTime, maxYTime));
-            if (maxTime < minTime)
-            {
-                Console.Write("HailStone {0}:{1}; {2}:{3} does not enter the cross window.", x, y, dx, dy);
-                continue;
-            }
-            trajectories.Add((new double[]{ x+dx*minTime, y+dy*minTime}, new double[] {x+dx*maxTime, y+dy*maxTime}));
-        }
-
         var result = 0;
-        for (var i = 0; i < trajectories.Count; i++)
+        for (var i = 0; i < _hailStones.Count; i++)
         {
-            for (var j = i+1; j < trajectories.Count; j++)
+            for (var j = i+1; j < _hailStones.Count; j++)
             {
-                if (SegmentsCross(trajectories[i], trajectories[j]))
+                var crossing = ComputeCrossing(_hailStones[i], _hailStones[j]);
+                if (crossing!= null && crossing.Value.x>=_minDim && crossing.Value.x<=_maxDim && crossing.Value.y>=_minDim && crossing.Value.y<=_maxDim)
                 {
                     result++;
                 }
@@ -101,47 +61,121 @@ public class DupdobDay24 : SolverWithLineParser
 
         return result;
     }
+
+    private (long x, long y, decimal time)? ComputeCrossing(IList<long> hailStoneA, IList<long> hailStoneB)
+    {
+        if (hailStoneA[Dx] == 0 || hailStoneB[Dx] == 0)
+        {
+            return null;
+        }
+        var slopeA = (decimal)hailStoneA[Dy] / hailStoneA[Dx];
+        var slopeB = (decimal)hailStoneB[Dy] / hailStoneB[Dx];
+        if (slopeA == slopeB)
+        {
+            return null;
+        }
+        var dYa= hailStoneA[Y]-hailStoneA[X]*slopeA;
+        var dYb= hailStoneB[Y]-hailStoneB[X]*slopeB;
+
+        var crossingX = (dYb - dYa) / (slopeA - slopeB);
+        var time = (crossingX -hailStoneA[X])/hailStoneA[Dx];
+        if (time < 0 || (crossingX - hailStoneB[X])/hailStoneB[Dx] < 0)
+        {
+            return null;
+        }
+
+        try
+        {
+            var result = ((long)crossingX, (long)(hailStoneA[Y] + (crossingX - hailStoneA[X]) * slopeA), time);
+            return result;
+
+        }
+        catch (OverflowException)
+        {
+            return null;
+        }
+    }
     
     private const int X = 0;
+    private const int Dx = 3;
     private const int Y = 1;
+    private const int Dy = 4;
     private const int Z = 2;
+    private const int Dz = 5;
 
-    private static int Orientation(IList<double> a, IList<double> b, IList<double> c)
+    public override object? GetAnswer2()
     {
-        return Math.Sign((b[Y]-a[Y])*(c[X]-b[X])-(b[X]-a[X])*(c[Y]-b[Y]));
-    }
+        var maxMatches = 0;
+        var maxSpeed = 500;
+        var minSpeed = -maxSpeed;
+        while (true)
+        {
+            var randomList = new List<List<long>>();
+            var indexes = new HashSet<int>();
+            var generator = new Random();
+            while (randomList.Count < 4)
+            {
+                var index = generator.Next() % _hailStones.Count;
+                if (indexes.Add(index))
+                {
+                    randomList.Add(_hailStones[index]);
+                }
+            }
+        
+            for (var dx=minSpeed; dx<=maxSpeed; dx++)
+            for (var dy = minSpeed; dy <= maxSpeed; dy++)
+            {
+                var hailStone0 = randomList[0].ToList();
+                hailStone0[Dx] += dx;
+                hailStone0[Dy] += dy;
+                var crossings = new List<(long x, long y, decimal time)>(randomList.Count-1);
+                for (var i = 1; i < randomList.Count; i++)
+                {
+                    var nextStone = randomList[i].ToList();
+                    nextStone[Dx] += dx;
+                    nextStone[Dy] += dy;
+                    var intersect = ComputeCrossing(nextStone, hailStone0);
+                    if (intersect == null)
+                    {
+                        break;
+                    }
+                    if (crossings.Count>0 && (intersect.Value.x != crossings[0].x || intersect.Value.y != crossings[0].y))
+                    {
+                        break;
+                    }
 
-    private static bool IsInSegment(IList<double> begin, IList<double> end, IList<double> point)
-    {
-        return point[X] <= Math.Max(begin[X], end[X]) && point[X] >= Math.Min(begin[X], end[X])
-                                                      && point[Y] <= Math.Max(begin[Y], end[Y]) &&
-                                                      point[Y] >= Math.Min(begin[Y], end[Y]);
-    }
-    
-    private bool SegmentsCross((IList<double> begin, IList<double> end) first, (IList<double> begin, IList<double> end) second)
-    {
-        var o1= Orientation(first.begin, first.end, second.begin);
-        var o2= Orientation(first.begin, first.end, second.end);
-        var o3= Orientation(second.begin, second.end, first.begin);
-        var o4= Orientation(second.begin, second.end, first.end);
-        // do segment crosses?
-        if (o1!=o2 && o3!=o4) return true;
-        // we may still have 3 points aligned
-        if (o1 == 0 && IsInSegment(first.begin, first.end, second.begin))
-            return true;
-        if (o2 == 0 && IsInSegment(first.begin, first.end, second.end))
-            return true;
-        if (o3 == 0 && IsInSegment(second.begin, second.end, first.begin))
-            return true;
-        if (o4 == 0 && IsInSegment(second.begin, second.end, first.end))
-            return true;
-        // nope, no form of crossing
-        return false;
-    }
+                    crossings.Add(intersect.Value);
+                }
+            
+                maxMatches = Math.Max(maxMatches, crossings.Count);
+                if (crossings.Count <randomList.Count-1)
+                {
+                    continue;
+                }
+                Console.WriteLine("Found common crossing at {0},{1} for dx{2}, dy{3}", crossings[0].x,crossings[0].y, dx, dy);
+                for (var dz = minSpeed; dz <= maxSpeed; dz++)
+                {
+                    var z = (long) (crossings[0].time*(randomList[1][Dz]+dz)+randomList[1][Z]);
+                    var isOk = true;
+                    for (var i = 2; i < randomList.Count; i++)
+                    {
+                        if (z != (long)(crossings[i - 1].time * (randomList[i][Dz] + dz) + randomList[i][Z]))
+                        {
+                            isOk = false;
+                            break;
+                        }
+                    }
 
-    public override object GetAnswer2()
-    {
-        return null;
+                    if (isOk)
+                    {
+                        return z+crossings[0].x+crossings[0].y;
+                    }
+                }
+            }
+            // if we arrive here we failed to find a valid solution
+            Console.WriteLine("Max matches was {0}.", maxMatches);
+            
+        }
     }
     
     protected override void ParseLine(string line, int index, int lineCount)
