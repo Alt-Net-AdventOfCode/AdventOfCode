@@ -28,25 +28,67 @@ namespace AdventCalendar2024;
 
 public class DupdobDay02 : SolverWithLineParser
 {
-
-    private readonly List<int> _numbers = new();
+    private readonly List<List<int>> _numbers = new();
     public override void SetupRun(Automaton automatonBase)
     {
-        automatonBase.Day = 1;
+        automatonBase.Day = 2;
+        
+        automatonBase.RegisterTestDataAndResult("""
+                                                7 6 4 2 1
+                                                1 2 7 8 9
+                                                9 7 6 2 1
+                                                1 3 2 4 5
+                                                8 6 4 4 1
+                                                1 3 6 7 9
+                                                """
+            , 2, 1);
+        automatonBase.RegisterTestResult(4, 2);
     }
 
     public override object GetAnswer1()
     {
-        throw new NotImplementedException();
+        return _numbers.Count(ReportIsSafe);
+    }
+
+    private static bool ReportIsSafe(List<int> line)
+    {
+        var dir = line[0].CompareTo(line[1]);
+        if (dir == 0 || (line[0]-line[1])*dir>3)
+            return false;
+        for (var i = 1; i < line.Count-1; i++)
+        {
+            var step = (line[i] - line[i + 1])*dir;
+            if (step is >= 1 and <= 3) continue;
+            return false;
+        }
+        return true;
     }
 
     public override object GetAnswer2()
     {
-        throw new NotImplementedException();
+        var score = 0;
+        foreach (var line in _numbers)
+        {
+            if (ReportIsSafe(line))
+            {
+                score++;
+                continue;
+            }
+
+            for (var i = 0; i < line.Count; i++)
+            {
+                var temp = new List<int>(line);
+                temp.RemoveAt(i);
+                if (!ReportIsSafe(temp)) continue;
+                score++;
+                break;
+            }
+        }
+        return score;
     }
 
     protected override void ParseLine(string line, int index, int lineCount)
     {
-        throw new NotImplementedException();
+        _numbers.Add(line.Split(' ').Select(int.Parse).ToList());
     }
 }
