@@ -91,6 +91,7 @@ public class DupdobDay06: SolverWithLineParser
         return _visited.Count;
     }
 
+    private readonly int[] _masks = [1,2,4,8];
     public override object GetAnswer2()
     {
         var options = 0;
@@ -102,34 +103,26 @@ public class DupdobDay06: SolverWithLineParser
             {
                 continue;
             }
-
-            if (attempt == (3, 6))
-            {
-                
-            }
+            
             var original = _map[attempt.y];
             _map[attempt.y] = (attempt.x > 0 ? original[..attempt.x]: "")+'#'+ (attempt.x<right ? original[(attempt.x+1)..] : "");
             // now we try a visit
-            var visited = new Dictionary<(int x, int y), bool[]>();
+            var visited = new Dictionary<(int x, int y), int>();
             var pos = _start;
             var dir = Dir;
             while (true)
             {
-                if (!visited.TryGetValue(pos, out var dirs))
+                var mask = _masks[dir];
+                var dirs = visited.GetValueOrDefault(pos);
+                if ((dirs & mask) == mask)
                 {
-                    dirs = new bool[4];
-                    visited[pos] = dirs;
-                }
-                else
-                {
-                    if (dirs[dir])
-                    {
-                        // we have a loop
-                        options++;
-                        break;
-                    }
-                }
-                dirs[dir] = true;
+                    // we have a loop
+                    options++;
+                    break;
+                } 
+                
+                dirs |= mask;
+                visited[pos] = dirs;
                 
                 (int x, int y) next = (pos.x+_vectors[dir].dx, pos.y+_vectors[dir].dy);
                 if (next.x < 0 || next.y < 0 || next.x > right || next.y > bottom)

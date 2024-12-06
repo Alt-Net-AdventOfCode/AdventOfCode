@@ -124,21 +124,8 @@ public class DupdobDay05: SolverWithLineParser
             var fixedList = new int[list.Length];
             foreach (var entry in list)
             {
-                int countOf;
-                if (_order.TryGetValue(entry, out var successors))
-                {
-                    countOf = list.Count( e => successors.Contains(e));
-                }
-                else
-                {
-                    countOf = 0;
-                }
+                var countOf = _order.TryGetValue(entry, out var successors) ? list.Count( e => successors.Contains(e)) : 0;
                 fixedList[list.Length-countOf-1] = entry;
-            }
-
-            if (!IsInValidOrder(fixedList))
-            {
-                throw new Exception("Algo is invalid");
             }
             result += fixedList[(list.Length - 1)/2];
         }
