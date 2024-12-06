@@ -1,0 +1,22 @@
+{
+  "SchemaVersion": "1",
+  "Day": 6,
+  "First": {
+    "Solved": true,
+    "Answer": "4722",
+    "Attempts": [
+      "4722"
+    ],
+    "Low": null,
+    "High": null
+  },
+  "Second": {
+    "Solved": true,
+    "Answer": "1602",
+    "Attempts": [
+      "1602"
+    ],
+    "Low": null,
+    "High": null
+  }
+}
