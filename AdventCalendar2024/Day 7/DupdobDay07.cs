@@ -32,23 +32,91 @@ public class DupdobDay07 : SolverWithLineParser
     {
         automatonBase.Day = 7;
         automatonBase.RegisterTestDataAndResult("""
-                                                
-                                                """, 0, 1);
-
+                                                190: 10 19
+                                                3267: 81 40 27
+                                                83: 17 5
+                                                156: 15 6
+                                                7290: 6 8 6 15
+                                                161011: 16 10 13
+                                                192: 17 8 14
+                                                21037: 9 7 18 13
+                                                292: 11 6 16 20
+                                                """, 3749, 1);
+        automatonBase.RegisterTestResult(11387, 2);
     }
 
     public override object GetAnswer1()
     {
-        throw new NotImplementedException();
+        var result = 0L;
+        foreach (var quiz in _quizzes)
+        {
+            var (value, operands) = quiz;
+            if (Solve(value, operands, 1, operands[0]))
+            {
+                result+=value;
+            }
+        }
+        return result;
+    }
+
+    private bool Solve(long value, List<long> operands, int index, long current)
+    {
+        if (index == operands.Count)
+        {
+            return current == value;
+        }
+
+        if (current > value)
+        {
+            return false;
+        }
+
+        return Solve(value, operands, index + 1, current + operands[index])
+               || Solve(value, operands, index + 1, current * operands[index]);
     }
 
     public override object GetAnswer2()
     {
-        throw new NotImplementedException();
+        var result = 0L;
+        foreach (var quiz in _quizzes)
+        {
+            var (value, operands) = quiz;
+            if (Solve2(value, operands, 1, operands[0]))
+            {
+                result+=value;
+            }
+        }
+        return result;
     }
 
+    private bool Solve2(long value, List<long> operands, int index, long current)
+    {
+        if (index == operands.Count)
+        {
+            return current == value;
+        }
+
+        if (current > value)
+        {
+            return false;
+        }
+
+        return Solve2(value, operands, index + 1, current + operands[index])
+               || Solve2(value, operands, index + 1, current * operands[index])
+               || Solve2(value, operands, index + 1, Concatenate(current, operands[index]));
+    }
+
+    private long Concatenate(long current, long operand)
+    {
+        return long.Parse(current.ToString() + operand.ToString());
+    }
+
+    private readonly List<(long result, List<long> operands)> _quizzes = [];
     protected override void ParseLine(string line, int index, int lineCount)
     {
-        throw new NotImplementedException();
+        var parts = line.Split(":");
+        var result = long.Parse(parts[0]);
+        var operands = parts[1].Split(" ", StringSplitOptions.RemoveEmptyEntries).Select(long.Parse).ToList();
+        _quizzes.Add((result, operands));
     }
 }
