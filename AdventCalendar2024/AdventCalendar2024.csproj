@@ -11,4 +11,8 @@
       <PackageReference Include="AoC2" Version="0.4.0" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\AoCAlgorithms\AoCAlgorithms.csproj" />
+    </ItemGroup>
+
 </Project>
