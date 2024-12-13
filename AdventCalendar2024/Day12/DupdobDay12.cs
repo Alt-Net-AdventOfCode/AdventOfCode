@@ -1,0 +1,250 @@
+// MIT License
+// 
+//  AdventOfCode
+// 
+//  Copyright (c) 2024 Cyrille DUPUYDAUBY
+// ---
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
+using AoC;
+
+namespace AdventCalendar2024;
+
+public class DupdobDay12 : SolverWithLineParser
+{
+    public override void SetupRun(Automaton automatonBase)
+    {
+        automatonBase.Day = 12;
+        automatonBase.RegisterTestDataAndResult("""
+                                                AAAA
+                                                BBCD
+                                                BBCC
+                                                EEEC
+                                                """, 140, 1);
+        automatonBase.RegisterTestResult(80, 2);
+        automatonBase.RegisterTestDataAndResult("""
+                                                OOOOO
+                                                OXOXO
+                                                OOOOO
+                                                OXOXO
+                                                OOOOO
+                                                """, 772, 1);
+        automatonBase.RegisterTestResult(436, 2);
+        automatonBase.RegisterTestDataAndResult("""
+                                                EEEEE
+                                                EXXXX
+                                                EEEEE
+                                                EXXXX
+                                                EEEEE
+                                                """, 236, 2);
+        automatonBase.RegisterTestDataAndResult("""
+                                                RRRRIICCFF
+                                                RRRRIICCCF
+                                                VVRRRCCFFF
+                                                VVRCCCJFFF
+                                                VVVVCJJCFE
+                                                VVIVCCJJEE
+                                                VVIIICJJEE
+                                                MIIIIIJJEE
+                                                MIIISIJEEE
+                                                MMMISSJEEE
+                                                """, 1206, 2);
+    }
+
+    public override object GetAnswer1()
+    {
+        _areaCharacteristics = new Dictionary<int, (int area, int perimeter, char type)>();
+        var areaId = 1;
+        _areas = new int[_map.Count, _map[0].Length];
+        for (var y = 0; y < _map.Count; y++)
+        {
+            for (var x = 0; x < _map[y].Length; x++)
+            {
+                var type = _map[y][x];
+                var (perimeter, id) = (0, areaId);
+                if (y == 0)
+                {
+                    perimeter++;
+                }
+                else if (_map[y - 1][x] != type)
+                {
+                    perimeter++;
+                }
+                else
+                {
+                    // we inherit the areaId
+                    id = _areas[y - 1, x];
+                }
+
+                if (x == 0)
+                {
+                    perimeter++;
+                }
+                else if (_map[y][x-1] != type)
+                {
+                    perimeter++;
+                }
+                else
+                {
+                    // we inherit the areaId
+                    // but we may merge two regions
+                    if (id != areaId && _areas[y, x - 1] != id)
+                    {
+                        var newId = _areas[y, x - 1];
+                        _areaCharacteristics[newId] = (_areaCharacteristics[id].area+_areaCharacteristics[newId].area, 
+                            _areaCharacteristics[id].perimeter+_areaCharacteristics[newId].perimeter, type);
+                        for (var i = 0; i <= y; i++)
+                        {
+                            for (var j = 0; j < _areas.GetLength(1); j++)
+                            {
+                                if (_areas[i, j] == id)
+                                {
+                                    _areas[i, j] = newId;
+                                }
+                            }
+                        }
+                        // we loose the old area
+                        _areaCharacteristics.Remove(id);
+                    }
+                    id = _areas[y, x-1];
+                }
+
+                if (y == _map.Count-1 || _map[y+1][x] != type)
+                {
+                    perimeter++;
+                }
+                if (x == _map[y].Length-1 || _map[y][x+1] != type)
+                {
+                    perimeter++;
+                }
+                _areas[y, x] = id;
+                if (_areaCharacteristics.TryGetValue(id, out var areaCharacteristic))
+                {
+                    _areaCharacteristics[id] = (areaCharacteristic.area+1, 
+                        _areaCharacteristics[id].perimeter+perimeter, type);
+                }
+                else
+                {
+                    _areaCharacteristics[areaId++] = (1, perimeter, type);
+                }
+            }
+        }
+        return _areaCharacteristics.Values.Aggregate(0L, (acc, entry) => acc+entry.perimeter*entry.area);
+    }
+
+    private readonly (int dy, int dx)[] _vectors = [(0, 1), (1, 0), (0,-1), (-1, 0)];
+    
+    public override object GetAnswer2()
+    {
+        if (_areas == null)
+            return null;
+        var height = _map.Count;
+        var width = _map[0].Length;
+        var areaEdges = new Dictionary<int, int>();
+        // find the first cell
+        foreach (var key in _areaCharacteristics.Keys)
+        {
+            var x =0;
+            int y;
+            var found = false;
+            for (y = 0; y < height; y++)
+            {
+                for (x = 0; x < width; x++)
+                {
+                    if (_areas[y,x] != key) continue;
+                    found = true;
+                    break;
+                }
+
+                if (found)
+                {
+                    break;
+                }
+            }
+            // we know there is a different kind of cell on top
+            var dir = 0;
+            var initPos = (y, x);
+            var edge = 0;
+            var neighbors = new HashSet<int>();
+            // we store the neighbor on top
+            if (y > 0)
+            {
+                neighbors.Add(_areas[y-1, x]);
+            }
+            do
+            {
+                (int y , int x) next = (y+_vectors[dir].dy, x+_vectors[dir].dx);
+                if (next.y<0 || next.x<0 || next.y>=height || next.x>=width)
+                {
+                    neighbors.Add(0);
+                    // we need to turn right, we do now move
+                    edge++;
+                    dir = (dir + 1) % 4;
+                }
+                else if (_areas[next.y, next.x] != key)
+                {
+                    neighbors.Add(_areas[next.y, next.x]);
+                    edge++;
+                    dir = (dir + 1) % 4;
+                }
+                else
+                {
+                    // we may need to turn left
+                    (y, x) = next;
+                    var nextDir = (dir + 3) % 4;
+                    next = (y + _vectors[nextDir].dy, x + _vectors[nextDir].dx);
+                    if (next is { y: >= 0, x: >= 0 } && next.y<height && next.x<width && _areas[next.y,next.x] == key)
+                    {
+                        // we need to turn left indeed
+                        (y, x) = next;
+                        edge++; 
+                        dir = nextDir;
+                    }
+                }
+            } while (initPos!=(y, x) || dir != 0);
+
+            areaEdges[key] = areaEdges.GetValueOrDefault(key)+edge;
+            if (neighbors.Count == 1 && neighbors.First()!=0)
+            {
+                // this area is enclosed in another one, we must declare the fences
+                Console.WriteLine("Area {0} is enclosed in {1}.", _areaCharacteristics[key].type, _areaCharacteristics[neighbors.First()].type);
+                areaEdges[neighbors.First()] = areaEdges.GetValueOrDefault(neighbors.First())+edge;
+            }
+        }
+        // compute
+        var result = 0L;
+        foreach (var area in _areaCharacteristics)
+        {
+            var carac = area.Value;
+            var edge = areaEdges[area.Key];
+            Console.WriteLine("Area {0} ({1}): area {2}, {3} edges", carac.type, area.Key, carac.area, edge);
+            result+=edge*_areaCharacteristics[area.Key].area;
+        }
+        return result;
+    }
+
+    private readonly List<string> _map = [];
+    private Dictionary<int, (int area, int perimeter, char type)> _areaCharacteristics = new();
+    private int[,]? _areas;
+
+    protected override void ParseLine(string line, int index, int lineCount)
+    {
+        _map.Add(line);
+    }
+}
