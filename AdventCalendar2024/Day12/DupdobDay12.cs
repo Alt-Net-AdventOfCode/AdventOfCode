@@ -38,6 +38,7 @@ public class DupdobDay12 : SolverWithLineParser
                                                 EEEC
                                                 """, 140, 1);
         automatonBase.RegisterTestResult(80, 2);
+        
         automatonBase.RegisterTestDataAndResult("""
                                                 OOOOO
                                                 OXOXO
@@ -54,6 +55,22 @@ public class DupdobDay12 : SolverWithLineParser
                                                 EEEEE
                                                 """, 236, 2);
         automatonBase.RegisterTestDataAndResult("""
+                                                AAAAAA
+                                                AAABBA
+                                                AAABBA
+                                                ABBAAA
+                                                ABBAAA
+                                                AAAAAA
+                                                """, 368, 2);
+        automatonBase.RegisterTestDataAndResult("""
+                                                AAAAAA
+                                                ABBAAA
+                                                ABBAAA
+                                                AAABBA
+                                                AAABBA
+                                                AAAAAA
+                                                """, 368, 2);
+        automatonBase.RegisterTestDataAndResult("""
                                                 RRRRIICCFF
                                                 RRRRIICCCF
                                                 VVRRRCCFFF
@@ -65,6 +82,7 @@ public class DupdobDay12 : SolverWithLineParser
                                                 MIIISIJEEE
                                                 MMMISSJEEE
                                                 """, 1206, 2);
+        
     }
 
     public override object GetAnswer1()
@@ -107,20 +125,24 @@ public class DupdobDay12 : SolverWithLineParser
                     if (id != areaId && _areas[y, x - 1] != id)
                     {
                         var newId = _areas[y, x - 1];
-                        _areaCharacteristics[newId] = (_areaCharacteristics[id].area+_areaCharacteristics[newId].area, 
+                        if (newId < id)
+                        {
+                            (newId, id) = (id, newId);
+                        }
+                        _areaCharacteristics[id] = (_areaCharacteristics[id].area+_areaCharacteristics[newId].area, 
                             _areaCharacteristics[id].perimeter+_areaCharacteristics[newId].perimeter, type);
                         for (var i = 0; i <= y; i++)
                         {
                             for (var j = 0; j < _areas.GetLength(1); j++)
                             {
-                                if (_areas[i, j] == id)
+                                if (_areas[i, j] == newId)
                                 {
-                                    _areas[i, j] = newId;
+                                    _areas[i, j] = id;
                                 }
                             }
                         }
                         // we loose the old area
-                        _areaCharacteristics.Remove(id);
+                        _areaCharacteristics.Remove(newId);
                     }
                     id = _areas[y, x-1];
                 }
@@ -141,11 +163,14 @@ public class DupdobDay12 : SolverWithLineParser
                 }
                 else
                 {
-                    _areaCharacteristics[areaId++] = (1, perimeter, type);
+                    _areaCharacteristics[id] = (1, perimeter, type);
+                    areaId++;
                 }
             }
         }
-        return _areaCharacteristics.Values.Aggregate(0L, (acc, entry) => acc+entry.perimeter*entry.area);
+
+        return _areaCharacteristics.Values.Aggregate(0L, (acc, entry) => 
+            acc+entry.perimeter*entry.area);
     }
 
     private readonly (int dy, int dx)[] _vectors = [(0, 1), (1, 0), (0,-1), (-1, 0)];
@@ -223,13 +248,12 @@ public class DupdobDay12 : SolverWithLineParser
             if (neighbors.Count == 1 && neighbors.First()!=0)
             {
                 // this area is enclosed in another one, we must declare the fences
-                Console.WriteLine("Area {0} is enclosed in {1}.", _areaCharacteristics[key].type, _areaCharacteristics[neighbors.First()].type);
                 areaEdges[neighbors.First()] = areaEdges.GetValueOrDefault(neighbors.First())+edge;
             }
         }
         // compute
         var result = 0L;
-        foreach (var area in _areaCharacteristics)
+        foreach (var area in _areaCharacteristics.OrderBy(p=>p.Key))
         {
             var carac = area.Value;
             var edge = areaEdges[area.Key];
