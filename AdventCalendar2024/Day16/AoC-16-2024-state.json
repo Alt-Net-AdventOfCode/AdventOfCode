@@ -1,20 +1,21 @@
 {
   "SchemaVersion": "1",
-  "Day": 15,
+  "Day": 16,
   "First": {
     "Solved": true,
-    "Answer": "1516281",
+    "Answer": "102460",
     "Attempts": [
-      "1516281"
+      "103460",
+      "102460"
     ],
     "Low": null,
-    "High": null
+    "High": 103460
   },
   "Second": {
     "Solved": true,
-    "Answer": "1527969",
+    "Answer": "527",
     "Attempts": [
-      "1527969"
+      "527"
     ],
     "Low": null,
     "High": null
