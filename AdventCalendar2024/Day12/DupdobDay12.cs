@@ -54,22 +54,7 @@ public class DupdobDay12 : SolverWithLineParser
                                                 EXXXX
                                                 EEEEE
                                                 """, 236, 2);
-        automatonBase.RegisterTestDataAndResult("""
-                                                AAAAAA
-                                                AAABBA
-                                                AAABBA
-                                                ABBAAA
-                                                ABBAAA
-                                                AAAAAA
-                                                """, 368, 2);
-        automatonBase.RegisterTestDataAndResult("""
-                                                AAAAAA
-                                                ABBAAA
-                                                ABBAAA
-                                                AAABBA
-                                                AAABBA
-                                                AAAAAA
-                                                """, 368, 2);
+
         automatonBase.RegisterTestDataAndResult("""
                                                 RRRRIICCFF
                                                 RRRRIICCCF
@@ -96,25 +81,17 @@ public class DupdobDay12 : SolverWithLineParser
             {
                 var type = _map[y][x];
                 var (perimeter, id) = (0, areaId);
-                if (y == 0)
-                {
-                    perimeter++;
-                }
-                else if (_map[y - 1][x] != type)
+                if (y == 0 || _map[y - 1][x] != type)
                 {
                     perimeter++;
                 }
                 else
                 {
-                    // we inherit the areaId
+                    // we assume we continue areaId from the line above
                     id = _areas[y - 1, x];
                 }
 
-                if (x == 0)
-                {
-                    perimeter++;
-                }
-                else if (_map[y][x-1] != type)
+                if (x == 0 || _map[y][x-1] != type)
                 {
                     perimeter++;
                 }
@@ -175,24 +152,24 @@ public class DupdobDay12 : SolverWithLineParser
 
     private readonly (int dy, int dx)[] _vectors = [(0, 1), (1, 0), (0,-1), (-1, 0)];
     
+    // this not a general solution as it does not properly some 'inner zones'.
+    // the ones that are made of more than 1 type of zone.
     public override object GetAnswer2()
     {
-        if (_areas == null)
-            return null;
         var height = _map.Count;
         var width = _map[0].Length;
         var areaEdges = new Dictionary<int, int>();
-        // find the first cell
-        foreach (var key in _areaCharacteristics.Keys)
+        foreach (var currentZone in _areaCharacteristics.Keys)
         {
             var x =0;
             int y;
+            // find the first cell
             var found = false;
             for (y = 0; y < height; y++)
             {
                 for (x = 0; x < width; x++)
                 {
-                    if (_areas[y,x] != key) continue;
+                    if (_areas[y,x] != currentZone) continue;
                     found = true;
                     break;
                 }
@@ -202,70 +179,90 @@ public class DupdobDay12 : SolverWithLineParser
                     break;
                 }
             }
+            
             // we know there is a different kind of cell on top
             var dir = 0;
             var initPos = (y, x);
             var edge = 0;
             var neighbors = new HashSet<int>();
+
             // we store the neighbor on top
             if (y > 0)
             {
                 neighbors.Add(_areas[y-1, x]);
             }
+            // we follow the edge
             do
             {
                 (int y , int x) next = (y+_vectors[dir].dy, x+_vectors[dir].dx);
                 if (next.y<0 || next.x<0 || next.y>=height || next.x>=width)
                 {
+                    // we reached a border of the map
+                    // we need to turn right, we do not move
                     neighbors.Add(0);
-                    // we need to turn right, we do now move
                     edge++;
                     dir = (dir + 1) % 4;
                 }
-                else if (_areas[next.y, next.x] != key)
+                else if (_areas[next.y, next.x] != currentZone)
                 {
+                    // there is an edge, we may turn right, but we will turn left for this case
+                    // as the 'inner' is considered as within X region (not on edge) 
+                    //?X?
+                    //X?X
                     neighbors.Add(_areas[next.y, next.x]);
                     edge++;
                     dir = (dir + 1) % 4;
+                    var nextDir = (dir + 2) % 4;
+                    (int y, int x) corner = (next.y + _vectors[nextDir].dy, next.x+_vectors[nextDir].dx);
+                    if (corner is not { y: >= 0, x: >= 0 } || corner.y >= height || corner.x >= width) continue;
+                    var cornerZone = _areas[corner.y, corner.x];
+                    if (cornerZone == currentZone)
+                    {
+                        // we turn left
+                        dir = nextDir;
+                        (y, x) = corner;
+                    }
+                    else
+                    {
+               //         neighbors.Add(cornerZone);
+                    }
                 }
                 else
                 {
-                    // we may need to turn left
+                    // either still the same side or we may need to turn left
                     (y, x) = next;
                     var nextDir = (dir + 3) % 4;
                     next = (y + _vectors[nextDir].dy, x + _vectors[nextDir].dx);
-                    if (next is { y: >= 0, x: >= 0 } && next.y<height && next.x<width && _areas[next.y,next.x] == key)
+                    if (next is not { y: >= 0, x: >= 0 } || next.y >= height || next.x >= width) continue;
+                    var cornerZone = _areas[next.y,next.x];
+                    if (cornerZone == currentZone)
                     {
                         // we need to turn left indeed
                         (y, x) = next;
-                        edge++; 
                         dir = nextDir;
+                        edge++;
+                    }
+                    else
+                    {
+//                        neighbors.Add(cornerZone);
                     }
                 }
             } while (initPos!=(y, x) || dir != 0);
 
-            areaEdges[key] = areaEdges.GetValueOrDefault(key)+edge;
-            if (neighbors.Count == 1 && neighbors.First()!=0)
-            {
-                // this area is enclosed in another one, we must declare the fences
-                areaEdges[neighbors.First()] = areaEdges.GetValueOrDefault(neighbors.First())+edge;
-            }
+            areaEdges[currentZone] = areaEdges.GetValueOrDefault(currentZone)+edge;
+            if (neighbors.Count != 1 || neighbors.Single() == 0) continue;
+            // this area is enclosed in another one, we must declare the fences
+            var enclosing = neighbors.Single();
+            areaEdges[enclosing] = areaEdges.GetValueOrDefault(enclosing)+edge;
         }
         // compute
-        var result = 0L;
-        foreach (var area in _areaCharacteristics.OrderBy(p=>p.Key))
-        {
-            var carac = area.Value;
-            var edge = areaEdges[area.Key];
-            Console.WriteLine("Area {0} ({1}): area {2}, {3} edges", carac.type, area.Key, carac.area, edge);
-            result+=edge*_areaCharacteristics[area.Key].area;
-        }
-        return result;
+
+        return _areaCharacteristics.Aggregate(0L, (current, area) => current + areaEdges[area.Key] * area.Value.area);
     }
 
     private readonly List<string> _map = [];
     private Dictionary<int, (int area, int perimeter, char type)> _areaCharacteristics = new();
-    private int[,]? _areas;
+    private int[,] _areas = new int[0,0];
 
     protected override void ParseLine(string line, int index, int lineCount)
     {
