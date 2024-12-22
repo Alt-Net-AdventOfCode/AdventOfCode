@@ -143,6 +143,7 @@ public class DupdobDay20: SolverWithLineParser
         var referenceDistance = _distancesFromStart[_end];
         var result = 0;
         var shortcutLengths1 = new Dictionary<int, List<(Position, Position)>>();
+        
 
         // using Manhattan distance
         foreach (var (position, initDistance) in _distancesFromStart)
@@ -163,89 +164,8 @@ public class DupdobDay20: SolverWithLineParser
                 }
             }
         }
-
-        // using pathfinding
-        // we scan all accessible point from the start
-        const int threshold = 100;
-        var shortcutLengths = new Dictionary<int, List<(Position, Position)>>();
-        const int maxShortcut = 20;
-        var shortcuts = new Dictionary<Position, Dictionary<Position, int>>();
-        foreach (var position in _distancesFromStart.Keys)
-        {
-            ScanShortcuts(
-                referenceDistance,
-                maxShortcut,
-                position, shortcuts);
-        }
-
-        foreach (var (start, destinations) in shortcuts)
-        {
-            foreach (var (end, save) in destinations)
-            {
-                if (!shortcutLengths.TryGetValue(save, out var list))
-                {
-                    shortcutLengths[save]= list = [];
-                }
-                list.Add((start, end));
-            }
-        }
-        return shortcutLengths.Sum( p=> p.Key>=threshold ? p.Value.Count : 0);
         
-    }
-    
-    private void ScanShortcuts(int referenceDistance, int maxShortcut, Position start,
-        Dictionary<Position, Dictionary<Position, int>> shortcuts)
-    {
-        Dictionary<Position, int> result = [];  
-        Dictionary<Position, int> visitedWalls = [];
-        var pendingWalls = new PriorityQueue<Position, int>();
-        var current = start;
-        var initDistance = _distancesFromStart[current];
-        var totalDistance = _distancesFromStart[_end];
-        pendingWalls.Enqueue(current, initDistance);
-        shortcuts[start]=[];
-        while(pendingWalls.TryDequeue(out current, out var distance))
-        {
-            distance++;
-            foreach (var (dy, dx) in _vectors)
-            {
-                var neighbor = new Position(current.Y + dy, current.X + dx);
-                // still in map?
-                if (neighbor.X < 0 || neighbor.Y < 0 || neighbor.Y >= _height || neighbor.X >= _width)
-                {
-                    continue;
-                }
-
-                // still a wall?
-                if (_map[neighbor.Y][neighbor.X] == '#')
-                {
-                    if (distance-initDistance<maxShortcut && 
-                        (!visitedWalls.TryGetValue(neighbor, out var distanceToWall) ||distanceToWall > distance))
-                    {
-                        visitedWalls[neighbor] = distance;
-                        pendingWalls.Enqueue(neighbor, distance);
-                    }
-                    continue;
-                }
-
-                if (!_distancesToEnd.TryGetValue(neighbor, out var distanceToEnd)
-                    || distance + distanceToEnd > referenceDistance)
-                {
-                    continue;
-                }
-
-                if (!result.TryGetValue(neighbor, out var currentDistance) ||
-                    currentDistance > distance + distanceToEnd)
-                {
-                    result[neighbor] = distance + distanceToEnd;
-                    var saved = totalDistance - distance - distanceToEnd;
-                    if (saved > 1)
-                    {
-                        shortcuts[start][neighbor] = saved;
-                    }
-                }
-            }
-        }
+        return result;
     }
 
     private record Position(int Y, int X);
@@ -253,8 +173,8 @@ public class DupdobDay20: SolverWithLineParser
     private Position _start = null!;
     private Position _end = null!;
     private readonly List<string> _map = [];
-    private Dictionary<Position, int> _distancesFromStart;
-    private Dictionary<Position, int> _distancesToEnd;
+    private Dictionary<Position, int> _distancesFromStart = [];
+    private Dictionary<Position, int> _distancesToEnd = [];
     private int _width;
     private int _height;
 

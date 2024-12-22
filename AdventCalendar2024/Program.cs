@@ -7,6 +7,6 @@ class Program
     {
         var engine = new Automaton(2024);
         engine.SetDataPath("../../../Day{0,2}");
-        engine.RunDay<DupdobDay21>();
+        engine.RunDay<DupdobDay22>();
     }
 }
