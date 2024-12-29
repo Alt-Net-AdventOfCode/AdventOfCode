@@ -1,16 +1,15 @@
 using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices.ComTypes;
 using AoC;
 
 namespace AdventCalendar2016
 {
     public class DupdobDay12: SolverWithLineParser
     {
-        private int[] _registers = new int[4];
+        private readonly int[] _registers = new int[4];
         private int _pc;
 
-        private List<Action> _program = new List<Action>();
+        private readonly List<Action> _program = [];
 
         public override void SetupRun(Automaton automaton)
         {

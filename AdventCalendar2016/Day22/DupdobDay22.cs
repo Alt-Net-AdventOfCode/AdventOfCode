@@ -33,7 +33,6 @@ namespace AdventCalendar2016;
 
 public class DupdobDay22 : SolverWithLineParser
 {
-
     private readonly Regex _lineFilter =
         new("\\/dev\\/grid\\/node-x(\\d+)-y(\\d+) *(\\d+)T *(\\d+)T *(\\d+)T *(\\d+)%", RegexOptions.Compiled);
 
@@ -44,6 +43,19 @@ public class DupdobDay22 : SolverWithLineParser
     public override void SetupRun(Automaton automatonBase)
     {
         automatonBase.Day = 22;
+        automatonBase.RegisterTestDataAndResult("""
+                                                Filesystem            Size  Used  Avail  Use%
+                                                /dev/grid/node-x0-y0   10T    8T     2T   80%
+                                                /dev/grid/node-x0-y1   11T    6T     5T   54%
+                                                /dev/grid/node-x0-y2   32T   28T     4T   87%
+                                                /dev/grid/node-x1-y0    9T    7T     2T   77%
+                                                /dev/grid/node-x1-y1    8T    0T     8T    0%
+                                                /dev/grid/node-x1-y2   11T    7T     4T   63%
+                                                /dev/grid/node-x2-y0   10T    6T     4T   60%
+                                                /dev/grid/node-x2-y1    9T    8T     1T   88%
+                                                /dev/grid/node-x2-y2    9T    6T     3T   66%
+                                                """, 7, 2);
+        automatonBase.RegisterTestResult(7, 1);
     }
 
     public override object GetAnswer1()
@@ -87,91 +99,133 @@ public class DupdobDay22 : SolverWithLineParser
     private class State : IEquatable<State>
     {
         private readonly int[,] _grid;
-        private readonly int _hash;
+        
+        public (int X, int Y) EmptySlot { get; }
+        public (int X, int Y) NodeOfInterest { get; private set; }
 
         private State(Func<int, int, int> extractor, int height, int width)
         {
             _grid = new int[width, height];
+            NodeOfInterest = (width-1, 0);
             for(var y = 0; y < height; y++)
-            for(var x = 0; x < width; x++)
             {
-                var used = extractor(x, y);
-                _grid[x, y] = used;
-                _hash = _hash * 23 + used;
+                for (var x = 0; x < width; x++)
+                {
+                    var used = extractor(x, y);
+                    _grid[x, y] = used;
+                    if (used == 0)
+                    {
+                        EmptySlot = (x, y);
+                    }
+                }
             }
         }
         
         public State(IDictionary<(int x, int y), (int size, int used, int avail)> nodes, int height, int width) : 
-            this((int x, int y) => nodes[(x, y)].used, height, width)
+            this((x, y) => nodes[(x, y)].used, height, width)
         {}
-
-        public static State FromSize(IDictionary<(int x, int y), (int size, int used, int avail)> nodes, int height, int width)
+        
+        public State MoveToEmpty((int X, int Y) node)
         {
-            return new State((x, y) => nodes[(x, y)].size, height, width);
+            var result = new State((x, y) =>
+            {
+                if (x == node.X && y == node.Y)
+                {
+                    return 0;
+                }
+
+                if (x == EmptySlot.X && y == EmptySlot.Y)
+                {
+                    return _grid[node.X, node.Y];
+                }
+
+                return _grid[x, y];
+            }, _grid.GetLength(1), _grid.GetLength(0));
+            if (node.X == NodeOfInterest.X && node.Y == NodeOfInterest.Y)
+            {
+                result.NodeOfInterest = EmptySlot;
+            }
+            else
+            {
+                result.NodeOfInterest = NodeOfInterest;
+            }
+
+            return result;
         }
 
         public bool Equals(State other)
         {
             if (other is null) return false;
-            if (other._hash != _hash) return false;
+            if (other.GetHashCode() != GetHashCode()) return false;
             if (ReferenceEquals(this, other)) return true;
             if (other._grid.GetLength(0) != _grid.GetLength(0) || other._grid.GetLength(1)!=_grid.GetLength(1)) return false;
-            for(var y = 0; y < _grid.GetLength(1); y++)
-            for(var x = 0; x < _grid.GetLength(0); x++)
-            {
-                if (_grid[x, y] != other._grid[x, y]) return false;
-            }
-            return true;
+            return other.NodeOfInterest == NodeOfInterest && other.EmptySlot == EmptySlot;
         }
 
-        public override bool Equals(object obj)
-        {
-            if (obj is null) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-            return Equals((State)obj);
-        }
+        public int Score() => ManhattanDistance((0, 0), NodeOfInterest) * 10000 + ManhattanDistance(EmptySlot, NodeOfInterest)*100;
 
-        public override int GetHashCode()
-        {
-            return _hash;
-        }
+        public override bool Equals(object obj) 
+            => obj is not null && (ReferenceEquals(this, obj) 
+                                   || obj.GetType() == GetType() && Equals((State)obj));
 
-        public static bool operator ==(State left, State right)
-        {
-            return Equals(left, right);
-        }
+        public override int GetHashCode() => NodeOfInterest.GetHashCode()*23+EmptySlot.GetHashCode();
 
-        public static bool operator !=(State left, State right)
-        {
-            return !Equals(left, right);
-        }
+        public static bool operator ==(State left, State right) => Equals(left, right);
+
+        public static bool operator !=(State left, State right) => !Equals(left, right);
     }
     
-    
+
+    // It turns out that slot are large and stuffed with data or can be stored in any other slot
+    // Therefore, there is no need to store the state of each slot, we just need to track the 
+    // empty slot and the node of interest
     public override object GetAnswer2()
     {
-       // find empty drive
-       (int x, int y) empty = (0, 0);
-       var nodeOfInterest = (_bottomRight.x, 0);
-       for(var y = 0; y < _bottomRight.y; y++)
-       for (var x = 0; x < _bottomRight.x; x++)
+       // we store the current state
+       var state = new State(_nodes, _bottomRight.y+1, _bottomRight.x+1);
+       var pendingStates = new PriorityQueue<State, int>();
+       pendingStates.Enqueue(state, state.Score());
+       var distances = new Dictionary<State, int>
        {
-           if (_nodes[(x, y)].used == 0)
+           [state] = 0
+       };
+       var minDist = int.MaxValue;
+       while (pendingStates.TryDequeue(out state, out _))
+       {
+           var current = state.EmptySlot;
+           var size = _nodes[state.EmptySlot].size;
+           var dist = distances[state]+1;
+           if (dist > minDist)
            {
-               empty = (x, y);
+               continue;
+           }
+           if (state.NodeOfInterest is { X: 0, Y: 0 })
+           {
+               minDist = Math.Min(minDist, dist-1);
+           }
+           // we try to see if we can transfer a slot
+           foreach (var (dx, dy) in _vectors)
+           {
+               (int X, int Y) neighbor = (current.X + dx, current.Y + dy);
+               if (neighbor.Y < 0 || neighbor.X < 0 || neighbor.X >_bottomRight.x || neighbor.Y >_bottomRight.y
+                   || _nodes[neighbor].used>size)
+               {
+                   continue;
+               }
+               
+               var newState = state.MoveToEmpty(neighbor);
+               if (distances.TryGetValue(newState, out var currentDistance) && currentDistance <= dist) continue;
+               pendingStates.Enqueue(newState, newState.Score());
+               distances[newState] = dist;
            }
        }
-       // we store the current state
-       var sizes = State.FromSize(_nodes, _bottomRight.y, _bottomRight.x);
-       var current = new State(_nodes, _bottomRight.y, _bottomRight.x);
-       var passedStates = new HashSet<(State state, int x, int y)> { (current, empty.x, empty.y) };
-       while (nodeOfInterest != (0,0))
-       {
-           // we try to move the empty slot
-       }
-       return 0;
+
+       return minDist;
     }
+
+    private readonly (int Dx, int Dy)[] _vectors = [(1, 0), (0, 1), (-1, 0), (0, -1)];
+
+    private static int ManhattanDistance((int Y, int X) a, (int Y, int X) b) => Math.Abs(a.X - b.X) + Math.Abs(a.Y - b.Y);
 
     protected override void ParseLine(string line, int index, int lineCount)
     {

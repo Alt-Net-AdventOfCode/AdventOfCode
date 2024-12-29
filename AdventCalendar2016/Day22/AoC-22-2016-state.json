@@ -5,16 +5,33 @@
     "Solved": true,
     "Answer": "993",
     "Attempts": [
+      "993",
+      "993",
+      "993",
+      "993",
+      "993",
+      "993",
+      "993",
+      "993",
+      "993",
+      "993",
+      "993",
+      "993",
       "993"
     ],
     "Low": null,
     "High": null
   },
   "Second": {
-    "Solved": false,
-    "Answer": null,
+    "Solved": true,
+    "Answer": "202",
     "Attempts": [
-      "0"
+      "0",
+      "204",
+      "204",
+      "204",
+      "204",
+      "202"
     ],
     "Low": null,
     "High": null
