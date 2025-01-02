@@ -22,29 +22,132 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
+using System.Collections.Generic;
 using AoC;
 
 namespace AdventCalendar2016;
 
 public class DupdobDay23 : SolverWithLineParser
 {
+    private readonly int[] _registers = new int[4];
+    private int _pc;
+
+    private readonly List<Action> _program = [];
+    private readonly Dictionary<int, bool> _toggled = [];
+
     public override void SetupRun(Automaton automatonBase)
     {
-        throw new System.NotImplementedException();
+        automatonBase.Day = 23;
+        automatonBase.RegisterTestDataAndResult("""
+                                                cpy 2 a
+                                                tgl a
+                                                tgl a
+                                                tgl a
+                                                cpy 1 a
+                                                dec a
+                                                dec a
+                                                """, 3, 1);
     }
 
     public override object GetAnswer1()
     {
-        throw new System.NotImplementedException();
+        _registers[0] = 7;
+        for (_pc = 0; _pc < _program.Count; _pc++)
+        {
+            _program[_pc]();
+        }
+        return _registers[NameToIndex("a")];
     }
 
     public override object GetAnswer2()
     {
-        throw new System.NotImplementedException();
+        _registers[0] = 12;
+        _registers[1] = 0;
+        _toggled.Clear();
+        for (_pc = 0; _pc < _program.Count; _pc++)
+        {
+            _program[_pc]();
+        }
+        return _registers[NameToIndex("a")];
     }
 
+    private bool IsToggled() => _toggled.GetValueOrDefault(_pc);
+     
     protected override void ParseLine(string line, int index, int lineCount)
     {
-        throw new System.NotImplementedException();
+        var tokens = line.Split(' ', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+        switch (tokens[0])
+        {
+            case "cpy":
+                _program.Add(() =>
+                {
+                    if (IsToggled()) 
+                        JumpIfNotZero(tokens);
+                    else 
+                        Copy(tokens);
+                });
+                break;
+            case "inc":
+                _program.Add(() =>
+                {
+                    if (IsToggled()) 
+                        Dec(tokens);
+                    else
+                        Inc(tokens);
+                });
+                break;
+            case "dec":
+                _program.Add(() =>
+                {
+                    if (IsToggled())
+                        Inc(tokens);
+                    else
+                        Dec(tokens);
+                });
+                break;
+            case "tgl":
+                _program.Add(() =>
+                {
+                    if (IsToggled())
+                        Inc(tokens);
+                    else
+                        Toggle(tokens);
+                });
+                break;
+            case "jnz":
+                _program.Add(() =>
+                {
+                    if (IsToggled())
+                        Copy(tokens);
+                    else
+                        JumpIfNotZero(tokens);
+                });
+                break;
+        }
     }
+
+    private void JumpIfNotZero(string[] tokens)
+    {
+        if (TokenToValue(tokens[1]) != 0)
+        {
+            _pc += TokenToValue(tokens[2]) - 1;
+        }
+    }
+
+    private void Toggle(string[] tokens) => _toggled[TokenToValue(tokens[1])+_pc] = true;
+
+    private void Dec(string[] tokens) => _registers[NameToIndex(tokens[1])]--;
+
+    private void Inc(string[] tokens) => _registers[NameToIndex(tokens[1])]++;
+
+    private void Copy(string[] tokens) => _registers[NameToIndex(tokens[2])] = TokenToValue(tokens[1]);
+
+    private static int NameToIndex(string register) => register[0] - 'a';
+
+    private int TokenToValue(string token)
+    {
+        return int.TryParse(token, out var value) ? value : _registers[NameToIndex(token)];
+    }
+    
 }

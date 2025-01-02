@@ -24,6 +24,24 @@
 
 namespace AoCAlgorithms;
 
+public static class Map2D
+{
+    public static Map2D<char> FromBlock(IList<string> block, OutBoundHandling mode = OutBoundHandling.Throw, char defaultValue = default)
+    {
+        var map = new char[block[0].Length, block.Count];
+        for (var y = 0; y < block.Count; y++)
+        {
+            var x = 0;
+            foreach (var entry in block[y])
+            {
+                map[x++, y] = entry;
+            }
+        }
+
+        return new Map2D<char>(map, mode, defaultValue);
+    }
+}
+
 /// <summary>
 /// Represents a 2D map with arbitrary storage type
 /// </summary>
@@ -31,6 +49,8 @@ namespace AoCAlgorithms;
 public class Map2D<T> : Map2DBase<T>
 {
     private readonly T[,] _map;
+
+    internal Map2D(T[,] map, OutBoundHandling mode, T defaultValue): base(mode, defaultValue) => _map = map;
 
     public Map2D(IList<IEnumerable<T>> map, OutBoundHandling mode = OutBoundHandling.Throw, T defaultValue = default) : base(mode, defaultValue)
     {
@@ -53,10 +73,7 @@ public class Map2D<T> : Map2DBase<T>
 
     protected override T GetValue((int x, int y) coords) => _map[coords.x, coords.y];
 
-    protected override void SetValue((int x, int y) coords, T value)
-    {
-        _map[coords.x, coords.y] = value;
-    }
+    protected override void SetValue((int x, int y) coords, T value) => _map[coords.x, coords.y] = value;
 
     public override int GetSize(int dimension) => _map.GetLength(dimension);
 
