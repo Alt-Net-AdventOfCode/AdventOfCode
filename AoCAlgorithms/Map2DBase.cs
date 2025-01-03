@@ -67,29 +67,39 @@ public abstract class Map2DBase<T>
     /// </summary>
     /// <param name="coordinates"></param>
     /// <returns></returns>
-    public IEnumerable<(int x, int y)> NeighborsOf((int x, int y) coordinates)
+   public IEnumerable<(int x, int y)> NeighborsOf((int x, int y) coordinates)
     {
-        var next = (coordinates.x - 1, coordinates.y);
-        if (WrapIfNeeded(ref next))
+        foreach (var (dx, dy) in Vectors)
         {
-            yield return next;
-        }
-        next = (coordinates.x, coordinates.y-1);
-        if (WrapIfNeeded(ref next))
-        {
-            yield return next;
-        }
-        next = (coordinates.x+1, coordinates.y);
-        if (WrapIfNeeded(ref next))
-        {
-            yield return next;
-        }
-        next = (coordinates.x, coordinates.y+1);
-        if (WrapIfNeeded(ref next))
-        {
-            yield return next;
+            var next = (coordinates.x + dx, coordinates.y + dy);
+            if (WrapIfNeeded(ref next))
+            {
+                yield return next;
+            } 
         }
     }
+    
+    private static readonly (int dx, int dy)[] Vectors = {(-1, 0), (0, -1), (1, 0), (0, 1) };
+    
+    /// <summary>
+    /// Enumerate direct neighbors (4 directions)
+    /// </summary>
+    /// <param name="coordinates"></param>
+    /// <returns></returns>
+   public IEnumerable<(int x, int y)> Neighbors8Of((int x, int y) coordinates)
+    {
+        foreach (var (dx, dy) in Vectors8)
+        {
+            var next = (coordinates.x + dx, coordinates.y + dy);
+            if (WrapIfNeeded(ref next))
+            {
+                yield return next;
+            } 
+        }
+    }
+    
+
+    private static readonly (int dx, int dy)[] Vectors8 = {(-1, 0), (-1, -1), (0, -1), (1, -1), (1, 0), ( 1, 1), (0, 1), (-1, 1) };
     
     /// <summary>
     /// Enumerate direct neighbors (8 directions)
