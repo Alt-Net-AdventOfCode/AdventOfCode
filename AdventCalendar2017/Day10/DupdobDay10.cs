@@ -52,7 +52,7 @@ public class DupdobDay10 : SolverWithDataAsLines
         return list[0] * list[1];
     }
 
-    private List<int> HashRound(List<int> lengths, List<int> list, ref int current, ref int skip)
+    private static List<int> HashRound(List<int> lengths, List<int> list, ref int current, ref int skip)
     {
         foreach (var length in lengths)
         {
