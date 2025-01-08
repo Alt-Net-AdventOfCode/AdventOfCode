@@ -1,0 +1,27 @@
+{
+  "SchemaVersion": "1",
+  "Day": 16,
+  "First": {
+    "Solved": true,
+    "Answer": "ceijbfoamgkdnlph",
+    "Attempts": [
+      "ceijbfoamgkdnlph",
+      "ceijbfoamgkdnlph",
+      "ceijbfoamgkdnlph",
+      "ceijbfoamgkdnlph"
+    ],
+    "Low": null,
+    "High": null
+  },
+  "Second": {
+    "Solved": true,
+    "Answer": "pnhajoekigcbflmd",
+    "Attempts": [
+      "hlacgpbkmoiefdnj",
+      "hlacgpbkmoiefdnj",
+      "pnhajoekigcbflmd"
+    ],
+    "Low": null,
+    "High": null
+  }
+}
