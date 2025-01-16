@@ -291,7 +291,7 @@ namespace AdventCalendar2016
         public override void SetupRun(Automaton automaton)
         {
             automaton.Day = 11;
-            automaton.RegisterTestData(@"The first floor contains a hydrogen-compatible microchip and a lithium-compatible microchip.
+            automaton.AddExample(@"The first floor contains a hydrogen-compatible microchip and a lithium-compatible microchip.
 The second floor contains a hydrogen generator.
 The third floor contains a lithium generator.
 The fourth floor contains nothing relevant.");

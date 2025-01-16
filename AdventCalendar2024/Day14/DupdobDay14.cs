@@ -29,20 +29,10 @@ namespace AdventCalendar2024;
 
 public partial class DupdobDay14 : SolverWithLineParser
 {
-    public DupdobDay14(string init)
-    {
-        if (!string.IsNullOrEmpty(init))
-        {
-            var parts = init.Split(",");
-            _width=int.Parse(parts[0]);
-            _height=int.Parse(parts[1]);
-        }
-    }
-    
     public override void SetupRun(Automaton automatonBase)
     {
         automatonBase.Day = 14;
-        automatonBase.RegisterTestData("""
+        automatonBase.AddExample("""
                                                 p=0,4 v=3,-3
                                                 p=6,3 v=-1,-3
                                                 p=10,3 v=-1,2
@@ -55,12 +45,17 @@ public partial class DupdobDay14 : SolverWithLineParser
                                                 p=7,3 v=-1,2
                                                 p=2,4 v=2,-3
                                                 p=9,5 v=-3,-3
-                                                """,  "7,11");
+                                                """).WithParameters(7,11);
         automatonBase.RegisterTestResult(12);
     }
 
     public override object GetAnswer1()
     {
+        if (ExtraParameters.Length != 0)
+        {
+            _width = ExtraParameters[0];
+            _height = ExtraParameters[1];
+        }
         var quadrants = new int[4];
         foreach (var guard in _guards)
         {
@@ -131,8 +126,8 @@ public partial class DupdobDay14 : SolverWithLineParser
 
     private record Guard(int X, int Y, int Dx, int Dy);
     private readonly List<Guard> _guards = [];
-    private readonly int _width = 101;
-    private readonly int _height = 103;
+    private int _width = 101;
+    private int _height = 103;
     
     protected override void ParseLine(string line, int index, int lineCount)
     {

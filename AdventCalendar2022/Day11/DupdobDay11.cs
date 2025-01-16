@@ -31,7 +31,7 @@ public class DupdobDay11 : SolverWithParser
     public override void SetupRun(Automaton automaton)
     {
         automaton.Day = 11;
-        automaton.RegisterTestData(@"Monkey 0:
+        automaton.AddExample(@"Monkey 0:
   Starting items: 79, 98
   Operation: new = old * 19
   Test: divisible by 23

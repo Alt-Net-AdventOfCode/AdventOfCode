@@ -42,13 +42,7 @@ public partial class DupdobDay21 : SolverWithLineParser
     private readonly Regex _reverse = MyRegex5();
     private readonly Regex _rotateOnLetter = MyRegex6();
     private readonly List<string> _lines = new();
-    private readonly string _scrambledCode;
-
-    public DupdobDay21(string init)
-    {
-        _initialCode = string.IsNullOrEmpty(init) ? "abcdefgh" : init;
-        _scrambledCode = string.IsNullOrEmpty(init) ? "fbgdceah" : init;
-    }
+    private  string _scrambledCode;
     
     public override void SetupRun(Automaton automatonBase)
     {
@@ -60,7 +54,7 @@ rotate left 1 step
 move position 1 to position 4
 move position 3 to position 0
 rotate based on position of letter b
-rotate based on position of letter d", "abcde").Answer1("decab");
+rotate based on position of letter d").Answer1("decab");
         /* no example provided for part 2
          and the example for part 1 is harder to reverse than the provided input.
          Odd length code imply the rotate based on position can be reversed in two different ways, while even length 
@@ -70,6 +64,12 @@ rotate based on position of letter d", "abcde").Answer1("decab");
 
     public override object GetAnswer1()
     {
+        if (IsTest)
+        {
+            _initialCode = !IsTest ? "abcdefgh" : "abcde";
+            _scrambledCode = !IsTest ? "fbgdceah" : "abcde";
+        }
+        
         var status = _initialCode.ToArray();
         return Scramble(status, true);
     }

@@ -31,7 +31,7 @@ public class DupdobDay16: SolverWithParser
     public override void SetupRun(Automaton automatonBase)
     {
         automatonBase.Day = 16;
-        automatonBase.RegisterTestData("s1,x3/4,pe/b").RegisterTestResult("baedc", 1);
+        automatonBase.AddExample("s1,x3/4,pe/b").Answer1("baedc");
     }
 
     private record DanceMove(char Action, string Param1, string Param2);

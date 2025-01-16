@@ -36,7 +36,7 @@ public class DupdobDay12 : SolverWithLineParser
     {
         automaton.Day = 12;
         // ReSharper disable StringLiteralTypo
-        automaton.RegisterTestData(@"Sabqponm
+        automaton.AddExample(@"Sabqponm
 abcryxxl
 accszExk
 acctuvwj

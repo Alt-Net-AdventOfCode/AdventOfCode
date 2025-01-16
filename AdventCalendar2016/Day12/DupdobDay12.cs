@@ -14,7 +14,7 @@ namespace AdventCalendar2016
         public override void SetupRun(Automaton automaton)
         {
             automaton.Day = 12;
-            automaton.RegisterTestData(@"cpy 41 a
+            automaton.AddExample(@"cpy 41 a
 inc a
 inc a
 dec a

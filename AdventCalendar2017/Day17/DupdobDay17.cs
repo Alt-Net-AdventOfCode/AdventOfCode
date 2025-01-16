@@ -33,7 +33,7 @@ public class DupdobDay17 : SolverWithParser
     public override void SetupRun(Automaton automatonBase)
     {
         automatonBase.Day = 17;
-        automatonBase.RegisterTestData("3").RegisterTestResult(638);
+        automatonBase.AddExample("3").Answer1(638);
     }
 
     protected override void Parse(string data)

@@ -35,10 +35,10 @@ namespace AdventCalendar2016
         {
             automaton.Day = 17;
 
-            automaton.RegisterTestData("ihgpwlah");
+            automaton.AddExample("ihgpwlah");
             automaton.RegisterTestResult("DDRRRD", 1);
             automaton.RegisterTestResult(370, 2);
-            automaton.RegisterTestData("kglvqrro");
+            automaton.AddExample("kglvqrro");
             automaton.RegisterTestResult("DDUDRLRRUDRD", 1);
             automaton.RegisterTestResult(492,2);
             

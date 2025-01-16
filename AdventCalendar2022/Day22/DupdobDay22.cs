@@ -31,7 +31,7 @@ public class DupdobDay22 : SolverWithLineParser
     public override void SetupRun(Automaton automaton)
     {
         automaton.Day = 22;
-        automaton.RegisterTestData(@"        ...#
+        automaton.AddExample(@"        ...#
         .#..
         #...
         ....
