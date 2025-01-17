@@ -106,7 +106,7 @@ public class DupdobDay23 : SolverWithLineParser
         return count;
     }
 
-    private bool IsPrime(int i)
+    private static bool IsPrime(int i)
     {
         if (i % 2 == 0)
         {
