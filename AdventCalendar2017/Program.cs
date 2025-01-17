@@ -8,6 +8,6 @@ internal static class Program
     {
         var engine = new Automaton(2017);
         engine.SetDataPath("../../../Day{0,2}");
-        engine.RunDay<DupdobDay24>();
+        engine.RunDay<DupdobDay25>();
     }
 }
