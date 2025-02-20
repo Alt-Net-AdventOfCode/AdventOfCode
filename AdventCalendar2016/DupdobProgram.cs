@@ -35,7 +35,7 @@ namespace AdventCalendar2016
 
         private static void Main()
         {
-            var engine = new Automaton(2016);
+            var engine = new HttpAutomaton(2016);
             engine.SetDataPath("../../../Day{0,2}");
             engine.RunDay<DupdobDay25>();
         }

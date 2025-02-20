@@ -32,7 +32,7 @@ public class DupdobDay22 : SolverWithDataAsLines
     {
         automatonBase.Day = 22;
         automatonBase.AddExample("..#\n#..\n...\n").WithParameters(70, 100)
-            .Answer1(41).Answer2(26);
+            .Answer1(41).Answer2(26).WithParameters().Answer1(5587);
     }
 
     private readonly (int dy, int dx)[] _vectors = [(-1, 0), (0,1), (1, 0), (0, -1)];
@@ -68,6 +68,7 @@ public class DupdobDay22 : SolverWithDataAsLines
     {
         Clean, Weakened, Infected, Flagged
     }
+    
     public override object GetAnswer2()
     {
         var cells = _infectedCells.ToDictionary(p=>p, _ => State.Infected);

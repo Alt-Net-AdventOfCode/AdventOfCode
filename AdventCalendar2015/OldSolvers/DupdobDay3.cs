@@ -60,9 +60,7 @@ namespace AdventCalendar2015
                     delivery[house]++;
                 }
 
-                var temp = house;
-                house = alt;
-                alt = temp;
+                (house, alt) = (alt, house);
             }
             return delivery.Count;
         }

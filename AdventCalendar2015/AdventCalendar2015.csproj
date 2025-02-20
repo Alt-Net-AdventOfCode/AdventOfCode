@@ -2,10 +2,12 @@
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
-        <TargetFramework>net7.0</TargetFramework>
+        <TargetFramework>net9.0</TargetFramework>
+        <LangVersion>default</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\AocAutomaton\AoC\AoC.csproj" />
       <ProjectReference Include="..\2019\AdventCalendar2019.csproj" />
       <ProjectReference Include="..\AOCHelpers\AOCHelpers.csproj" />
     </ItemGroup>
