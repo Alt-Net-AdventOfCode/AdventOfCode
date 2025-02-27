@@ -6,6 +6,7 @@
     "Answer": "1586300",
     "Attempts": [
       "1586300",
+      "1586300",
       "1586300"
     ],
     "Low": null,
@@ -13,9 +14,10 @@
   },
   "Second": {
     "Solved": true,
-    "Answer": "3737498",
+    "Answer": "7474996",
     "Attempts": [
-      "3737498"
+      "3737498",
+      "7474996"
     ],
     "Low": null,
     "High": null

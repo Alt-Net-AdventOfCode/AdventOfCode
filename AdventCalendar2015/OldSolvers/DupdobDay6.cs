@@ -63,6 +63,8 @@ namespace AdventCalendar2015
                 }
             }
 
+            return;
+
             (int x, int y) Extract(Capture group)
             {
                 var fields = group.Value.Split(',');

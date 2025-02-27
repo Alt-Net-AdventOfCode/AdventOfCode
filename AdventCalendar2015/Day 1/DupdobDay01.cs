@@ -27,6 +27,7 @@ using AoC;
 
 namespace AdventCalendar2015;
 
+[Day(1)]
 public class DupdobDay01: SolverWithParser 
 {
     private int _depth;
@@ -34,9 +35,6 @@ public class DupdobDay01: SolverWithParser
 
     public override void SetupRun(Automaton automaton)
     {
-        automaton.Day = 1;
-        automaton.AddExample("(())").Answer1(0);
-        automaton.AddExample("(()(()(").Answer1(3);
     }
 
     protected override void Parse(string data)
@@ -52,6 +50,8 @@ public class DupdobDay01: SolverWithParser
         }
     }
 
+    [Example("(())", 0)]
+    [Example("(()(()(", 3)]
     public override object GetAnswer1() => _depth;
 
     public override object GetAnswer2() => _basementStep;

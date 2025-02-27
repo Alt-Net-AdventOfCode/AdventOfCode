@@ -29,6 +29,7 @@ using AoC;
 
 namespace AdventCalendar2015;
 
+[Day(2)]
 public class DupdobDay02: SolverWithLineParser
 {
     private record Gift(int L, int W, int H);
@@ -36,11 +37,10 @@ public class DupdobDay02: SolverWithLineParser
     private readonly List<Gift> _gifts = [];
     public override void SetupRun(Automaton automaton)
     {
-        automaton.Day = 2;
-        automaton.AddExample("2x3x4").Answer1(58).Answer2(34);
-        automaton.AddExample("1x1x10").Answer1(43).Answer2(14);
     }
 
+    [Example("2x3x4", 58)]
+    [Example("1x1x10", 43)]
     public override object GetAnswer1()
     {
         var neededSurface = 0;
@@ -51,6 +51,8 @@ public class DupdobDay02: SolverWithLineParser
         return neededSurface;
     }
 
+    [Example("2x3x4", 34)]
+    [Example("1x1x10", 14)]
     public override object GetAnswer2()
     {
         var neededRibbon = 0;

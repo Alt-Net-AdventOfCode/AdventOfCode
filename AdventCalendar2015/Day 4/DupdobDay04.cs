@@ -22,57 +22,55 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
-using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using AoC;
 
 namespace AdventCalendar2015;
 
-[Day(3)]
-public class DupdobDay03 : SolverWithParser
+[Day(4)]
+public class DupdobDay04 : SolverWithParser
 {
-    private const string Directions = ">v<^";
-    private readonly (int dx, int dy)[] _vectors = [(1, 0), (0, 1), (-1, 0), (0, -1)];
-    private string _moves;
+    private string _prefix;
+    private int _fiveZeros;
 
     public override void SetupRun(Automaton automaton)
     {
     }
 
-    protected override void Parse(string data) => _moves = data;
-
-    [Example("^>v<", 4)]
-    public override object GetAnswer1()
+    protected override void Parse(string data)
     {
-        var hits = new Dictionary<(int x, int y), int>();
-        
-        (int x, int y) start = (0, 0);
-        hits[start] = 1;
-        foreach (var vector in _moves.Select(move => _vectors[Directions.IndexOf(move)]))
-        {
-            start = (start.x + vector.dx, start.y + vector.dy);
-            hits[start] = 1 + hits.GetValueOrDefault(start);
-        }
-        
-        return hits.Count;
+        _prefix = data;
     }
 
-    [Example("^>v<", 3)]
+    [Example("abcdef", 609043)]
+    [Example("pqrstuv", 1048970)]
+    public override object GetAnswer1()
+    {
+        for (var i = _fiveZeros; i < int.MaxValue; i++)
+        {
+            var hash = MD5.HashData(Encoding.ASCII.GetBytes($"{_prefix}{i}"));
+            if (hash[0] == 0 && hash[1] == 0 && hash[2] < 16)
+            {
+                _fiveZeros = i;
+                return i;
+            }
+        }
+
+        return null;
+    }
+
     public override object GetAnswer2()
     {
-        var hits = new Dictionary<(int x, int y), int>();
-        
-        (int x, int y) startSanta = (0, 0);
-        (int x, int y) startRobot = startSanta;
-        hits[startSanta] = 1;
-        hits[startRobot] = 1;
-        foreach (var vector in _moves.Select(move => _vectors[Directions.IndexOf(move)]))
+        for (var i = 1; i < int.MaxValue; i++)
         {
-            startSanta = (startSanta.x + vector.dx, startSanta.y + vector.dy);
-            hits[startSanta] = 1 + hits.GetValueOrDefault(startSanta);
-            (startSanta, startRobot) = (startRobot, startSanta);
+            var hash = MD5.HashData(Encoding.ASCII.GetBytes($"{_prefix}{i}"));
+            if (hash[0] == 0 && hash[1] == 0 && hash[2] == 0)
+            {
+                return i;
+            }
         }
-        
-        return hits.Count;
+
+        return null;
     }
 }
