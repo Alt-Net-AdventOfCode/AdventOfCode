@@ -1,5 +1,4 @@
 ﻿    using System;
-    using System.Net;
     using AoC;
     using AOCHelpers;
 
@@ -11,7 +10,7 @@ namespace AdventCalendar2015
         {
             var automaton = Automaton.WebsiteAutomaton(2015);
             automaton.SetDataPath("../../../Day{0,2}");
-            automaton.RunDay<DupdobDay06>();
+            automaton.RunDay<DupdobDay07>();
         }
 
         private static void GiveAllAnswers()
