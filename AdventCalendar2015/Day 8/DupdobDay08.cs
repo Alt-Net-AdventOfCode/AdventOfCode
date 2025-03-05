@@ -35,12 +35,12 @@ public class DupdobDay08: SolverWithDataAsLines
     public override void SetupRun(Automaton automaton)
     {}
 
-    [SharedExample("""
+    [Example(1, """
              ""
              "abc"
              "aaa\"aaa"
              "\x27"
-             """, 1,12)]
+             """, 12)]
     public override object GetAnswer1() => _lines.Sum(CalcDiff);
 
     private static int CalcDiff(string arg) => arg.Length - CountLetter(arg);
@@ -74,7 +74,7 @@ public class DupdobDay08: SolverWithDataAsLines
 
     private static int CalcDiff2(string arg) => arg.Length + 2 + arg.Count(t => t is '\\' or '"') - arg.Length;
 
-    [SharedExample(1, 19)]
+    [ReuseExample(1, 19)]
     public override object GetAnswer2() => _lines.Sum(CalcDiff2);
 
     protected override void ParseLines(string[] lines) => _lines = lines;
