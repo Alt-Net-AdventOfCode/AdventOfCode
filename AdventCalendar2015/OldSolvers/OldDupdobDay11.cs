@@ -2,7 +2,7 @@ using System;
 
 namespace AdventCalendar2015
 {
-    internal class DupdobDay11
+    internal class OldDupdobDay11
     {
         private string _input;
         private string _lastPassword;
