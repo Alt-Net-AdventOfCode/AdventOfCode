@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
 
-namespace AdventCalendar2015
+namespace AdventCalendar2015.OldSolvers
 {
     public class DupdobDay14
     {

@@ -1,4 +1,5 @@
 ﻿    using System;
+    using AdventCalendar2015.OldSolvers;
     using AoC;
     using AOCHelpers;
 
@@ -9,9 +10,8 @@ namespace AdventCalendar2015
         private static void Main(string[] args)
         {
             var automaton = Automaton.WebsiteAutomaton(2015);
-            automaton.SetRootPath("../../../");
-            automaton.SetDataPath("Day{0,2}");
-            automaton.RunDay<DupdobDay12>();
+            automaton.SetDataPath("../../../Day{0,2}");
+            automaton.RunDay<DupdobDay14>();
         }
 
         private static void GiveAllAnswers()
@@ -36,7 +36,7 @@ namespace AdventCalendar2015
             var day12 = new OldSolvers.DupdobDay12();
             day12.Parse();
             Console.WriteLine("Day 12: (1) = {0} , (2) = {1}", day12.Compute1(), day12.Compute2());
-            var day13 = new DupdobDay13();
+            var day13 = new OldSolvers.DupdobDay13();
             day13.Parse();
             Console.WriteLine("Day 13: (1) = {0} , (2) = {1}", day13.Compute1(), day13.Compute2());
             var day14 = new DupdobDay14();
