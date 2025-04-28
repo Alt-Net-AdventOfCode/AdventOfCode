@@ -39,7 +39,7 @@ namespace AdventCalendar2015
             var day13 = new OldSolvers.DupdobDay13();
             day13.Parse();
             Console.WriteLine("Day 13: (1) = {0} , (2) = {1}", day13.Compute1(), day13.Compute2());
-            var day14 = new DupdobDay14();
+            var day14 = new OldSolvers.DupdobDay14();
             day14.Parse();
             Console.WriteLine("Day 14: (1) = {0} , (2) = {1}", day14.Compute1(), day14.Compute2());
             var day15 = new DupdobDay15();
