@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-namespace AdventCalendar2015
+namespace AdventCalendar2015.OldSolvers
 {
     internal class DupdobDay15
     {
