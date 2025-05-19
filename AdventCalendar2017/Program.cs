@@ -6,7 +6,7 @@ internal static class Program
 {
     private static void Main(string[] args)
     {
-        var engine = Automaton.WebsiteAutomaton(2017);
+        var engine = MetaAutomaton.WebsiteAutomaton(2017);
         engine.SetDataPath("../../../Day{0,2}");
         engine.RunDay<DupdobDay22>();
     }

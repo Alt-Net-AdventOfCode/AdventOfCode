@@ -8,9 +8,9 @@ namespace AdventCalendar2015
     {
         private static void Main(string[] args)
         {
-            var automaton = Automaton.WebsiteAutomaton(2015);
+            var automaton = MetaAutomaton.WebsiteAutomaton(2015);
             automaton.SetDataPath("../../../Day{0,2}");
-            automaton.RunDay<DupdobDay17>();
+            automaton.RunDay<DupdobDay18>();
         }
 
         private static void GiveAllAnswers()
@@ -47,7 +47,7 @@ namespace AdventCalendar2015
             DupdobDayBase day= new OldSolvers.DupdobDay17();
             day.SetData();
             Console.WriteLine("Day {2}: (1) = {0} , (2) = {1}", day.GiveAnswer1(), day.GiveAnswer2(), day.Day);
-            day = new DupdobDay18();
+            day = new OldSolvers.DupdobDay18();
             day.SetData();
             Console.WriteLine("Day {0}: (1) = {1} , (2) = {2}", day.Day, day.GiveAnswer1(), day.GiveAnswer2());
             new DupdobDay19().OutputAnswers();
