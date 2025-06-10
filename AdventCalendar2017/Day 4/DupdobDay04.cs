@@ -28,10 +28,10 @@ namespace AdventCalendar2017;
 
 public class DupdobDay04 : SolverWithBlockParser
 {
-    public override void SetupRun(Automaton automatonBase)
+    public override void SetupRun(DayAutomaton dayAutomatonBase)
     {
-        automatonBase.Day = 4;
-        automatonBase.RegisterTestDataAndResult("""
+        dayAutomatonBase.Day = 4;
+        dayAutomatonBase.RegisterTestDataAndResult("""
                                                 aa bb cc dd ee
                                                 aa bb cc dd aa
                                                 aa bb cc dd aaa

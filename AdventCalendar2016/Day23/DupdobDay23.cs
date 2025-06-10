@@ -36,10 +36,10 @@ public class DupdobDay23 : SolverWithLineParser
     private readonly List<Action> _program = [];
     private readonly Dictionary<int, bool> _toggled = [];
 
-    public override void SetupRun(Automaton automatonBase)
+    public override void SetupRun(DayAutomaton dayAutomatonBase)
     {
-        automatonBase.Day = 23;
-        automatonBase.RegisterTestDataAndResult("""
+        dayAutomatonBase.Day = 23;
+        dayAutomatonBase.RegisterTestDataAndResult("""
                                                 cpy 2 a
                                                 tgl a
                                                 tgl a

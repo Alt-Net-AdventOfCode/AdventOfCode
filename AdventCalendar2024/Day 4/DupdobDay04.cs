@@ -31,10 +31,10 @@ public class DupdobDay04 : SolverWithLineParser
 {
     private readonly List<string> _letters = [];
     
-    public override void SetupRun(Automaton automatonBase)
+    public override void SetupRun(DayAutomaton dayAutomatonBase)
     {
-        automatonBase.Day = 4;
-        automatonBase.RegisterTestDataAndResult(@"MMMSXXMASM
+        dayAutomatonBase.Day = 4;
+        dayAutomatonBase.RegisterTestDataAndResult(@"MMMSXXMASM
 MSAMXMSMSA
 AMXSXMAAMM
 MSAMASMSMX
@@ -44,7 +44,7 @@ SMSMSASXSS
 SAXAMASAAA
 MAMMMXMMMM
 MXMXAXMASX", 18, 1);
-        automatonBase.RegisterTestResult(9, 2);
+        dayAutomatonBase.RegisterTestResult(9, 2);
     }
 
     protected override void ParseLine(string line, int index, int lineCount)

@@ -30,11 +30,11 @@ namespace AdventCalendar2024;
 public partial class DupdobDay03 : SolverWithParser
 {
     private string _formula = string.Empty;
-    public override void SetupRun(Automaton automatonBase)
+    public override void SetupRun(DayAutomaton dayAutomatonBase)
     {
-        automatonBase.Day = 3;
-        automatonBase.RegisterTestDataAndResult(@"xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(32,64]then(mul(11,8)mul(8,5))", 161, 1);
-        automatonBase.RegisterTestDataAndResult(@"xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))",48, 2);
+        dayAutomatonBase.Day = 3;
+        dayAutomatonBase.RegisterTestDataAndResult(@"xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(32,64]then(mul(11,8)mul(8,5))", 161, 1);
+        dayAutomatonBase.RegisterTestDataAndResult(@"xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))",48, 2);
     }
 
     public override object GetAnswer1() => Compute(_formula);

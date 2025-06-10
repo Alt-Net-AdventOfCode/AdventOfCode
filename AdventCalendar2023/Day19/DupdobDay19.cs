@@ -128,10 +128,10 @@ public class DupdobDay19: SolverWithLineParser
     private readonly Dictionary<string, Filter> _filters = new();
     private readonly List<List<int>> _items = new();
     
-    public override void SetupRun(Automaton automatonBase)
+    public override void SetupRun(DayAutomaton dayAutomatonBase)
     {
-        automatonBase.Day = 19;
-        automatonBase.RegisterTestDataAndResult(@"px{a<2006:qkq,m>2090:A,rfg}
+        dayAutomatonBase.Day = 19;
+        dayAutomatonBase.RegisterTestDataAndResult(@"px{a<2006:qkq,m>2090:A,rfg}
 pv{a>1716:R,A}
 lnx{m>1548:A,A}
 rfg{s<537:gd,x>2440:R,A}
@@ -148,7 +148,7 @@ hdj{m>838:A,pv}
 {x=2036,m=264,a=79,s=2244}
 {x=2461,m=1339,a=466,s=291}
 {x=2127,m=1623,a=2188,s=1013}", 19114, 1);
-        automatonBase.RegisterTestResult(167409079868000L, 2);
+        dayAutomatonBase.RegisterTestResult(167409079868000L, 2);
     }
 
     public override object GetAnswer1()

@@ -34,7 +34,7 @@ public class DupdobDay04 : SolverWithParser
     private string _prefix;
     private int _fiveZeros;
 
-    public override void SetupRun(Automaton automaton)
+    public override void SetupRun(DayAutomaton dayAutomaton)
     {
     }
 

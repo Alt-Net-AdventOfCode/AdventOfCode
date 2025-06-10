@@ -33,7 +33,7 @@ namespace AdventCalendar2015;
 [Day(14)]
 public class DupdobDay14: SolverWithIntParameter
 {
-    public override void SetupRun(Automaton automaton)
+    public override void SetupRun(DayAutomaton dayAutomaton)
     {
         
     }

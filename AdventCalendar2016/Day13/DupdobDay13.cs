@@ -11,11 +11,11 @@ namespace AdventCalendar2016
         private int _targetX;
         private int _targetY;
         private int _seed;
-        public override void SetupRun(Automaton automaton)
+        public override void SetupRun(DayAutomaton dayAutomaton)
         {
-            automaton.Day = 13;
-            automaton.AddExample("10,7,4");
-            automaton.RegisterTestResult(11);
+            dayAutomaton.Day = 13;
+            dayAutomaton.AddExample("10,7,4");
+            dayAutomaton.RegisterTestResult(11);
         }
 
         public override object GetAnswer1()

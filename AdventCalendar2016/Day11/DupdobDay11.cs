@@ -288,14 +288,14 @@ namespace AdventCalendar2016
             }
         }
 
-        public override void SetupRun(Automaton automaton)
+        public override void SetupRun(DayAutomaton dayAutomaton)
         {
-            automaton.Day = 11;
-            automaton.AddExample(@"The first floor contains a hydrogen-compatible microchip and a lithium-compatible microchip.
+            dayAutomaton.Day = 11;
+            dayAutomaton.AddExample(@"The first floor contains a hydrogen-compatible microchip and a lithium-compatible microchip.
 The second floor contains a hydrogen generator.
 The third floor contains a lithium generator.
 The fourth floor contains nothing relevant.");
-            automaton.RegisterTestResult(11);
+            dayAutomaton.RegisterTestResult(11);
         }
 
         private readonly Regex _basic = new("The (\\w*) floor contains (.*).");

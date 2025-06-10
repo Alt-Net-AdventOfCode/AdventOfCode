@@ -30,11 +30,11 @@ namespace AdventCalendar2022;
 
 public partial class DupdobDay21 : SolverWithLineParser
 {
-    public override void SetupRun(Automaton automaton)
+    public override void SetupRun(DayAutomaton dayAutomaton)
     {
-        automaton.Day = 21;
+        dayAutomaton.Day = 21;
         // ReSharper disable StringLiteralTypo
-        automaton.AddExample(@"root: pppw + sjmn
+        dayAutomaton.AddExample(@"root: pppw + sjmn
 dbpl: 5
 cczh: sllz + lgvd
 zczc: 2
@@ -49,8 +49,8 @@ pppw: cczh / lfqf
 lgvd: ljgn * ptdq
 drzm: hmdt - zczc
 hmdt: 32");
-        automaton.RegisterTestResult(152L);
-        automaton.RegisterTestResult(301L,2);
+        dayAutomaton.RegisterTestResult(152L);
+        dayAutomaton.RegisterTestResult(301L,2);
     }
 
     public override object GetAnswer1()

@@ -32,7 +32,7 @@ public class DupdobDay11: SolverWithParser
 {
     private string _password;
 
-    public override void SetupRun(Automaton automaton)
+    public override void SetupRun(DayAutomaton dayAutomaton)
     {
     }
 

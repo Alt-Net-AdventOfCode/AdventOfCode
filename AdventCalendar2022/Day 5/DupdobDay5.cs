@@ -35,10 +35,10 @@ public class DupdobDay5 : SolverWithLineParser
     
     private readonly List<(int repeat, int from, int to)> _operations = new();
     
-    public override void SetupRun(Automaton automaton)
+    public override void SetupRun(DayAutomaton dayAutomaton)
     {
-        automaton.Day = 5;
-        automaton.RegisterTestDataAndResult(@"    [D]    
+        dayAutomaton.Day = 5;
+        dayAutomaton.RegisterTestDataAndResult(@"    [D]    
 [N] [C]    
 [Z] [M] [P]
  1   2   3 
@@ -47,7 +47,7 @@ move 1 from 2 to 1
 move 3 from 1 to 3
 move 2 from 2 to 1
 move 1 from 1 to 2
-", "CMZ", 1);        automaton.RegisterTestDataAndResult(@"    [D]    
+", "CMZ", 1);        dayAutomaton.RegisterTestDataAndResult(@"    [D]    
 [N] [C]    
 [Z] [M] [P]
  1   2   3 

@@ -32,10 +32,10 @@ namespace AdventCalendar2016;
 public class DupdobDay20 : SolverWithLineParser
 {
     private List<(uint low, uint high)> _ranges = new();
-    public override void SetupRun(Automaton automaton)
+    public override void SetupRun(DayAutomaton dayAutomaton)
     {
-        automaton.Day = 20;
-        automaton.RegisterTest(@"5-8
+        dayAutomaton.Day = 20;
+        dayAutomaton.RegisterTest(@"5-8
 0-2
 4-7").Answer1(3);
     }

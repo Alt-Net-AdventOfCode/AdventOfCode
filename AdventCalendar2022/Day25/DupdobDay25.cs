@@ -28,10 +28,10 @@ namespace AdventCalendar2022;
 
 public class DupdobDay25 : SolverWithLineParser
 {
-    public override void SetupRun(Automaton automaton)
+    public override void SetupRun(DayAutomaton dayAutomaton)
     {
-        automaton.Day = 25;
-        automaton.AddExample(@"1=-0-2
+        dayAutomaton.Day = 25;
+        dayAutomaton.AddExample(@"1=-0-2
 12111
 2=0=
 21
@@ -44,7 +44,7 @@ public class DupdobDay25 : SolverWithLineParser
 12
 1=
 122");
-        automaton.RegisterTestResult("2=-1=0");
+        dayAutomaton.RegisterTestResult("2=-1=0");
     }
 
     private const string Digits = "=-012";

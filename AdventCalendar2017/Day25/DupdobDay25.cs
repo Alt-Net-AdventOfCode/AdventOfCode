@@ -29,10 +29,10 @@ namespace AdventCalendar2017;
 
 public partial class DupdobDay25: SolverWithBlockParser
 {
-    public override void SetupRun(Automaton automatonBase)
+    public override void SetupRun(DayAutomaton dayAutomatonBase)
     {
-        automatonBase.Day = 25;
-        automatonBase.AddExample("""
+        dayAutomatonBase.Day = 25;
+        dayAutomatonBase.AddExample("""
                                  Begin in state A.
                                  Perform a diagnostic checksum after 6 steps.
 

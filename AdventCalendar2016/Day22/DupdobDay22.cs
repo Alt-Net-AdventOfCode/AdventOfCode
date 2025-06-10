@@ -40,10 +40,10 @@ public class DupdobDay22 : SolverWithLineParser
 
     private (int x, int y) _bottomRight;
 
-    public override void SetupRun(Automaton automatonBase)
+    public override void SetupRun(DayAutomaton dayAutomatonBase)
     {
-        automatonBase.Day = 22;
-        automatonBase.RegisterTestDataAndResult("""
+        dayAutomatonBase.Day = 22;
+        dayAutomatonBase.RegisterTestDataAndResult("""
                                                 Filesystem            Size  Used  Avail  Use%
                                                 /dev/grid/node-x0-y0   10T    8T     2T   80%
                                                 /dev/grid/node-x0-y1   11T    6T     5T   54%
@@ -55,7 +55,7 @@ public class DupdobDay22 : SolverWithLineParser
                                                 /dev/grid/node-x2-y1    9T    8T     1T   88%
                                                 /dev/grid/node-x2-y2    9T    6T     3T   66%
                                                 """, 7, 2);
-        automatonBase.RegisterTestResult(7, 1);
+        dayAutomatonBase.RegisterTestResult(7, 1);
     }
 
     public override object GetAnswer1()

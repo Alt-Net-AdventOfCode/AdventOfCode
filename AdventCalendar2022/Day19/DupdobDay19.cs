@@ -41,13 +41,13 @@ public partial class DupdobDay19 : SolverWithLineParser
     private readonly Regex _parser =
         MyRegex();
 
-    public override void SetupRun(Automaton automaton)
+    public override void SetupRun(DayAutomaton dayAutomaton)
     {
-        automaton.Day = 19;
-        automaton.AddExample(
+        dayAutomaton.Day = 19;
+        dayAutomaton.AddExample(
             @"Blueprint 1: Each ore robot costs 4 ore. Each clay robot costs 2 ore. Each obsidian robot costs 3 ore and 14 clay. Each geode robot costs 2 ore and 7 obsidian.
 Blueprint 2: Each ore robot costs 2 ore. Each clay robot costs 3 ore. Each obsidian robot costs 3 ore and 8 clay. Each geode robot costs 3 ore and 12 obsidian.");
-        automaton.RegisterTestResult(33);
+        dayAutomaton.RegisterTestResult(33);
     }
 
     public override object GetAnswer1() => _blueprints.Select((t, i) => (i + 1) * MaxOfGeodes(t,24)).Sum();

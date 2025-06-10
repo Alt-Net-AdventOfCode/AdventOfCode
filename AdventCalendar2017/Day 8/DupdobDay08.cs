@@ -29,10 +29,10 @@ namespace AdventCalendar2017;
 
 public partial class DupdobDay08: SolverWithDataAsLines
 {
-    public override void SetupRun(Automaton automatonBase)
+    public override void SetupRun(DayAutomaton dayAutomatonBase)
     {
-        automatonBase.Day = 8;
-        automatonBase.RegisterTestDataAndResult("""
+        dayAutomatonBase.Day = 8;
+        dayAutomatonBase.RegisterTestDataAndResult("""
                                                 b inc 5 if a > 1
                                                 a inc 1 if b < 5
                                                 c dec -10 if a >= 1

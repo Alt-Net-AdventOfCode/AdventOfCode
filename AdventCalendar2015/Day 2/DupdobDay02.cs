@@ -35,7 +35,7 @@ public class DupdobDay02: SolverWithLineParser
     private record Gift(int L, int W, int H);
 
     private readonly List<Gift> _gifts = [];
-    public override void SetupRun(Automaton automaton)
+    public override void SetupRun(DayAutomaton dayAutomaton)
     {
     }
 

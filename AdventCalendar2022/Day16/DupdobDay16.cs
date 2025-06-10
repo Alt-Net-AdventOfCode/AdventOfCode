@@ -29,10 +29,10 @@ namespace AdventCalendar2022;
 
 public partial class DupdobDay16 : SolverWithLineParser
 {
-    public override void SetupRun(Automaton automaton)
+    public override void SetupRun(DayAutomaton dayAutomaton)
     {
-        automaton.Day = 16;
-        automaton.AddExample(@"Valve AA has flow rate=0; tunnels lead to valves DD, II, BB
+        dayAutomaton.Day = 16;
+        dayAutomaton.AddExample(@"Valve AA has flow rate=0; tunnels lead to valves DD, II, BB
 Valve BB has flow rate=13; tunnels lead to valves CC, AA
 Valve CC has flow rate=2; tunnels lead to valves DD, BB
 Valve DD has flow rate=20; tunnels lead to valves CC, AA, EE
@@ -42,8 +42,8 @@ Valve GG has flow rate=0; tunnels lead to valves FF, HH
 Valve HH has flow rate=22; tunnel leads to valve GG
 Valve II has flow rate=0; tunnels lead to valves AA, JJ
 Valve JJ has flow rate=21; tunnel leads to valve II");
-        automaton.RegisterTestResult(1651);
-        automaton.RegisterTestResult(1707,2);
+        dayAutomaton.RegisterTestResult(1651);
+        dayAutomaton.RegisterTestResult(1707,2);
     }
 
     private void CreateNetwork(string valveId, IEnumerable<string> wanted)

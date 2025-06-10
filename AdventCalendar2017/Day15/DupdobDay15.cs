@@ -29,10 +29,10 @@ namespace AdventCalendar2017;
 
 public class DupdobDay15 : SolverWithDataAsLines
 {
-    public override void SetupRun(Automaton automatonBase)
+    public override void SetupRun(DayAutomaton dayAutomatonBase)
     {
-        automatonBase.Day = 15;
-        automatonBase.RegisterTestDataAndResult("""
+        dayAutomatonBase.Day = 15;
+        dayAutomatonBase.RegisterTestDataAndResult("""
                                                 Generator A starts with 65
                                                 Generator B starts with 8921
                                                 """, 588, 1).RegisterTestResult(309,2);

@@ -99,15 +99,15 @@ public class DupdobDay7 : SolverWithLineParser
         return (withJoker && maps.ContainsKey('J') ? HandType.OnePair : HandType.High, ordered);
     }
     
-    public override void SetupRun(Automaton automatonBase)
+    public override void SetupRun(DayAutomaton dayAutomatonBase)
     {
-        automatonBase.Day = 7;
-        automatonBase.RegisterTestDataAndResult(@"32T3K 765
+        dayAutomatonBase.Day = 7;
+        dayAutomatonBase.RegisterTestDataAndResult(@"32T3K 765
 T55J5 684
 KK677 28
 KTJJT 220
 QQQJA 483", 6440, 1);
-        automatonBase.RegisterTestResult(5905, 2);
+        dayAutomatonBase.RegisterTestResult(5905, 2);
     }
 
     public override object GetAnswer1()

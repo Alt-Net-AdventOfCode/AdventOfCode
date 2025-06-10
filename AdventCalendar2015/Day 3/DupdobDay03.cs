@@ -35,7 +35,7 @@ public class DupdobDay03 : SolverWithParser
     private readonly (int dx, int dy)[] _vectors = [(1, 0), (0, 1), (-1, 0), (0, -1)];
     private string _moves;
 
-    public override void SetupRun(Automaton automaton)
+    public override void SetupRun(DayAutomaton dayAutomaton)
     {
     }
 

@@ -30,13 +30,13 @@ public class DupdobDay01 : SolverWithLineParser
 {
     private string _line = null!;
 
-    public override void SetupRun(Automaton automatonBase)
+    public override void SetupRun(DayAutomaton dayAutomatonBase)
     {
-        automatonBase.Day = 1;
-        automatonBase.RegisterTestDataAndResult("1122", 3, 1);
-        automatonBase.RegisterTestDataAndResult("91212129", 9, 1);
-        automatonBase.RegisterTestDataAndResult("1212", 6, 2);
-        automatonBase.RegisterTestDataAndResult("12131415", 4, 2);
+        dayAutomatonBase.Day = 1;
+        dayAutomatonBase.RegisterTestDataAndResult("1122", 3, 1);
+        dayAutomatonBase.RegisterTestDataAndResult("91212129", 9, 1);
+        dayAutomatonBase.RegisterTestDataAndResult("1212", 6, 2);
+        dayAutomatonBase.RegisterTestDataAndResult("12131415", 4, 2);
     }
 
     public override object GetAnswer1() => _line.Where((t, i) => t == _line[(i + 1) % _line.Length]).Aggregate(0L, (current, t) => current + (t - '0'));

@@ -32,10 +32,10 @@ public class DupdobDay13 : SolverWithLineParser
     private readonly List<List<string>> _patterns = new();
     private List<string>? _currentPattern;
     
-    public override void SetupRun(Automaton automatonBase)
+    public override void SetupRun(DayAutomaton dayAutomatonBase)
     {
-        automatonBase.Day = 13;
-        automatonBase.RegisterTestDataAndResult(@"#.##..##.
+        dayAutomatonBase.Day = 13;
+        dayAutomatonBase.RegisterTestDataAndResult(@"#.##..##.
 ..#.##.#.
 ##......#
 ##......#

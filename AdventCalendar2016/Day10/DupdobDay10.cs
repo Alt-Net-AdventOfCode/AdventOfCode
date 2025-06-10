@@ -149,10 +149,10 @@ namespace AdventCalendar2016
             return _bins[0].FirstValue() * _bins[1].FirstValue() * _bins[2].FirstValue();
         }
 
-        public override void SetupRun(Automaton automaton)
+        public override void SetupRun(DayAutomaton dayAutomaton)
         {
-            automaton.Day = 10;
-            automaton.RegisterTestDataAndResult(@"value 5 goes to bot 2
+            dayAutomaton.Day = 10;
+            dayAutomaton.RegisterTestDataAndResult(@"value 5 goes to bot 2
 bot 2 gives low to bot 1 and high to bot 0
 value 3 goes to bot 1
 bot 1 gives low to output 1 and high to bot 0

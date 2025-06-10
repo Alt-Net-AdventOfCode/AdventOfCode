@@ -3,32 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using AOCHelpers;
 
-namespace AdventCalendar2015
+namespace AdventCalendar2015.OldSolvers
 {
-    public static class DupdobArray
-    {
-        public static IEnumerable<T> Shuffle<T>(this IEnumerable<T> array)
-        {
-            var rnd = new Random();
-            return array.OrderBy(_ => rnd.Next());
-        }
-
-        public static string ReplaceAll(this string text, string toReplace, string replacement, out int count)
-        {
-            var pos = 0;
-            count = 0;
-            do
-            {
-                pos = text.IndexOf(toReplace, pos, StringComparison.Ordinal);
-                if (pos < 0) continue;
-                count++;
-                pos += toReplace.Length;
-            } while (pos >=0);
-
-            return text.Replace(toReplace, replacement, StringComparison.Ordinal);
-        }
-    }
-
     public class DupdobDay19: DupdobDayWithTest
     {
         protected override IEnumerable<(string intput, object result)> GetTestData1()
@@ -165,5 +141,32 @@ e => OMg
 
 ORnPBPMgArCaCaCaSiThCaCaSiThCaCaPBSiRnFArRnFArCaCaSiThCaCaSiThCaCaCaCaCaCaSiRnFYFArSiRnMgArCaSiRnPTiTiBFYPBFArSiRnCaSiRnTiRnFArSiAlArPTiBPTiRnCaSiAlArCaPTiTiBPMgYFArPTiRnFArSiRnCaCaFArRnCaFArCaSiRnSiRnMgArFYCaSiRnMgArCaCaSiThPRnFArPBCaSiRnMgArCaCaSiThCaSiRnTiMgArFArSiThSiThCaCaSiRnMgArCaCaSiRnFArTiBPTiRnCaSiAlArCaPTiRnFArPBPBCaCaSiThCaPBSiThPRnFArSiThCaSiThCaSiThCaPTiBSiRnFYFArCaCaPRnFArPBCaCaPBSiRnTiRnFArCaPRnFArSiRnCaCaCaSiThCaRnCaFArYCaSiRnFArBCaCaCaSiThFArPBFArCaSiRnFArRnCaCaCaFArSiRnFArTiRnPMgArF";
         public override int Day => 19;
+    }
+}
+
+namespace AdventCalendar2015
+{
+    public static class DupdobArray
+    {
+        public static IEnumerable<T> Shuffle<T>(this IEnumerable<T> array)
+        {
+            var rnd = new Random();
+            return array.OrderBy(_ => rnd.Next());
+        }
+
+        public static string ReplaceAll(this string text, string toReplace, string replacement, out int count)
+        {
+            var pos = 0;
+            count = 0;
+            do
+            {
+                pos = text.IndexOf(toReplace, pos, StringComparison.Ordinal);
+                if (pos < 0) continue;
+                count++;
+                pos += toReplace.Length;
+            } while (pos >=0);
+
+            return text.Replace(toReplace, replacement, StringComparison.Ordinal);
+        }
     }
 }

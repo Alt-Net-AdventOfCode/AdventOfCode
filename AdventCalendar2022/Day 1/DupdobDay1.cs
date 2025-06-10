@@ -31,9 +31,9 @@ public class DupdobDay1 : SolverWithLineParser
     private readonly List<List<int>> _calories = new();
     private readonly List<int> _totals = new();
     
-    public override void SetupRun(Automaton automaton)
+    public override void SetupRun(DayAutomaton dayAutomaton)
     {
-        automaton.Day = 1;
+        dayAutomaton.Day = 1;
     }
 
     public override object GetAnswer1()

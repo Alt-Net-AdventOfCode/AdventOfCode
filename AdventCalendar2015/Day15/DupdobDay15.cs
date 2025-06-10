@@ -34,7 +34,7 @@ public class DupdobDay15: SolverWithParser
 {
     private readonly List<int[]> _ingredientsProperties = [];
 
-    public override void SetupRun(Automaton automaton)
+    public override void SetupRun(DayAutomaton dayAutomaton)
     { }
 
     protected override void Parse(string data)

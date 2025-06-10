@@ -31,7 +31,7 @@ using AoC;
 [Day(9)]
 public class DupdobDay09: SolverWithDataAsLines
 {
-    public override void SetupRun(Automaton automaton)
+    public override void SetupRun(DayAutomaton dayAutomaton)
     {
     }
 

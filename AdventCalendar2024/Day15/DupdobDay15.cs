@@ -29,10 +29,10 @@ namespace AdventCalendar2024;
 
 public class DupdobDay15: SolverWithLineParser
 {
-    public override void SetupRun(Automaton automatonBase)
+    public override void SetupRun(DayAutomaton dayAutomatonBase)
     {
-        automatonBase.Day = 15;
-        automatonBase.RegisterTestDataAndResult("""
+        dayAutomatonBase.Day = 15;
+        dayAutomatonBase.RegisterTestDataAndResult("""
                                                 ##########
                                                 #..O..O.O#
                                                 #......O.#
@@ -56,7 +56,7 @@ public class DupdobDay15: SolverWithLineParser
                                                 v^^>>><<^^<>>^v^<v^vv<>v^<<>^<^v^v><^<<<><<^<v><v<>vv>>v><v^<vv<>v^<<^
                                                 
                                                 """, 10092, 1);
-        automatonBase.RegisterTestResult(9021, 2);
+        dayAutomatonBase.RegisterTestResult(9021, 2);
     }
     private readonly (int dy, int dx)[] _vectors = [(0, 1), (1, 0), (0,-1), (-1, 0)];
     private const string Symbols = ">v<^";

@@ -29,10 +29,10 @@ namespace AdventCalendar2024;
 
 public class DupdobDay24 : SolverWithLineParser
 {
-    public override void SetupRun(Automaton automatonBase)
+    public override void SetupRun(DayAutomaton dayAutomatonBase)
     {
-        automatonBase.Day = 24;
-        automatonBase.RegisterTestDataAndResult("""
+        dayAutomatonBase.Day = 24;
+        dayAutomatonBase.RegisterTestDataAndResult("""
                                                 x00: 1
                                                 x01: 1
                                                 x02: 1
@@ -45,8 +45,8 @@ public class DupdobDay24 : SolverWithLineParser
                                                 x02 OR y02 -> z02
                                                 """, 4, 1);
         // dummy response
-        automatonBase.RegisterTestResult(0, 2);
-        automatonBase.RegisterTestDataAndResult("""
+        dayAutomatonBase.RegisterTestResult(0, 2);
+        dayAutomatonBase.RegisterTestDataAndResult("""
                                                 x00: 1
                                                 x01: 0
                                                 x02: 1

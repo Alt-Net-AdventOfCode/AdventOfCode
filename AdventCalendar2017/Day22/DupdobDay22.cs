@@ -28,10 +28,10 @@ namespace AdventCalendar2017;
 
 public class DupdobDay22 : SolverWithDataAsLines
 {
-    public override void SetupRun(Automaton automatonBase)
+    public override void SetupRun(DayAutomaton dayAutomatonBase)
     {
-        automatonBase.Day = 22;
-        automatonBase.AddExample("..#\n#..\n...\n").WithParameters(70, 100)
+        dayAutomatonBase.Day = 22;
+        dayAutomatonBase.AddExample("..#\n#..\n...\n").WithParameters(70, 100)
             .Answer1(41).Answer2(26).WithParameters().Answer1(5587);
     }
 

@@ -1,12 +1,13 @@
-﻿using AdventCalendar2019.Day23;
+﻿using AoC;
 
 namespace AdventCalendar2019
 {
-    class Program
+    internal static class Program
     {
         static void Main(string[] args)
         {
-            DupdobDay23.GiveAnswers();
+            var automaton = Automaton.WebsiteAutomaton(2019);
+            automaton.RunDay<DupdobDay1>();
         }
     }
 }

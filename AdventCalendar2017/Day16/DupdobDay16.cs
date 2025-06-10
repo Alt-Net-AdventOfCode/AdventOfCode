@@ -28,10 +28,10 @@ namespace AdventCalendar2017;
 
 public class DupdobDay16: SolverWithParser
 {
-    public override void SetupRun(Automaton automatonBase)
+    public override void SetupRun(DayAutomaton dayAutomatonBase)
     {
-        automatonBase.Day = 16;
-        automatonBase.AddExample("s1,x3/4,pe/b").Answer1("baedc");
+        dayAutomatonBase.Day = 16;
+        dayAutomatonBase.AddExample("s1,x3/4,pe/b").Answer1("baedc");
     }
 
     private record DanceMove(char Action, string Param1, string Param2);

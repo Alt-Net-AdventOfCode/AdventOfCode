@@ -31,10 +31,10 @@ public class DupdobDay7 : SolverWithLineParser
     private readonly Directory _root = new Directory("", null);
     private Directory? _current;
     
-    public override void SetupRun(Automaton automaton)
+    public override void SetupRun(DayAutomaton dayAutomaton)
     {
-        automaton.Day = 7;
-        automaton.RegisterTestDataAndResult(@"$ cd /
+        dayAutomaton.Day = 7;
+        dayAutomaton.RegisterTestDataAndResult(@"$ cd /
 $ ls
 dir a
 14848514 b.txt
@@ -58,7 +58,7 @@ $ ls
 5626152 d.ext
 7214296 k
 ", 95437, 1);
-        automaton.RegisterTestDataAndResult(@"$ cd /
+        dayAutomaton.RegisterTestDataAndResult(@"$ cd /
 $ ls
 dir a
 14848514 b.txt

@@ -30,10 +30,10 @@ public class DupdobDay13 : SolverWithDataAsLines
 {
     private readonly List<(int offset, int length)> _scanners = [];
 
-    public override void SetupRun(Automaton automatonBase)
+    public override void SetupRun(DayAutomaton dayAutomatonBase)
     {
-        automatonBase.Day = 13;
-        automatonBase.RegisterTestDataAndResult("""
+        dayAutomatonBase.Day = 13;
+        dayAutomatonBase.RegisterTestDataAndResult("""
                                                 0: 3
                                                 1: 2
                                                 4: 4

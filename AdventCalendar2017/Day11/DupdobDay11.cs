@@ -30,13 +30,13 @@ public class DupdobDay11 : SolverWithDataAsLines
 {
     private string[]? _steps;
 
-    public override void SetupRun(Automaton automatonBase)
+    public override void SetupRun(DayAutomaton dayAutomatonBase)
     {
-        automatonBase.Day = 11;
-        automatonBase.RegisterTestDataAndResult("ne,ne,ne", 3, 1);
-        automatonBase.RegisterTestDataAndResult("ne,ne,sw,sw", 0, 1);
-        automatonBase.RegisterTestDataAndResult("ne,ne,s,s", 2, 1);
-        automatonBase.RegisterTestDataAndResult("se,sw,se,sw,sw", 3, 1);
+        dayAutomatonBase.Day = 11;
+        dayAutomatonBase.RegisterTestDataAndResult("ne,ne,ne", 3, 1);
+        dayAutomatonBase.RegisterTestDataAndResult("ne,ne,sw,sw", 0, 1);
+        dayAutomatonBase.RegisterTestDataAndResult("ne,ne,s,s", 2, 1);
+        dayAutomatonBase.RegisterTestDataAndResult("se,sw,se,sw,sw", 3, 1);
     }
 
     private int _maxDistance;

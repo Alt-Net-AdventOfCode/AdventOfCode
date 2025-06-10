@@ -28,10 +28,10 @@ namespace AdventCalendar2017;
 
 public class DupdobDay18: SolverWithLineParser
 {
-    public override void SetupRun(Automaton automatonBase)
+    public override void SetupRun(DayAutomaton dayAutomatonBase)
     {
-        automatonBase.Day = 18;
-        automatonBase.RegisterTestDataAndResult("""
+        dayAutomatonBase.Day = 18;
+        dayAutomatonBase.RegisterTestDataAndResult("""
                                                 set a 1
                                                 add a 2
                                                 mul a a
@@ -44,7 +44,7 @@ public class DupdobDay18: SolverWithLineParser
                                                 jgz a -2
                                                 """, 4, 1);
 
-        automatonBase.RegisterTestDataAndResult("""
+        dayAutomatonBase.RegisterTestDataAndResult("""
                                                 snd 1
                                                 snd 2
                                                 snd p

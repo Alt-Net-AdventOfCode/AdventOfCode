@@ -33,12 +33,12 @@ public class DupdobDay6 : SolverWithLineParser
     private long _time;
     private long _distance;
     
-    public override void SetupRun(Automaton automatonBase)
+    public override void SetupRun(DayAutomaton dayAutomatonBase)
     {
-        automatonBase.Day = 6;
-        automatonBase.RegisterTestDataAndResult(@"Time:      7  15   30
+        dayAutomatonBase.Day = 6;
+        dayAutomatonBase.RegisterTestDataAndResult(@"Time:      7  15   30
 Distance:  9  40  200", 288, 1);
-        automatonBase.RegisterTestResult(71503, 2);
+        dayAutomatonBase.RegisterTestResult(71503, 2);
     }
 
     public override object GetAnswer1()

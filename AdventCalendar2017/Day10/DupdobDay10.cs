@@ -29,12 +29,12 @@ namespace AdventCalendar2017;
 
 public class DupdobDay10 : SolverWithDataAsLines
 {
-    public override void SetupRun(Automaton automatonBase)
+    public override void SetupRun(DayAutomaton dayAutomatonBase)
     {
-        automatonBase.Day = 10;
-        automatonBase.RegisterTestDataAndResult("3, 4, 1, 5", 12, 1);
-        automatonBase.RegisterTestDataAndResult("", "a2582a3a0e66e6e86e3812dcb672a272", 2);
-        automatonBase.RegisterTestDataAndResult("AoC 2017", "33efeb34ea91902bb2f59c9920caa6cd", 2);
+        dayAutomatonBase.Day = 10;
+        dayAutomatonBase.RegisterTestDataAndResult("3, 4, 1, 5", 12, 1);
+        dayAutomatonBase.RegisterTestDataAndResult("", "a2582a3a0e66e6e86e3812dcb672a272", 2);
+        dayAutomatonBase.RegisterTestDataAndResult("AoC 2017", "33efeb34ea91902bb2f59c9920caa6cd", 2);
     }
 
     public override object GetAnswer1()

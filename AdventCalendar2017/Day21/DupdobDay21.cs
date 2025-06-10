@@ -43,10 +43,10 @@ public class DupdobDay21: SolverWithLineParser
         ]);
     }
 
-    public override void SetupRun(Automaton automatonBase)
+    public override void SetupRun(DayAutomaton dayAutomatonBase)
     {
-        automatonBase.Day = 21;
-        automatonBase.AddExample("""
+        dayAutomatonBase.Day = 21;
+        dayAutomatonBase.AddExample("""
                                  ../.# => ##./#../...
                                  .#./..#/### => #..#/..../..../#..#
                                  """).WithParameters(2).Answer1(12);

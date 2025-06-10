@@ -30,11 +30,11 @@ public class DupdobDay15 : SolverWithLineParser
 {
     private string? _line;
     
-    public override void SetupRun(Automaton automatonBase)
+    public override void SetupRun(DayAutomaton dayAutomatonBase)
     {
-        automatonBase.Day = 15;
-        automatonBase.RegisterTestDataAndResult("rn=1,cm-,qp=3,cm=2,qp-,pc=4,ot=9,ab=5,pc-,pc=6,ot=7", 1320, 1);
-        automatonBase.RegisterTestResult(145, 2);
+        dayAutomatonBase.Day = 15;
+        dayAutomatonBase.RegisterTestDataAndResult("rn=1,cm-,qp=3,cm=2,qp-,pc=4,ot=9,ab=5,pc-,pc=6,ot=7", 1320, 1);
+        dayAutomatonBase.RegisterTestResult(145, 2);
     }
 
     public override object GetAnswer1() => string.IsNullOrEmpty(_line) ? 0 : _line.Split(',', StringSplitOptions.RemoveEmptyEntries).Sum(part => ComputeHash(part));

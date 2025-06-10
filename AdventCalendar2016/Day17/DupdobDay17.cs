@@ -31,16 +31,16 @@ namespace AdventCalendar2016
 {
     public class DupdobDay17 : SolverWithLineParser
     {
-        public override void SetupRun(Automaton automaton)
+        public override void SetupRun(DayAutomaton dayAutomaton)
         {
-            automaton.Day = 17;
+            dayAutomaton.Day = 17;
 
-            automaton.AddExample("ihgpwlah");
-            automaton.RegisterTestResult("DDRRRD", 1);
-            automaton.RegisterTestResult(370, 2);
-            automaton.AddExample("kglvqrro");
-            automaton.RegisterTestResult("DDUDRLRRUDRD", 1);
-            automaton.RegisterTestResult(492,2);
+            dayAutomaton.AddExample("ihgpwlah");
+            dayAutomaton.RegisterTestResult("DDRRRD", 1);
+            dayAutomaton.RegisterTestResult(370, 2);
+            dayAutomaton.AddExample("kglvqrro");
+            dayAutomaton.RegisterTestResult("DDUDRLRRUDRD", 1);
+            dayAutomaton.RegisterTestResult(492,2);
             
         }
         private static readonly ((int dx, int dy) vector, char letter) [] Rules = { ((0, -1), 'U'), ((0, 1), 'D'), ((-1, 0), 'L'), ((1, 0),'R') };

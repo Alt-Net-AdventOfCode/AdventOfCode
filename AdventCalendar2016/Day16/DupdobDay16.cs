@@ -32,10 +32,10 @@ namespace AdventCalendar2016
         private string _input;
         private int _targetLength = 272;
 
-        public override void SetupRun(Automaton automaton)
+        public override void SetupRun(DayAutomaton dayAutomaton)
         {
-            automaton.Day = 16;
-            automaton.RegisterTestDataAndResult(@"10000
+            dayAutomaton.Day = 16;
+            dayAutomaton.RegisterTestDataAndResult(@"10000
 20", "01100", 1);
         }
 

@@ -30,11 +30,11 @@ public class DupdobDay6 : SolverWithLineParser
 {
     private string _message = string.Empty;
 
-    public override void SetupRun(Automaton automaton)
+    public override void SetupRun(DayAutomaton dayAutomaton)
     {
-        automaton.Day = 6;
-        automaton.RegisterTestDataAndResult("mjqjpqmgbljsphdztnvjfqwrcgsmlb", 7,1);
-        automaton.RegisterTestDataAndResult("mjqjpqmgbljsphdztnvjfqwrcgsmlb", 19,2);
+        dayAutomaton.Day = 6;
+        dayAutomaton.RegisterTestDataAndResult("mjqjpqmgbljsphdztnvjfqwrcgsmlb", 7,1);
+        dayAutomaton.RegisterTestDataAndResult("mjqjpqmgbljsphdztnvjfqwrcgsmlb", 19,2);
     }
 
     public override object GetAnswer1()

@@ -31,13 +31,13 @@ public class DupdobDay09 : SolverWithDataAsLines
     private string _line = null!;
     private int _garbageLength;
 
-    public override void SetupRun(Automaton automatonBase)
+    public override void SetupRun(DayAutomaton dayAutomatonBase)
     {
-        automatonBase.Day = 9;
-        automatonBase.RegisterTestDataAndResult("{{{}}}", 6, 1);
-        automatonBase.RegisterTestDataAndResult("{{<!!>},{<!!>},{<!!>},{<!!>}}", 9, 1);
-        automatonBase.RegisterTestDataAndResult("{{{},{},{{}}}}", 16, 1);
-        automatonBase.RegisterTestDataAndResult("{<{},{},{{}}>}", 1, 1);
+        dayAutomatonBase.Day = 9;
+        dayAutomatonBase.RegisterTestDataAndResult("{{{}}}", 6, 1);
+        dayAutomatonBase.RegisterTestDataAndResult("{{<!!>},{<!!>},{<!!>},{<!!>}}", 9, 1);
+        dayAutomatonBase.RegisterTestDataAndResult("{{{},{},{{}}}}", 16, 1);
+        dayAutomatonBase.RegisterTestDataAndResult("{<{},{},{{}}>}", 1, 1);
     }
 
     public override object GetAnswer1()

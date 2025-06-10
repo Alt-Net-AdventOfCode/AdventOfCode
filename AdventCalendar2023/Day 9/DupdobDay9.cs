@@ -31,13 +31,13 @@ public class DupdobDay9 : SolverWithLineParser
 {
     private List<List<long>> _numbers = new();
     
-    public override void SetupRun(Automaton automatonBase)
+    public override void SetupRun(DayAutomaton dayAutomatonBase)
     {
-        automatonBase.Day = 9;
-        automatonBase.RegisterTestDataAndResult(@"0 3 6 9 12 15
+        dayAutomatonBase.Day = 9;
+        dayAutomatonBase.RegisterTestDataAndResult(@"0 3 6 9 12 15
 1 3 6 10 15 21
 10 13 16 21 30 45", 114, 1);
-        automatonBase.RegisterTestResult(2, 2);
+        dayAutomatonBase.RegisterTestResult(2, 2);
         
     }
 

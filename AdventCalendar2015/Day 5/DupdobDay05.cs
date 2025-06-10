@@ -33,7 +33,7 @@ public class DupdobDay05 : SolverWithDataAsLines
 {
     private List<string> _lines;
 
-    public override void SetupRun(Automaton automaton)
+    public override void SetupRun(DayAutomaton dayAutomaton)
     {
     }
 

@@ -35,10 +35,10 @@ namespace AdventCalendar2016
 
         private List<(int max, int current)> _positions = new();
 
-        public override void SetupRun(Automaton automaton)
+        public override void SetupRun(DayAutomaton dayAutomaton)
         {
-            automaton.Day = 15;
-            automaton.RegisterTestDataAndResult(@"Disc #1 has 5 positions; at time=0, it is at position 4.
+            dayAutomaton.Day = 15;
+            dayAutomaton.RegisterTestDataAndResult(@"Disc #1 has 5 positions; at time=0, it is at position 4.
 Disc #2 has 2 positions; at time=0, it is at position 1.
 ", 5, 1);
         }

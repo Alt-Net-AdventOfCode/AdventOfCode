@@ -36,9 +36,9 @@ public class DupdobDay25 : SolverWithLineParser
     private readonly List<Action> _program = [];
     private readonly List<int> _output = [];
 
-    public override void SetupRun(Automaton automatonBase)
+    public override void SetupRun(DayAutomaton dayAutomatonBase)
     {
-        automatonBase.Day = 25;
+        dayAutomatonBase.Day = 25;
     }
 
     public override object GetAnswer1()

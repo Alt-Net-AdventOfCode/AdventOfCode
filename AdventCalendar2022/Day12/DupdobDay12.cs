@@ -32,17 +32,17 @@ public class DupdobDay12 : SolverWithLineParser
     private (int x, int y) _start;
     private (int x, int y) _end;
 
-    public override void SetupRun(Automaton automaton)
+    public override void SetupRun(DayAutomaton dayAutomaton)
     {
-        automaton.Day = 12;
+        dayAutomaton.Day = 12;
         // ReSharper disable StringLiteralTypo
-        automaton.AddExample(@"Sabqponm
+        dayAutomaton.AddExample(@"Sabqponm
 abcryxxl
 accszExk
 acctuvwj
 abdefghi");
-        automaton.RegisterTestResult(31);
-        automaton.RegisterTestResult(29, 2);
+        dayAutomaton.RegisterTestResult(31);
+        dayAutomaton.RegisterTestResult(29, 2);
     }
 
     public override object GetAnswer1()

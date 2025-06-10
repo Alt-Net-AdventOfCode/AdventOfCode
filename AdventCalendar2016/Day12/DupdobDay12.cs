@@ -11,16 +11,16 @@ namespace AdventCalendar2016
 
         private readonly List<Action> _program = [];
 
-        public override void SetupRun(Automaton automaton)
+        public override void SetupRun(DayAutomaton dayAutomaton)
         {
-            automaton.Day = 12;
-            automaton.AddExample(@"cpy 41 a
+            dayAutomaton.Day = 12;
+            dayAutomaton.AddExample(@"cpy 41 a
 inc a
 inc a
 dec a
 jnz a 2
 dec a");
-            automaton.RegisterTestResult(42);
+            dayAutomaton.RegisterTestResult(42);
         }
 
         private int NameToIndex(string register)

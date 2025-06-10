@@ -30,16 +30,16 @@ public class DupdobDay22 : SolverWithLineParser
 {
     private const int CountOfChange = 2000;
 
-    public override void SetupRun(Automaton automatonBase)
+    public override void SetupRun(DayAutomaton dayAutomatonBase)
     {
-        automatonBase.Day = 22;
-        automatonBase.RegisterTestDataAndResult("""
+        dayAutomatonBase.Day = 22;
+        dayAutomatonBase.RegisterTestDataAndResult("""
                                                 1
                                                 10
                                                 100
                                                 2024
                                                 """, 37327623, 1);
-        automatonBase.RegisterTestDataAndResult("""
+        dayAutomatonBase.RegisterTestDataAndResult("""
                                                 1
                                                 2
                                                 3

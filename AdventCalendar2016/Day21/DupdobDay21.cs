@@ -44,10 +44,10 @@ public partial class DupdobDay21 : SolverWithLineParser
     private readonly List<string> _lines = new();
     private  string _scrambledCode;
     
-    public override void SetupRun(Automaton automatonBase)
+    public override void SetupRun(DayAutomaton dayAutomatonBase)
     {
-        automatonBase.Day = 21;
-        automatonBase.RegisterTest(@"swap position 4 with position 0
+        dayAutomatonBase.Day = 21;
+        dayAutomatonBase.RegisterTest(@"swap position 4 with position 0
 swap letter d with letter b
 reverse positions 0 through 4
 rotate left 1 step

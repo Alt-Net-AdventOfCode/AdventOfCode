@@ -31,10 +31,10 @@ public class DupdobDay3 : SolverWithLineParser
     private readonly List<string> _lines = new();
     private List<(int number, List<(int y, int x)> stars)> _singleGear = new();
 
-    public override void SetupRun(Automaton automatonBase)
+    public override void SetupRun(DayAutomaton dayAutomatonBase)
     {
-        automatonBase.Day = 3;
-        automatonBase.RegisterTestDataAndResult(@"467..114..
+        dayAutomatonBase.Day = 3;
+        dayAutomatonBase.RegisterTestDataAndResult(@"467..114..
 ...*......
 ..35..633.
 ......#...

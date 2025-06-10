@@ -30,10 +30,10 @@ public class DupdobDay01 : SolverWithLineParser
 {
     private readonly List<int> _first = new();
     private readonly List<int> _second = new();
-    public override void SetupRun(Automaton automatonBase)
+    public override void SetupRun(DayAutomaton dayAutomatonBase)
     {
-        automatonBase.Day = 1;
-        automatonBase.RegisterTestDataAndResult("""
+        dayAutomatonBase.Day = 1;
+        dayAutomatonBase.RegisterTestDataAndResult("""
                                                 3   4
                                                 4   3
                                                 2   5
@@ -41,7 +41,7 @@ public class DupdobDay01 : SolverWithLineParser
                                                 3   9
                                                 3   3
                                                 """, 11, 1);
-        automatonBase.RegisterTestResult(31, 2);
+        dayAutomatonBase.RegisterTestResult(31, 2);
     }
 
     public override object GetAnswer1()

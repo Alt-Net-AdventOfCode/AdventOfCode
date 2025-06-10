@@ -31,10 +31,10 @@ public class DupdobDay11: SolverWithParser
 {
     private List<long> _stones;
         
-    public override void SetupRun(Automaton automatonBase)
+    public override void SetupRun(DayAutomaton dayAutomatonBase)
     {
-        automatonBase.Day = 11;
-        automatonBase.RegisterTestDataAndResult("""
+        dayAutomatonBase.Day = 11;
+        dayAutomatonBase.RegisterTestDataAndResult("""
                                                 125 17
                                                 """, 55312, 1);
     }

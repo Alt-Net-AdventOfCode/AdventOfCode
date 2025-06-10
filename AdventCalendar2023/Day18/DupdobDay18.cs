@@ -34,10 +34,10 @@ public partial class DupdobDay18 : SolverWithLineParser
     private static readonly string Symbols = "RDLU";
     private readonly List<(char symbol, int len, int len2, int dir)> _path= new ();
     private readonly Regex _parser = MyRegex();
-    public override void SetupRun(Automaton automatonBase)
+    public override void SetupRun(DayAutomaton dayAutomatonBase)
     {
-        automatonBase.Day = 18;
-        automatonBase.RegisterTestDataAndResult(@"R 6 (#70c710)
+        dayAutomatonBase.Day = 18;
+        dayAutomatonBase.RegisterTestDataAndResult(@"R 6 (#70c710)
 D 5 (#0dc571)
 L 2 (#5713f0)
 D 2 (#d2c081)
@@ -51,7 +51,7 @@ R 2 (#7807d2)
 U 3 (#a77fa3)
 L 2 (#015232)
 U 2 (#7a21e3)", 62, 1);
-        automatonBase.RegisterTestResult(952408144115L, 2);
+        dayAutomatonBase.RegisterTestResult(952408144115L, 2);
     }
 
     public override object GetAnswer1()

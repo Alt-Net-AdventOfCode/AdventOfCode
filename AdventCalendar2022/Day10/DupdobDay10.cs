@@ -50,11 +50,11 @@ public class DupdobDay10 : SolverWithLineParser
         return newCpu;
     }
     
-    public override void SetupRun(Automaton automaton)
+    public override void SetupRun(DayAutomaton dayAutomaton)
     {
-        automaton.Day = 10;
+        dayAutomaton.Day = 10;
         // ReSharper disable  StringLiteralTypo
-        automaton.AddExample(@"addx 15
+        dayAutomaton.AddExample(@"addx 15
 addx -11
 addx 6
 addx -3
@@ -200,8 +200,8 @@ addx -11
 noop
 noop
 noop");
-        automaton.RegisterTestResult(13140L);
-        automaton.RegisterTestResult("ok", 2);
+        dayAutomaton.RegisterTestResult(13140L);
+        dayAutomaton.RegisterTestResult("ok", 2);
     }
 
     public override object GetAnswer1()

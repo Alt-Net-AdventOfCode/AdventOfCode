@@ -30,10 +30,10 @@ public class DupdobDay14: SolverWithDataAsLines
 {
     private string _prefix = null!;
 
-    public override void SetupRun(Automaton automatonBase)
+    public override void SetupRun(DayAutomaton dayAutomatonBase)
     {
-        automatonBase.Day = 14;
-        automatonBase.RegisterTestDataAndResult("flqrgnkx", 8108, 1).RegisterTestResult(1242, 2);
+        dayAutomatonBase.Day = 14;
+        dayAutomatonBase.RegisterTestDataAndResult("flqrgnkx", 8108, 1).RegisterTestResult(1242, 2);
     }
 
     private readonly bool[,] _map = new bool[128,128];

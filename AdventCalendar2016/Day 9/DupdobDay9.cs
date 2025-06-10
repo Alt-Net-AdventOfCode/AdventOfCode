@@ -72,15 +72,15 @@ namespace AdventCalendar2016
             return answer;
         }
 
-        public override void SetupRun(Automaton automaton)
+        public override void SetupRun(DayAutomaton dayAutomaton)
         {
-            automaton.Day = 9;
-            automaton.RegisterTestDataAndResult("ADVENT", 6, 1);
-            automaton.RegisterTestDataAndResult("A(1x5)BC", 7, 1);
-            automaton.RegisterTestDataAndResult("(3x3)XYZ", 9, 1);
-            automaton.RegisterTestDataAndResult("A(2x2)BCD(2x2)EFG", 11, 1);
-            automaton.RegisterTestDataAndResult("(6x1)(1x3)A", 6, 1);
-            automaton.RegisterTestDataAndResult("X(8x2)(3x3)ABCY", 18, 1);
+            dayAutomaton.Day = 9;
+            dayAutomaton.RegisterTestDataAndResult("ADVENT", 6, 1);
+            dayAutomaton.RegisterTestDataAndResult("A(1x5)BC", 7, 1);
+            dayAutomaton.RegisterTestDataAndResult("(3x3)XYZ", 9, 1);
+            dayAutomaton.RegisterTestDataAndResult("A(2x2)BCD(2x2)EFG", 11, 1);
+            dayAutomaton.RegisterTestDataAndResult("(6x1)(1x3)A", 6, 1);
+            dayAutomaton.RegisterTestDataAndResult("X(8x2)(3x3)ABCY", 18, 1);
         }
     }
 }

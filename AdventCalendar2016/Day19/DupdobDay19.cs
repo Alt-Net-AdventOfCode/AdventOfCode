@@ -32,12 +32,12 @@ public class DupdobDay19 : SolverWithLineParser
 {
     private int _elvesCount;
 
-    public override void SetupRun(Automaton automaton)
+    public override void SetupRun(DayAutomaton dayAutomaton)
     {
-        automaton.Day = 19;
-        automaton.AddExample("5");
-        automaton.RegisterTestResult(3);
-        automaton.RegisterTestResult(2,2);
+        dayAutomaton.Day = 19;
+        dayAutomaton.AddExample("5");
+        dayAutomaton.RegisterTestResult(3);
+        dayAutomaton.RegisterTestResult(2,2);
     }
 
     public override object GetAnswer1()

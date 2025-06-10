@@ -33,10 +33,10 @@ public class DupdobDay19: SolverWithDataAsLines
     private int _width;
     private int _height;
 
-    public override void SetupRun(Automaton automatonBase)
+    public override void SetupRun(DayAutomaton dayAutomatonBase)
     {
-        automatonBase.Day = 19;
-        automatonBase.RegisterTestDataAndResult("""
+        dayAutomatonBase.Day = 19;
+        dayAutomatonBase.RegisterTestDataAndResult("""
                                                     |          
                                                     |  +--+    
                                                     A  |  C    

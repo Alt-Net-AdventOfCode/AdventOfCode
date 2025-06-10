@@ -31,16 +31,16 @@ public class DupdobDay10 : SolverWithLineParser
 {
     private Dictionary<(int y, int x), Node> _map = new();
     
-    public override void SetupRun(Automaton automatonBase)
+    public override void SetupRun(DayAutomaton dayAutomatonBase)
     {
-        automatonBase.Day = 10;
-        automatonBase.RegisterTestDataAndResult(@"..F7.
+        dayAutomatonBase.Day = 10;
+        dayAutomatonBase.RegisterTestDataAndResult(@"..F7.
 .FJ|.
 SJ.L7
 |F--J
 LJ...", 8, 1);
 
-        automatonBase.RegisterTestDataAndResult(@"...........
+        dayAutomatonBase.RegisterTestDataAndResult(@"...........
 .S-------7.
 .|F-----7|.
 .||.....||.
@@ -50,8 +50,8 @@ LJ...", 8, 1);
 .L--J.L--J.
 ...........
 ", 23, 1);
-        automatonBase.RegisterTestResult(4, 2);
-        automatonBase.RegisterTestDataAndResult(@".F----7F7F7F7F-7....
+        dayAutomatonBase.RegisterTestResult(4, 2);
+        dayAutomatonBase.RegisterTestDataAndResult(@".F----7F7F7F7F-7....
 .|F--7||||||||FJ....
 .||.FJ||||||||L7....
 FJL7L7LJLJ||LJ.L-7..
@@ -61,7 +61,7 @@ L--J.L7...LJS7F-7L7.
 .....|FJLJ|FJ|F7|.LJ
 ....FJL-7.||.||||...
 ....L---J.LJ.LJLJ...", 8, 2);
-        automatonBase.RegisterTestResult(70);
+        dayAutomatonBase.RegisterTestResult(70);
     }
 
     public override object GetAnswer1()

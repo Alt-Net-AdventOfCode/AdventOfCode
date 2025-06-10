@@ -28,10 +28,10 @@ namespace AdventCalendar2022;
 
 public class DupdobDay11 : SolverWithParser
 {
-    public override void SetupRun(Automaton automaton)
+    public override void SetupRun(DayAutomaton dayAutomaton)
     {
-        automaton.Day = 11;
-        automaton.AddExample(@"Monkey 0:
+        dayAutomaton.Day = 11;
+        dayAutomaton.AddExample(@"Monkey 0:
   Starting items: 79, 98
   Operation: new = old * 19
   Test: divisible by 23
@@ -59,8 +59,8 @@ Monkey 3:
     If true: throw to monkey 0
     If false: throw to monkey 1
 ");
-        automaton.RegisterTestResult(10605);
-        automaton.RegisterTestResult(2713310158L,2);
+        dayAutomaton.RegisterTestResult(10605);
+        dayAutomaton.RegisterTestResult(2713310158L,2);
     }
 
     public override object GetAnswer1()

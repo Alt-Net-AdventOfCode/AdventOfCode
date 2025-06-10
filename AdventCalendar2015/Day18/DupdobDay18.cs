@@ -35,7 +35,7 @@ public class DupdobDay18 : SolverWithIntParameter
     private readonly HashSet<(int x, int y)> _lights = [];
     private int _width,_height;
     
-    public override void SetupRun(Automaton automaton)
+    public override void SetupRun(DayAutomaton dayAutomaton)
     {
     }
 

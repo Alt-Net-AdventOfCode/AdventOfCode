@@ -30,10 +30,10 @@ public class DupdobDay17 : SolverWithParser
 {
     private int _seed;
 
-    public override void SetupRun(Automaton automatonBase)
+    public override void SetupRun(DayAutomaton dayAutomatonBase)
     {
-        automatonBase.Day = 17;
-        automatonBase.AddExample("3").Answer1(638);
+        dayAutomatonBase.Day = 17;
+        dayAutomatonBase.AddExample("3").Answer1(638);
     }
 
     protected override void Parse(string data)

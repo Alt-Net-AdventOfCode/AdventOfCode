@@ -33,7 +33,7 @@ public class DupdobDay01: SolverWithParser
     private int _depth;
     private int _basementStep = 0;
 
-    public override void SetupRun(Automaton automaton)
+    public override void SetupRun(DayAutomaton dayAutomaton)
     {
     }
 

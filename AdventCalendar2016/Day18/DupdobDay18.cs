@@ -33,11 +33,11 @@ public class DupdobDay18 : SolverWithLineParser
     private int _rowCount;
     private string _firstLine;
 
-    public override void SetupRun(Automaton automaton)
+    public override void SetupRun(DayAutomaton dayAutomaton)
     {
-        automaton.Day = 18;
-        automaton.AddExample(".^^.^.^^^^");
-        automaton.RegisterTestResult(38);
+        dayAutomaton.Day = 18;
+        dayAutomaton.AddExample(".^^.^.^^^^");
+        dayAutomaton.RegisterTestResult(38);
     }   
 
     public override object GetAnswer1() => CountEmptyCells(_rowCount);

@@ -36,11 +36,11 @@ namespace AdventCalendar2016
     public class DupdobDay14 : SolverWithLineParser
     {
         private string _salt;
-        public override void SetupRun(Automaton automaton)
+        public override void SetupRun(DayAutomaton dayAutomaton)
         {
-            automaton.Day = 14;
-            automaton.RegisterTestDataAndResult("abc\n", 22728, 1);
-            automaton.RegisterTestDataAndResult("abc\n", 22551, 2);
+            dayAutomaton.Day = 14;
+            dayAutomaton.RegisterTestDataAndResult("abc\n", 22728, 1);
+            dayAutomaton.RegisterTestDataAndResult("abc\n", 22551, 2);
         }
 
         public override object GetAnswer1()

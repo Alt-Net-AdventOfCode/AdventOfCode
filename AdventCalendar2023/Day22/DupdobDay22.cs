@@ -28,17 +28,17 @@ namespace AdventCalendar2023;
 
 public class DupdobDay22 : SolverWithLineParser
 {
-    public override void SetupRun(Automaton automatonBase)
+    public override void SetupRun(DayAutomaton dayAutomatonBase)
     {
-        automatonBase.Day = 22;
-        automatonBase.RegisterTestDataAndResult(@"1,0,1~1,2,1
+        dayAutomatonBase.Day = 22;
+        dayAutomatonBase.RegisterTestDataAndResult(@"1,0,1~1,2,1
 0,0,2~2,0,2
 0,2,3~2,2,3
 0,0,4~0,2,4
 2,0,5~2,2,5
 0,1,6~2,1,6
 1,1,8~1,1,9", 5, 1);
-        automatonBase.RegisterTestResult(7, 2);
+        dayAutomatonBase.RegisterTestResult(7, 2);
     }
     
     private const int X = 0;

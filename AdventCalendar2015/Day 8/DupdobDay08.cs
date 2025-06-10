@@ -32,7 +32,7 @@ public class DupdobDay08: SolverWithDataAsLines
 {   
     private string[] _lines;
 
-    public override void SetupRun(Automaton automaton)
+    public override void SetupRun(DayAutomaton dayAutomaton)
     {}
 
     [Example(1, """

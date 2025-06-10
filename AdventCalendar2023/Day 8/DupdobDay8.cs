@@ -33,10 +33,10 @@ public class DupdobDay8 : SolverWithLineParser
     private readonly Dictionary<string, (string left, string right)> _graph = new();
     private string _instructions = "";
     
-    public override void SetupRun(Automaton automatonBase)
+    public override void SetupRun(DayAutomaton dayAutomatonBase)
     {
-        automatonBase.Day = 8;
-        automatonBase.RegisterTestDataAndResult(@"RL
+        dayAutomatonBase.Day = 8;
+        dayAutomatonBase.RegisterTestDataAndResult(@"RL
 
 AAA = (BBB, CCC)
 BBB = (DDD, EEE)
@@ -45,13 +45,13 @@ DDD = (DDD, DDD)
 EEE = (EEE, EEE)
 GGG = (GGG, GGG)
 ZZZ = (ZZZ, ZZZ)", 2, 1);
-        automatonBase.RegisterTestDataAndResult(@"LLR
+        dayAutomatonBase.RegisterTestDataAndResult(@"LLR
 
 AAA = (BBB, BBB)
 BBB = (AAA, ZZZ)
 ZZZ = (ZZZ, ZZZ)", 6, 1);
 
-        automatonBase.RegisterTestDataAndResult(@"LR
+        dayAutomatonBase.RegisterTestDataAndResult(@"LR
 
 11A = (11B, XXX)
 11B = (XXX, 11Z)
@@ -61,7 +61,7 @@ ZZZ = (ZZZ, ZZZ)", 6, 1);
 22C = (22Z, 22Z)
 22Z = (22B, 22B)
 XXX = (XXX, XXX)", 0, 1);
-        automatonBase.RegisterTestResult(6, 2);
+        dayAutomatonBase.RegisterTestResult(6, 2);
     }
 
     public override object GetAnswer1()

@@ -28,14 +28,14 @@ namespace AdventCalendar2022;
 
 public class DupdobDay14 : SolverWithLineParser
 {
-    public override void SetupRun(Automaton automaton)
+    public override void SetupRun(DayAutomaton dayAutomaton)
     {
-        automaton.Day = 14;
-        automaton.AddExample(@"498,4 -> 498,6 -> 496,6
+        dayAutomaton.Day = 14;
+        dayAutomaton.AddExample(@"498,4 -> 498,6 -> 496,6
 503,4 -> 502,4 -> 502,9 -> 494,9
 ");
-        automaton.RegisterTestResult(24);
-        automaton.RegisterTestResult(93,2);
+        dayAutomaton.RegisterTestResult(24);
+        dayAutomaton.RegisterTestResult(93,2);
     }
 
     private void DrawCave()

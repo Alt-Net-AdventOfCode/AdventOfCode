@@ -29,10 +29,10 @@ using AoC;
 
 public class DupdobDay06: SolverWithDataAsLines
 {
-    public override void SetupRun(Automaton automatonBase)
+    public override void SetupRun(DayAutomaton dayAutomatonBase)
     {
-        automatonBase.Day = 6;
-        automatonBase.RegisterTestDataAndResult("0\t2\t7\t0", 5, 1).RegisterTestResult(4,2);
+        dayAutomatonBase.Day = 6;
+        dayAutomatonBase.RegisterTestDataAndResult("0\t2\t7\t0", 5, 1).RegisterTestResult(4,2);
     }
 
     public override object GetAnswer1()

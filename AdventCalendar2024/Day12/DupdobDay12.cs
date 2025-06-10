@@ -28,26 +28,26 @@ namespace AdventCalendar2024;
 
 public class DupdobDay12 : SolverWithLineParser
 {
-    public override void SetupRun(Automaton automatonBase)
+    public override void SetupRun(DayAutomaton dayAutomatonBase)
     {
-        automatonBase.Day = 12;
-        automatonBase.RegisterTestDataAndResult("""
+        dayAutomatonBase.Day = 12;
+        dayAutomatonBase.RegisterTestDataAndResult("""
                                                 AAAA
                                                 BBCD
                                                 BBCC
                                                 EEEC
                                                 """, 140, 1);
-        automatonBase.RegisterTestResult(80, 2);
+        dayAutomatonBase.RegisterTestResult(80, 2);
         
-        automatonBase.RegisterTestDataAndResult("""
+        dayAutomatonBase.RegisterTestDataAndResult("""
                                                 OOOOO
                                                 OXOXO
                                                 OOOOO
                                                 OXOXO
                                                 OOOOO
                                                 """, 772, 1);
-        automatonBase.RegisterTestResult(436, 2);
-        automatonBase.RegisterTestDataAndResult("""
+        dayAutomatonBase.RegisterTestResult(436, 2);
+        dayAutomatonBase.RegisterTestDataAndResult("""
                                                 EEEEE
                                                 EXXXX
                                                 EEEEE
@@ -55,7 +55,7 @@ public class DupdobDay12 : SolverWithLineParser
                                                 EEEEE
                                                 """, 236, 2);
 
-        automatonBase.RegisterTestDataAndResult("""
+        dayAutomatonBase.RegisterTestDataAndResult("""
                                                 RRRRIICCFF
                                                 RRRRIICCCF
                                                 VVRRRCCFFF

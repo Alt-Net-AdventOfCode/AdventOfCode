@@ -31,10 +31,10 @@ public class DupdobDay5 : SolverWithLineParser
 {
     private List<long> _seeds = new List<long>();
     private List<List<(long target, long source, long lenght)>> _maps = new();
-    public override void SetupRun(Automaton automatonBase)
+    public override void SetupRun(DayAutomaton dayAutomatonBase)
     {
-        automatonBase.Day = 5;
-        automatonBase.RegisterTestDataAndResult(@"seeds: 79 14 55 13
+        dayAutomatonBase.Day = 5;
+        dayAutomatonBase.RegisterTestDataAndResult(@"seeds: 79 14 55 13
 
 seed-to-soil map:
 50 98 2
@@ -67,7 +67,7 @@ temperature-to-humidity map:
 humidity-to-location map:
 60 56 37
 56 93 4", 35, 1);
-        automatonBase.RegisterTestResult(46, 2);
+        dayAutomatonBase.RegisterTestResult(46, 2);
     }
 
     public override object GetAnswer1()

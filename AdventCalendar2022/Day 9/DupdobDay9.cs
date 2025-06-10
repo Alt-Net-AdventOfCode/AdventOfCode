@@ -29,10 +29,10 @@ namespace AdventCalendar2022;
 public class DupdobDay9 : SolverWithLineParser
 {
     private readonly List<(char direction, int steps)> _steps = new();
-    public override void SetupRun(Automaton automaton)
+    public override void SetupRun(DayAutomaton dayAutomaton)
     {
-        automaton.Day = 9;
-        automaton.RegisterTestDataAndResult(@"R 4
+        dayAutomaton.Day = 9;
+        dayAutomaton.RegisterTestDataAndResult(@"R 4
 U 4
 L 3
 D 1
@@ -40,7 +40,7 @@ R 4
 D 1
 L 5
 R 2", 13, 1);
-        automaton.RegisterTestDataAndResult(@"R 5
+        dayAutomaton.RegisterTestDataAndResult(@"R 5
 U 8
 L 8
 D 3

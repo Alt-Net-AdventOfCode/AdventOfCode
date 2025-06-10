@@ -32,16 +32,16 @@ public class DupdobDay24 : SolverWithLineParser
     private long _minDim=200000000000000;
     private readonly List<List<long>> _hailStones = new();
     
-    public override void SetupRun(Automaton automatonBase)
+    public override void SetupRun(DayAutomaton dayAutomatonBase)
     {
-        automatonBase.Day = 24;
-        automatonBase.RegisterTestDataAndResult(@"7,27
+        dayAutomatonBase.Day = 24;
+        dayAutomatonBase.RegisterTestDataAndResult(@"7,27
 19, 13, 30 @ -2,  1, -2
 18, 19, 22 @ -1, -1, -2
 20, 25, 34 @ -2, -2, -4
 12, 31, 28 @ -1, -2, -1
 20, 19, 15 @  1, -5, -3", 2, 1);
-        automatonBase.RegisterTestResult(47, 2);
+        dayAutomatonBase.RegisterTestResult(47, 2);
     }
 
     public override object GetAnswer1()
