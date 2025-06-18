@@ -26,7 +26,7 @@ using AoC;
 
 namespace AdventCalendar2017;
 
-public class DupdobDay11 : SolverWithDataAsLines
+public class DupdobDay11 : SolverWithParser
 {
     private string[]? _steps;
 
@@ -73,7 +73,9 @@ public class DupdobDay11 : SolverWithDataAsLines
         return _maxDistance;
     }
 
-    protected override void ParseLines(string[] lines)
+    protected override void Parse(string data) => ParseLines(data.SplitLines());
+
+    private void ParseLines(string[] lines)
     {
         _steps = lines[0].Split(',', StringSplitOptions.TrimEntries).ToArray();
     }

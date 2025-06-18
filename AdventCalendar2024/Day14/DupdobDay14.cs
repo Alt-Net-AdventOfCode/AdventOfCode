@@ -53,8 +53,8 @@ public partial class DupdobDay14 : SolverWithLineParser
     {
         if (ExtraParameters.Length != 0)
         {
-            _width = ExtraParameters[0];
-            _height = ExtraParameters[1];
+            _width = (int) ExtraParameters[0];
+            _height = (int) ExtraParameters[1];
         }
         var quadrants = new int[4];
         foreach (var guard in _guards)

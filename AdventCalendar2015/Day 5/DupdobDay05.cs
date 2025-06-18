@@ -29,14 +29,10 @@ using AoC;
 namespace AdventCalendar2015;
 
 [Day(5)]
-public class DupdobDay05 : SolverWithDataAsLines
+public class DupdobDay05 : SolverWithParser
 {
-    private List<string> _lines;
-
-    public override void SetupRun(DayAutomaton dayAutomaton)
-    {
-    }
-
+    private string[] _lines;
+    
     [Example("ugknbfddgicrmopn", 1)]
     [Example("aaa", 1)]
     [Example("jchzalrnumimnmhp", 0)]
@@ -103,8 +99,5 @@ public class DupdobDay05 : SolverWithDataAsLines
         return doublePair && mirroredLetters;
     }
 
-    protected override void ParseLines(string[] lines)
-    {
-        _lines = lines.ToList();
-    }
+    protected override void Parse(string data) => _lines = data.SplitLines();
 }

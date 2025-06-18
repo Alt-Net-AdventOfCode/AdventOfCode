@@ -26,7 +26,7 @@ using AoC;
 
 namespace AdventCalendar2017;
 
-public class DupdobDay02 : SolverWithBlockParser
+public class DupdobDay02 : SolverWithParser
 {
     public override void SetupRun(DayAutomaton dayAutomatonBase)
     {
@@ -81,7 +81,17 @@ public class DupdobDay02 : SolverWithBlockParser
     }
 
     private readonly List<List<int>> _matrix = [];
-    protected override void ParseBlock(List<string> block, int blockIndex)
+    
+    protected override void Parse(string input)
+    {
+        var blockIndex = 0;
+        foreach (var block in input.SplitLineBlocks())
+        {
+            ParseBlock(block.ToList(), blockIndex++);
+        }
+    }
+
+    private void ParseBlock(List<string> block, int blockIndex)
     {
         foreach (var line in block)
         {

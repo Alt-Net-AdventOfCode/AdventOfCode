@@ -26,7 +26,7 @@ using AoC;
 
 namespace AdventCalendar2017;
 
-public class DupdobDay14: SolverWithDataAsLines
+public class DupdobDay14: SolverWithParser
 {
     private string _prefix = null!;
 
@@ -139,7 +139,9 @@ public class DupdobDay14: SolverWithDataAsLines
         return hash;
     }
     
-    protected override void ParseLines(string[] lines)
+    protected override void Parse(string data) => ParseLines(data.SplitLines());
+
+    private void ParseLines(string[] lines)
     {
         _prefix = lines[0];
     }

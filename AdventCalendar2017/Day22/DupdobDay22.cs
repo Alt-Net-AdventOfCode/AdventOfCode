@@ -26,13 +26,13 @@ using AoC;
 
 namespace AdventCalendar2017;
 
-public class DupdobDay22 : SolverWithDataAsLines
+public class DupdobDay22 : SolverWithParser
 {
     public override void SetupRun(DayAutomaton dayAutomatonBase)
     {
         dayAutomatonBase.Day = 22;
         dayAutomatonBase.AddExample("..#\n#..\n...\n").WithParameters(70, 100)
-            .Answer1(41).Answer2(26).WithParameters().Answer1(5587);
+            .Answer1(41).Answer2(26).Answer1(5587);
     }
 
     private readonly (int dy, int dx)[] _vectors = [(-1, 0), (0,1), (1, 0), (0, -1)];
@@ -113,7 +113,9 @@ public class DupdobDay22 : SolverWithDataAsLines
 
     private readonly List<(int y, int x)> _infectedCells = [];
     
-    protected override void ParseLines(string[] lines)
+    protected override void Parse(string data) => ParseLines(data.SplitLines());
+
+    private void ParseLines(string[] lines)
     {
         var offsetX = (lines[0].Length - 1) / 2;
         var offsetY = (lines.Length - 1) / 2;

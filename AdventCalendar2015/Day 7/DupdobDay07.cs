@@ -29,11 +29,8 @@ using AoC;
 namespace AdventCalendar2015;
 
 [Day(7)]
-public class DupdobDay07: SolverWithLineParser
+public class DupdobDay07: SolverWithParser
 {
-    public override void SetupRun(DayAutomaton _)
-    {
-    }
 
     [Example("""
              123 -> x
@@ -74,36 +71,39 @@ public class DupdobDay07: SolverWithLineParser
         return value;
     }
     
-    protected override void ParseLine(string line, int index, int lineCount)
+    protected override void Parse(string data)
     {
-        var blocks = line.Split("->", StringSplitOptions.TrimEntries);
-        var target = blocks[1];
-        Func<ushort> wireLogic;
-        var expression = blocks[0];
-        if (!expression.Contains(' '))
+        foreach (var line in data.SplitLines())
         {
-            wireLogic = () => Evaluate(expression);
-        }
-        else if (expression.StartsWith("NOT"))
-        {
-            var operand = expression.Split(' ')[1];
-            wireLogic = () => (ushort)~Evaluate(operand);
-        }
-        else
-        {
-            blocks = expression.Split(' ', StringSplitOptions.TrimEntries);
-            var a = blocks[0];
-            var b = blocks[2];
-            wireLogic = blocks[1] switch
+            var blocks = line.Split("->", StringSplitOptions.TrimEntries);
+            var target = blocks[1];
+            Func<ushort> wireLogic;
+            var expression = blocks[0];
+            if (!expression.Contains(' '))
             {
-                "AND" => () => (ushort)(Evaluate(a) & Evaluate(b)),
-                "OR" => () => (ushort)(Evaluate(a) | Evaluate(b)),
-                "LSHIFT" => () => (ushort)(Evaluate(a) << Evaluate(b)),
-                "RSHIFT" => () => (ushort)(Evaluate(a) >> Evaluate(b)),
-                _ => null
-            };
-        }
+                wireLogic = () => Evaluate(expression);
+            }
+            else if (expression.StartsWith("NOT"))
+            {
+                var operand = expression.Split(' ')[1];
+                wireLogic = () => (ushort)~Evaluate(operand);
+            }
+            else
+            {
+                blocks = expression.Split(' ', StringSplitOptions.TrimEntries);
+                var a = blocks[0];
+                var b = blocks[2];
+                wireLogic = blocks[1] switch
+                {
+                    "AND" => () => (ushort)(Evaluate(a) & Evaluate(b)),
+                    "OR" => () => (ushort)(Evaluate(a) | Evaluate(b)),
+                    "LSHIFT" => () => (ushort)(Evaluate(a) << Evaluate(b)),
+                    "RSHIFT" => () => (ushort)(Evaluate(a) >> Evaluate(b)),
+                    _ => null
+                };
+            }
 
-        _wires[target] = wireLogic;
+            _wires[target] = wireLogic;            
+        }
     }
 }

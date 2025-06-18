@@ -27,7 +27,7 @@ using System.Security.AccessControl;
 namespace AdventCalendar2017;
 using AoC;
 
-public class DupdobDay06: SolverWithDataAsLines
+public class DupdobDay06: SolverWithParser
 {
     public override void SetupRun(DayAutomaton dayAutomatonBase)
     {
@@ -142,8 +142,8 @@ public class DupdobDay06: SolverWithDataAsLines
         }
 
     }
-    protected override void ParseLines(string[] lines)
+    protected override void Parse(string data)
     {
-        _banks = lines[0].Split('\t', StringSplitOptions.TrimEntries).Select(int.Parse).ToList();
+        _banks = data.Split('\t', StringSplitOptions.TrimEntries).Select(int.Parse).ToList();
     }
 }

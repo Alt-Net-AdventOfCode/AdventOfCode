@@ -7,6 +7,6 @@ class Program
     {
         var engine = new HttpAutomaton(2024);
         engine.SetDataPath("../../../Day{0,2}");
-        engine.RunDay<DupdobDay24>();
+        engine.RunDay<DupdobDay14>();
     }
 }

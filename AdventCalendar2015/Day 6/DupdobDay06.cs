@@ -31,10 +31,8 @@ using AoC;
 namespace AdventCalendar2015;
 
 [Day(6)]
-public class DupdobDay06 : SolverWithDataAsLines
+public class DupdobDay06 : SolverWithParser
 {
-    public override void SetupRun(DayAutomaton _)
-    {}
 
     [Example("""
              turn on 0,0 through 999,999
@@ -120,9 +118,9 @@ public class DupdobDay06 : SolverWithDataAsLines
 
     private readonly List<(Operation, Light, Light)> _tasks = [];
     
-    protected override void ParseLines(string[] lines)
+    protected override void Parse(string data)
     {
-        foreach (var match in lines.Select(s => Parser.Match(s)))
+        foreach (var match in data.SplitLines().Select(s => Parser.Match(s)))
         {
             if (!match.Success)
             {

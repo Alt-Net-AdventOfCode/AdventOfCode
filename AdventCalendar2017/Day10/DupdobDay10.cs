@@ -27,7 +27,7 @@ using AoC;
 
 namespace AdventCalendar2017;
 
-public class DupdobDay10 : SolverWithDataAsLines
+public class DupdobDay10 : SolverWithParser
 {
     public override void SetupRun(DayAutomaton dayAutomatonBase)
     {
@@ -101,7 +101,9 @@ public class DupdobDay10 : SolverWithDataAsLines
     private List<int> _lengths = null!;
     private List<int> _raw = null!;
 
-    protected override void ParseLines(string[] lines)
+    protected override void Parse(string data) => ParseLines(data.SplitLines());
+
+    private void ParseLines(string[] lines)
     {
         try
         {

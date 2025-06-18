@@ -30,7 +30,7 @@ using AoC;
 namespace AdventCalendar2015;
 
 [Day(2)]
-public class DupdobDay02: SolverWithLineParser
+public class DupdobDay02: SolverWithParser
 {
     private record Gift(int L, int W, int H);
 
@@ -63,9 +63,12 @@ public class DupdobDay02: SolverWithLineParser
         return neededRibbon;
     }
 
-    protected override void ParseLine(string line, int index, int lineCount)
+    protected override void Parse(string data)
     {
-        var values = line.Split('x', StringSplitOptions.TrimEntries).Select(int.Parse).ToArray();
-        _gifts.Add(new Gift(values[0], values[1], values[2]));
+        foreach (var line in data.SplitLines())
+        {
+            var values = line.Split('x', StringSplitOptions.TrimEntries).Select(int.Parse).ToArray();
+            _gifts.Add(new Gift(values[0], values[1], values[2]));            
+        }
     }
 }

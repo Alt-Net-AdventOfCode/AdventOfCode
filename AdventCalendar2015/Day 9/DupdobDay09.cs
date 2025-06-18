@@ -29,11 +29,8 @@ using System.Text.RegularExpressions;
 using AoC;
 
 [Day(9)]
-public class DupdobDay09: SolverWithDataAsLines
+public class DupdobDay09: SolverWithParser
 {
-    public override void SetupRun(DayAutomaton dayAutomaton)
-    {
-    }
 
     [Example(1, """
              London to Dublin = 464
@@ -107,9 +104,9 @@ public class DupdobDay09: SolverWithDataAsLines
     private readonly Dictionary<string, long> _encoding = [];
     private long _toVisit;
 
-    protected override void ParseLines(string[] lines)
+    protected override void Parse(string data)
     {
-        foreach (var line in lines)
+        foreach (var line in data.SplitLines())
         {
             var match = _parser.Match(line);
             if (!match.Success)

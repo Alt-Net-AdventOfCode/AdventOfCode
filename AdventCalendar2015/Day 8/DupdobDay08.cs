@@ -28,12 +28,10 @@ using AoC;
 namespace AdventCalendar2015;
 
 [Day(8)]
-public class DupdobDay08: SolverWithDataAsLines
+public class DupdobDay08: SolverWithParser
 {   
     private string[] _lines;
-
-    public override void SetupRun(DayAutomaton dayAutomaton)
-    {}
+    
 
     [Example(1, """
              ""
@@ -77,5 +75,5 @@ public class DupdobDay08: SolverWithDataAsLines
     [ReuseExample(1, 19)]
     public override object GetAnswer2() => _lines.Sum(CalcDiff2);
 
-    protected override void ParseLines(string[] lines) => _lines = lines;
+    protected override void Parse(string data) => _lines = data.SplitLines();
 }

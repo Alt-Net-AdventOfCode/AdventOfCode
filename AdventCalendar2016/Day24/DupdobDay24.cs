@@ -31,7 +31,7 @@ using AoCAlgorithms;
 
 namespace AdventCalendar2016;
 
-public class DupdobDay24 : SolverWithBlockParser
+public class DupdobDay24 : SolverWithParser
 {
     public override void SetupRun(DayAutomaton dayAutomatonBase)
     {
@@ -121,7 +121,16 @@ public class DupdobDay24 : SolverWithBlockParser
     private readonly Dictionary<int, Point> _points = [];
     private Dictionary<int, Dictionary<int, int>> _distances;
 
-    protected override void ParseBlock(List<string> block, int blockIndex)
+    protected override void Parse(string input)
+    {
+        var blockIndex = 0;
+        foreach (var block in input.SplitLineBlocks())
+        {
+            ParseBlock(block.ToList(), blockIndex++);
+        }
+    }
+
+    protected void ParseBlock(List<string> block, int blockIndex)
     {
         _map = Map2D.FromBlock(block, OutBoundHandling.DefaultValue, '#');
         for(var y = 0; y < _map.GetUpperBound(1); y++)
