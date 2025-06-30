@@ -31,7 +31,7 @@ using AoC;
 namespace AdventCalendar2015;
 
 [Day(17)]
-public class DupdobDay17:SolverWithIntParameter
+public class DupdobDay17: SolverWithParam<int>
 {
     public override void SetupRun(DayAutomaton dayAutomaton)
     {

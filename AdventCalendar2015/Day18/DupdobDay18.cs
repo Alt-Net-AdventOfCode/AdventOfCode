@@ -30,7 +30,7 @@ using AoC;
 namespace AdventCalendar2015;
 
 [Day(18)]
-public class DupdobDay18 : SolverWithIntParameter
+public class DupdobDay18 : SolverWithParam<int>
 {
     private readonly HashSet<(int x, int y)> _lights = [];
     private int _width,_height;

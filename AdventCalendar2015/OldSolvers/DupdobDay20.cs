@@ -1,6 +1,6 @@
 using AOCHelpers;
 
-namespace AdventCalendar2015
+namespace AdventCalendar2015.OldSolvers
 {
     public class DupdobDay20 : DupdobDayWithTest
     {

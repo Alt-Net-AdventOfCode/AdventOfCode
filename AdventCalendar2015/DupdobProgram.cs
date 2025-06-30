@@ -10,7 +10,7 @@ namespace AdventCalendar2015
         {
             var automaton = Automaton.WebsiteAutomaton(2015);
             automaton.SetDataPath("../../../Day{0,2}");
-            automaton.RunDay<DupdobDay14>();
+            automaton.RunDay<DupdobDay20>();
         }
 
         private static void GiveAllAnswers()
@@ -51,7 +51,7 @@ namespace AdventCalendar2015
             day.SetData();
             Console.WriteLine("Day {0}: (1) = {1} , (2) = {2}", day.Day, day.GiveAnswer1(), day.GiveAnswer2());
             new OldSolvers.DupdobDay19().OutputAnswers();
-            new DupdobDay20().OutputAnswers();
+            new OldSolvers.DupdobDay20().OutputAnswers();
             new DupdobDay21().OutputAnswers();
             new DupdobDay22().OutputAnswers();
             new DupdobDay23().OutputAnswers();
