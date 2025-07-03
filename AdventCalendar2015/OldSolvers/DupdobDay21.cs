@@ -5,7 +5,7 @@ using System.Data.Common;
 using System.Linq;
 using AOCHelpers;
 
-namespace AdventCalendar2015
+namespace AdventCalendar2015.OldSolvers
 {
     public class DupdobDay21: DupdobDayWithTest
     {

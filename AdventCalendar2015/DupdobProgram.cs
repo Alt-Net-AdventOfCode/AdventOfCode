@@ -4,13 +4,14 @@
 
 namespace AdventCalendar2015
 {
+    
     internal static class DupdobProgram
     {
         private static void Main(string[] args)
         {
             var automaton = Automaton.WebsiteAutomaton(2015);
             automaton.SetDataPath("../../../Day{0,2}");
-            automaton.RunDay<DupdobDay20>();
+            automaton.RunDay<DupdobDay22>();
         }
 
         private static void GiveAllAnswers()
@@ -52,8 +53,8 @@ namespace AdventCalendar2015
             Console.WriteLine("Day {0}: (1) = {1} , (2) = {2}", day.Day, day.GiveAnswer1(), day.GiveAnswer2());
             new OldSolvers.DupdobDay19().OutputAnswers();
             new OldSolvers.DupdobDay20().OutputAnswers();
-            new DupdobDay21().OutputAnswers();
-            new DupdobDay22().OutputAnswers();
+            new OldSolvers.DupdobDay21().OutputAnswers();
+            new OldSolvers.DupdobDay22().OutputAnswers();
             new DupdobDay23().OutputAnswers();
             new DupdobDay24().OutputAnswers();
             new DupdobDay25().OutputAnswers();
