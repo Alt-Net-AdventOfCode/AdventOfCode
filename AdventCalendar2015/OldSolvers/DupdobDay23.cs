@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Threading;
 using AOCHelpers;
 
-namespace AdventCalendar2015
+namespace AdventCalendar2015.OldSolvers
 {
     public class DupdobDay23: DupdobDayWithTest
     {
