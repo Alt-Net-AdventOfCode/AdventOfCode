@@ -1,7 +1,7 @@
 using System.Text.RegularExpressions;
 using AOCHelpers;
 
-namespace AdventCalendar2015
+namespace AdventCalendar2015.OldSolvers
 {
     public class DupdobDay25: DupdobDayWithTest
     {
