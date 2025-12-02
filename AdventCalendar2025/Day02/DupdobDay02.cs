@@ -49,14 +49,13 @@ public class DupdobDay02: SolverWithParser
             {
                 continue;
             }
-            var invalidProductIDs = sequenceEnd - sequenceStart + 1;
-            var productIDSum = invalidProductIDs * (sequenceEnd+sequenceStart)/2*(range +1);
-            total+=productIDSum;
+
+            total+=(sequenceEnd - sequenceStart + 1) * (sequenceEnd+sequenceStart)/2*(range +1);
         }
 
         return total;
     }
-    private int[][] _computedRanges =
+    private readonly int[][] _computedRanges =
     [
         [],   //1
         [11], // 2
@@ -74,6 +73,7 @@ public class DupdobDay02: SolverWithParser
     public override object GetAnswer2()
     {
         var result = 0L;
+        Debug.Assert(_ranges != null, nameof(_ranges) + " != null");
         foreach (var (start, end) in _ranges)
         {
             var index = 0;
