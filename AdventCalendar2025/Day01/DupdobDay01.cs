@@ -55,7 +55,7 @@ public class DupdobDay01: SolverWithParser
             if (number<0)
             {
                 password += -dial / 100 + (dial > 0 || dial == number ? 0 : 1);
-                dial = (dial%100+100)%100;
+                dial = (dial % 100 + 100) % 100;
             }
             else
             {
