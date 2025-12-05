@@ -1,4 +1,5 @@
 
+using System.Diagnostics;
 using AoC;
 
 namespace AdventCalendar2025;
@@ -32,6 +33,7 @@ public class DupdobDay01: SolverWithParser
     {
         var password = 0;
         var dial = 50;
+        Debug.Assert(_numbers != null, nameof(_numbers) + " != null");
         foreach (var number in _numbers)
         {
             dial+=number;
@@ -48,6 +50,7 @@ public class DupdobDay01: SolverWithParser
     {
         var password = 0;
         var dial = 50;
+        Debug.Assert(_numbers != null, nameof(_numbers) + " != null");
         foreach (var number in _numbers)
         {
             // dial is always between 0 and 99

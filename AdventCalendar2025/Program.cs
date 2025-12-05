@@ -5,4 +5,4 @@ using AoC;
 
 var engine = Automaton.WebsiteAutomaton(2025);
 engine.SetDataPath("../../../Day{0:00}");
-engine.RunDay<DupdobDay03>();
+engine.RunDay<DupdobDay05>();
